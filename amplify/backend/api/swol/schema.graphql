@@ -27,3 +27,9 @@ type MyExercise @model @auth(rules: [{ allow: owner }]) {
   rating: Int
   weight: Int
 }
+
+type Profile @model @auth(rules: [{allow: private , ownerField: "owner"}]) {
+  id: ID!
+  username: String!
+  owner: String
+}

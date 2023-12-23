@@ -17,7 +17,7 @@ const TabNavigation = () => {
   return (
     <Tab.Navigator>
       <Tab.Screen name="Feed" component={TabScreen} />
-      <Tab.Screen name="Matching" component={TabScreen} />
+      <Tab.Screen name="Search" component={TabScreen} />
       <Tab.Screen name="Workouts" component={WorkoutsScreen} />
     </Tab.Navigator>
   );

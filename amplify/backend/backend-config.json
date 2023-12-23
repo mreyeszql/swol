@@ -7,7 +7,7 @@
             "UserPoolId"
           ],
           "category": "auth",
-          "resourceName": "swol9b86d43e"
+          "resourceName": "swol9618fbda"
         }
       ],
       "output": {
@@ -16,7 +16,7 @@
           "defaultAuthentication": {
             "authenticationType": "AMAZON_COGNITO_USER_POOLS",
             "userPoolConfig": {
-              "userPoolId": "authswol9b86d43e"
+              "userPoolId": "authswol9618fbda"
             }
           }
         }
@@ -26,7 +26,7 @@
     }
   },
   "auth": {
-    "swol9b86d43e": {
+    "swol9618fbda": {
       "customAuth": false,
       "dependsOn": [],
       "frontendAuthConfig": {
@@ -39,7 +39,8 @@
           "passwordPolicyMinLength": 8
         },
         "signupAttributes": [
-          "EMAIL"
+          "EMAIL",
+          "PREFERRED_USERNAME"
         ],
         "socialProviders": [],
         "usernameAttributes": [

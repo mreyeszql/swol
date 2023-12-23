@@ -15,7 +15,7 @@ const SignupScreen = ({ navigation }) => {
     });
 
     if (result) {
-        navigation.navigate('ConfirmSignup', { email });
+        navigation.navigate('ConfirmSignup', { email, username });
     }
   };
 
