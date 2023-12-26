@@ -28,8 +28,17 @@ type MyExercise @model @auth(rules: [{ allow: owner }]) {
   weight: Int
 }
 
-type Profile @model @auth(rules: [{allow: private , ownerField: "owner"}]) {
+type Profile @model @auth(rules: [{allow: private , ownerField: "ownerId"}]) {
   id: ID!
   username: String!
-  owner: String
+  ownerId: ID! @index
+  incomingRequests: [FriendRequest] @hasMany
+  outgoingRequests: [FriendRequest] @hasMany
+}
+
+type FriendRequest @model @auth(rules: [{ allow: private }]) {
+    id: ID!
+    sender: Profile! @belongsTo
+    receiver: Profile! @belongsTo
+    accepted: Boolean!
 }

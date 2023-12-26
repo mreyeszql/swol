@@ -9,6 +9,7 @@ import TabScreen from 'screens/home/TabScreen';
 import WorkoutsScreen from 'screens/home/workout/WorkoutsScreen';
 import WorkoutScreen from 'screens/home/workout/WorkoutScreen';
 import ExercisesScreen from 'screens/home/workout/ExercisesScreen';
+import SearchProfilesScreen from 'screens/home/search/SearchProfilesScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -17,7 +18,7 @@ const TabNavigation = () => {
   return (
     <Tab.Navigator>
       <Tab.Screen name="Feed" component={TabScreen} />
-      <Tab.Screen name="Search" component={TabScreen} />
+      <Tab.Screen name="Search" component={SearchProfilesScreen} />
       <Tab.Screen name="Workouts" component={WorkoutsScreen} />
     </Tab.Navigator>
   );

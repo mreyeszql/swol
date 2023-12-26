@@ -1,4 +1,4 @@
-import { signUp, confirmSignUp, autoSignIn } from 'aws-amplify/auth';
+import { signUp, confirmSignUp, autoSignIn, fetchUserAttributes } from 'aws-amplify/auth';
 import { generateClient } from 'aws-amplify/api';
 import { createProfile } from 'graphql/mutations';
 
@@ -21,25 +21,26 @@ const handleSignUp = async ({ username, email, password }) => {
   }
 };
 
-const handleConfirmSignUp = async ({ email, username, confirmationCode }) => {
+const handleConfirmSignUp = async ({ email, confirmationCode }) => {
   try {
     const client = generateClient();
-    console.log(username);
-    const { isSignUpComplete, nextStep } = await confirmSignUp({
+    const { isSignUpComplete } = await confirmSignUp({
       username: email,
       confirmationCode: confirmationCode
     });
 
-    await autoSignIn();
-
     if (isSignUpComplete) {
+      await autoSignIn();
+      const { preferred_username, sub } = await fetchUserAttributes();
+
       await client.graphql({
-        query: createProfile,
-        variables: { input: {
-          username,
-        }}
+          query: createProfile,
+          variables: { input: {
+          username: preferred_username,
+          ownerId: sub,
+          }}
       });
-    }
+    };
 
     return isSignUpComplete;
   } catch (error) {

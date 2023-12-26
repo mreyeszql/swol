@@ -8,11 +8,9 @@ export const getMuscle = /* GraphQL */ `
       name
       exercises {
         nextToken
-        __typename
       }
       createdAt
       updatedAt
-      __typename
     }
   }
 `;
@@ -28,10 +26,8 @@ export const listMuscles = /* GraphQL */ `
         name
         createdAt
         updatedAt
-        __typename
       }
       nextToken
-      __typename
     }
   }
 `;
@@ -42,16 +38,13 @@ export const getExercise = /* GraphQL */ `
       name
       muscles {
         nextToken
-        __typename
       }
       workouts {
         nextToken
-        __typename
       }
       time
       createdAt
       updatedAt
-      __typename
     }
   }
 `;
@@ -68,10 +61,8 @@ export const listExercises = /* GraphQL */ `
         time
         createdAt
         updatedAt
-        __typename
       }
       nextToken
-      __typename
     }
   }
 `;
@@ -82,11 +73,9 @@ export const getWorkout = /* GraphQL */ `
       name
       exercises {
         nextToken
-        __typename
       }
       createdAt
       updatedAt
-      __typename
     }
   }
 `;
@@ -102,10 +91,8 @@ export const listWorkouts = /* GraphQL */ `
         name
         createdAt
         updatedAt
-        __typename
       }
       nextToken
-      __typename
     }
   }
 `;
@@ -119,7 +106,6 @@ export const getMyExercise = /* GraphQL */ `
         time
         createdAt
         updatedAt
-        __typename
       }
       rating
       weight
@@ -127,7 +113,6 @@ export const getMyExercise = /* GraphQL */ `
       updatedAt
       myExerciseExerciseId
       owner
-      __typename
     }
   }
 `;
@@ -146,10 +131,8 @@ export const listMyExercises = /* GraphQL */ `
         updatedAt
         myExerciseExerciseId
         owner
-        __typename
       }
       nextToken
-      __typename
     }
   }
 `;
@@ -158,10 +141,15 @@ export const getProfile = /* GraphQL */ `
     getProfile(id: $id) {
       id
       username
-      owner
+      ownerId
+      incomingRequests {
+        nextToken
+      }
+      outgoingRequests {
+        nextToken
+      }
       createdAt
       updatedAt
-      __typename
     }
   }
 `;
@@ -175,13 +163,56 @@ export const listProfiles = /* GraphQL */ `
       items {
         id
         username
-        owner
+        ownerId
         createdAt
         updatedAt
-        __typename
       }
       nextToken
-      __typename
+    }
+  }
+`;
+export const getFriendRequest = /* GraphQL */ `
+  query GetFriendRequest($id: ID!) {
+    getFriendRequest(id: $id) {
+      id
+      sender {
+        id
+        username
+        ownerId
+        createdAt
+        updatedAt
+      }
+      receiver {
+        id
+        username
+        ownerId
+        createdAt
+        updatedAt
+      }
+      accepted
+      createdAt
+      updatedAt
+      profileIncomingRequestsId
+      profileOutgoingRequestsId
+    }
+  }
+`;
+export const listFriendRequests = /* GraphQL */ `
+  query ListFriendRequests(
+    $filter: ModelFriendRequestFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listFriendRequests(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        accepted
+        createdAt
+        updatedAt
+        profileIncomingRequestsId
+        profileOutgoingRequestsId
+      }
+      nextToken
     }
   }
 `;
@@ -196,7 +227,6 @@ export const getMuscleExercises = /* GraphQL */ `
         name
         createdAt
         updatedAt
-        __typename
       }
       exercise {
         id
@@ -204,11 +234,9 @@ export const getMuscleExercises = /* GraphQL */ `
         time
         createdAt
         updatedAt
-        __typename
       }
       createdAt
       updatedAt
-      __typename
     }
   }
 `;
@@ -225,10 +253,8 @@ export const listMuscleExercises = /* GraphQL */ `
         exerciseId
         createdAt
         updatedAt
-        __typename
       }
       nextToken
-      __typename
     }
   }
 `;
@@ -244,18 +270,15 @@ export const getWorkoutExercises = /* GraphQL */ `
         time
         createdAt
         updatedAt
-        __typename
       }
       workout {
         id
         name
         createdAt
         updatedAt
-        __typename
       }
       createdAt
       updatedAt
-      __typename
     }
   }
 `;
@@ -276,10 +299,34 @@ export const listWorkoutExercises = /* GraphQL */ `
         workoutId
         createdAt
         updatedAt
-        __typename
       }
       nextToken
-      __typename
+    }
+  }
+`;
+export const profilesByOwnerId = /* GraphQL */ `
+  query ProfilesByOwnerId(
+    $ownerId: ID!
+    $sortDirection: ModelSortDirection
+    $filter: ModelProfileFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    profilesByOwnerId(
+      ownerId: $ownerId
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        username
+        ownerId
+        createdAt
+        updatedAt
+      }
+      nextToken
     }
   }
 `;
@@ -304,10 +351,8 @@ export const muscleExercisesByMuscleId = /* GraphQL */ `
         exerciseId
         createdAt
         updatedAt
-        __typename
       }
       nextToken
-      __typename
     }
   }
 `;
@@ -332,10 +377,8 @@ export const muscleExercisesByExerciseId = /* GraphQL */ `
         exerciseId
         createdAt
         updatedAt
-        __typename
       }
       nextToken
-      __typename
     }
   }
 `;
@@ -360,10 +403,8 @@ export const workoutExercisesByExerciseId = /* GraphQL */ `
         workoutId
         createdAt
         updatedAt
-        __typename
       }
       nextToken
-      __typename
     }
   }
 `;
@@ -388,10 +429,8 @@ export const workoutExercisesByWorkoutId = /* GraphQL */ `
         workoutId
         createdAt
         updatedAt
-        __typename
       }
       nextToken
-      __typename
     }
   }
 `;
