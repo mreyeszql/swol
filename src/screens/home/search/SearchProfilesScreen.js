@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { View, Text, TextInput, FlatList, Button } from 'react-native';
 import { generateClient } from "aws-amplify/api";
-import { listProfiles, profilesByOwnerId } from "graphql/queries";
-import { getCurrentUser } from "aws-amplify/auth";
+import { listProfiles } from "graphql/queries";
 import { createFriendRequest, deleteFriendRequest, updateFriendRequest } from "graphql/mutations";
+import { handleFetchAuth } from "functions/utils/profile";
 
 const SearchProfilesScreen = () => {
     const client = generateClient();
@@ -16,33 +16,7 @@ const SearchProfilesScreen = () => {
     }, []);
 
     const localHandleFetchAuth = async () => {
-        const { userId } = await getCurrentUser();
-        const query = `
-        query MyQuery {
-            profilesByOwnerId(ownerId: "${userId}") {
-            items {
-                id
-                incomingRequests {
-                items {
-                    id
-                    accepted
-                    profileOutgoingRequestsId
-                }
-                }
-                outgoingRequests {
-                items {
-                    id
-                    accepted
-                    profileIncomingRequestsId
-                }
-                }
-            }
-            }
-        }
-        `;
-        const profile = await client.graphql({
-            query: query,
-        });
+        const profile = await handleFetchAuth();
         setLocalProfile(profile.data.profilesByOwnerId.items[0]);
     };
     

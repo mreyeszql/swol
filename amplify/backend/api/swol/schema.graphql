@@ -13,6 +13,7 @@ type Exercise @model @auth(rules: [{ allow: private }]) {
   muscles: [Muscle] @manyToMany(relationName: "MuscleExercises")
   workouts: [Workout] @manyToMany(relationName: "WorkoutExercises")
   time: Int
+  increment: Int
 }
 
 type Workout @model @auth(rules: [{ allow: private }]) {
@@ -26,6 +27,7 @@ type MyExercise @model @auth(rules: [{ allow: owner }]) {
   exercise: Exercise @hasOne
   rating: Int
   weight: Int
+  maxweight: Int
 }
 
 type Profile @model @auth(rules: [{allow: private , ownerField: "ownerId"}]) {
@@ -34,11 +36,18 @@ type Profile @model @auth(rules: [{allow: private , ownerField: "ownerId"}]) {
   ownerId: ID! @index
   incomingRequests: [FriendRequest] @hasMany
   outgoingRequests: [FriendRequest] @hasMany
+  posts: [Post] @hasMany
 }
 
 type FriendRequest @model @auth(rules: [{ allow: private }]) {
-    id: ID!
-    sender: Profile! @belongsTo
-    receiver: Profile! @belongsTo
-    accepted: Boolean!
+  id: ID!
+  sender: Profile! @belongsTo
+  receiver: Profile! @belongsTo
+  accepted: Boolean!
+}
+
+type Post @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  author: Profile! @belongsTo
+  text: String!
 }

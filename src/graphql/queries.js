@@ -8,9 +8,11 @@ export const getMuscle = /* GraphQL */ `
       name
       exercises {
         nextToken
+        __typename
       }
       createdAt
       updatedAt
+      __typename
     }
   }
 `;
@@ -26,8 +28,10 @@ export const listMuscles = /* GraphQL */ `
         name
         createdAt
         updatedAt
+        __typename
       }
       nextToken
+      __typename
     }
   }
 `;
@@ -38,13 +42,17 @@ export const getExercise = /* GraphQL */ `
       name
       muscles {
         nextToken
+        __typename
       }
       workouts {
         nextToken
+        __typename
       }
       time
+      increment
       createdAt
       updatedAt
+      __typename
     }
   }
 `;
@@ -59,10 +67,13 @@ export const listExercises = /* GraphQL */ `
         id
         name
         time
+        increment
         createdAt
         updatedAt
+        __typename
       }
       nextToken
+      __typename
     }
   }
 `;
@@ -73,9 +84,11 @@ export const getWorkout = /* GraphQL */ `
       name
       exercises {
         nextToken
+        __typename
       }
       createdAt
       updatedAt
+      __typename
     }
   }
 `;
@@ -91,8 +104,10 @@ export const listWorkouts = /* GraphQL */ `
         name
         createdAt
         updatedAt
+        __typename
       }
       nextToken
+      __typename
     }
   }
 `;
@@ -104,15 +119,19 @@ export const getMyExercise = /* GraphQL */ `
         id
         name
         time
+        increment
         createdAt
         updatedAt
+        __typename
       }
       rating
       weight
+      maxweight
       createdAt
       updatedAt
       myExerciseExerciseId
       owner
+      __typename
     }
   }
 `;
@@ -127,12 +146,15 @@ export const listMyExercises = /* GraphQL */ `
         id
         rating
         weight
+        maxweight
         createdAt
         updatedAt
         myExerciseExerciseId
         owner
+        __typename
       }
       nextToken
+      __typename
     }
   }
 `;
@@ -144,12 +166,19 @@ export const getProfile = /* GraphQL */ `
       ownerId
       incomingRequests {
         nextToken
+        __typename
       }
       outgoingRequests {
         nextToken
+        __typename
+      }
+      posts {
+        nextToken
+        __typename
       }
       createdAt
       updatedAt
+      __typename
     }
   }
 `;
@@ -166,8 +195,10 @@ export const listProfiles = /* GraphQL */ `
         ownerId
         createdAt
         updatedAt
+        __typename
       }
       nextToken
+      __typename
     }
   }
 `;
@@ -181,6 +212,7 @@ export const getFriendRequest = /* GraphQL */ `
         ownerId
         createdAt
         updatedAt
+        __typename
       }
       receiver {
         id
@@ -188,12 +220,14 @@ export const getFriendRequest = /* GraphQL */ `
         ownerId
         createdAt
         updatedAt
+        __typename
       }
       accepted
       createdAt
       updatedAt
       profileIncomingRequestsId
       profileOutgoingRequestsId
+      __typename
     }
   }
 `;
@@ -211,8 +245,50 @@ export const listFriendRequests = /* GraphQL */ `
         updatedAt
         profileIncomingRequestsId
         profileOutgoingRequestsId
+        __typename
       }
       nextToken
+      __typename
+    }
+  }
+`;
+export const getPost = /* GraphQL */ `
+  query GetPost($id: ID!) {
+    getPost(id: $id) {
+      id
+      author {
+        id
+        username
+        ownerId
+        createdAt
+        updatedAt
+        __typename
+      }
+      text
+      createdAt
+      updatedAt
+      profilePostsId
+      __typename
+    }
+  }
+`;
+export const listPosts = /* GraphQL */ `
+  query ListPosts(
+    $filter: ModelPostFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listPosts(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        text
+        createdAt
+        updatedAt
+        profilePostsId
+        __typename
+      }
+      nextToken
+      __typename
     }
   }
 `;
@@ -227,16 +303,20 @@ export const getMuscleExercises = /* GraphQL */ `
         name
         createdAt
         updatedAt
+        __typename
       }
       exercise {
         id
         name
         time
+        increment
         createdAt
         updatedAt
+        __typename
       }
       createdAt
       updatedAt
+      __typename
     }
   }
 `;
@@ -253,8 +333,10 @@ export const listMuscleExercises = /* GraphQL */ `
         exerciseId
         createdAt
         updatedAt
+        __typename
       }
       nextToken
+      __typename
     }
   }
 `;
@@ -268,17 +350,21 @@ export const getWorkoutExercises = /* GraphQL */ `
         id
         name
         time
+        increment
         createdAt
         updatedAt
+        __typename
       }
       workout {
         id
         name
         createdAt
         updatedAt
+        __typename
       }
       createdAt
       updatedAt
+      __typename
     }
   }
 `;
@@ -299,8 +385,10 @@ export const listWorkoutExercises = /* GraphQL */ `
         workoutId
         createdAt
         updatedAt
+        __typename
       }
       nextToken
+      __typename
     }
   }
 `;
@@ -325,8 +413,10 @@ export const profilesByOwnerId = /* GraphQL */ `
         ownerId
         createdAt
         updatedAt
+        __typename
       }
       nextToken
+      __typename
     }
   }
 `;
@@ -351,8 +441,10 @@ export const muscleExercisesByMuscleId = /* GraphQL */ `
         exerciseId
         createdAt
         updatedAt
+        __typename
       }
       nextToken
+      __typename
     }
   }
 `;
@@ -377,8 +469,10 @@ export const muscleExercisesByExerciseId = /* GraphQL */ `
         exerciseId
         createdAt
         updatedAt
+        __typename
       }
       nextToken
+      __typename
     }
   }
 `;
@@ -403,8 +497,10 @@ export const workoutExercisesByExerciseId = /* GraphQL */ `
         workoutId
         createdAt
         updatedAt
+        __typename
       }
       nextToken
+      __typename
     }
   }
 `;
@@ -429,8 +525,10 @@ export const workoutExercisesByWorkoutId = /* GraphQL */ `
         workoutId
         createdAt
         updatedAt
+        __typename
       }
       nextToken
+      __typename
     }
   }
 `;
