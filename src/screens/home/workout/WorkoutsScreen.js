@@ -12,30 +12,34 @@ const WorkoutsScreen = ({ navigation }) => {
 
     const localHandleFetchWorkouts = async () => {
         const customQuery = `
-            query MyCustomQuery {
-                listWorkouts {
-                    items {
+          query MyCustomQuery {
+            listWorkouts {
+              items {
+                id
+                name
+                exercises {
+                  items {
+                    exercise {
                       id
                       name
-                      exercises {
+                      muscles {
                         items {
-                          exercise {
-                            id
+                          muscle {
                             name
-                            muscles {
-                              items {
-                                muscle {
-                                  name
-                                }
-                              }
-                            }
                           }
                         }
                       }
+                      increment
                     }
                   }
+                }
+                reps
+                sets
+                rests
+              }
             }
-            `;
+          }
+          `;
         
         const result = await client.graphql({ query: customQuery });
         setWorkouts(result.data.listWorkouts.items);

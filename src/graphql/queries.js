@@ -48,7 +48,6 @@ export const getExercise = /* GraphQL */ `
         nextToken
         __typename
       }
-      time
       increment
       createdAt
       updatedAt
@@ -66,7 +65,6 @@ export const listExercises = /* GraphQL */ `
       items {
         id
         name
-        time
         increment
         createdAt
         updatedAt
@@ -86,6 +84,9 @@ export const getWorkout = /* GraphQL */ `
         nextToken
         __typename
       }
+      reps
+      sets
+      rests
       createdAt
       updatedAt
       __typename
@@ -102,6 +103,9 @@ export const listWorkouts = /* GraphQL */ `
       items {
         id
         name
+        reps
+        sets
+        rests
         createdAt
         updatedAt
         __typename
@@ -118,7 +122,6 @@ export const getMyExercise = /* GraphQL */ `
       exercise {
         id
         name
-        time
         increment
         createdAt
         updatedAt
@@ -308,7 +311,6 @@ export const getMuscleExercises = /* GraphQL */ `
       exercise {
         id
         name
-        time
         increment
         createdAt
         updatedAt
@@ -349,7 +351,6 @@ export const getWorkoutExercises = /* GraphQL */ `
       exercise {
         id
         name
-        time
         increment
         createdAt
         updatedAt
@@ -358,6 +359,9 @@ export const getWorkoutExercises = /* GraphQL */ `
       workout {
         id
         name
+        reps
+        sets
+        rests
         createdAt
         updatedAt
         __typename

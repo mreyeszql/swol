@@ -12,14 +12,16 @@ type Exercise @model @auth(rules: [{ allow: private }]) {
   name: String!
   muscles: [Muscle] @manyToMany(relationName: "MuscleExercises")
   workouts: [Workout] @manyToMany(relationName: "WorkoutExercises")
-  time: Int
-  increment: Int
+  increment: Int!
 }
 
 type Workout @model @auth(rules: [{ allow: private }]) {
   id: ID!
   name: String!
   exercises: [Exercise] @manyToMany(relationName: "WorkoutExercises")
+  reps: [Int]
+  sets: [Int]
+  rests: [Int]
 }
 
 type MyExercise @model @auth(rules: [{ allow: owner }]) {

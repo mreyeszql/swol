@@ -71,7 +71,6 @@ export const createExercise = /* GraphQL */ `
         nextToken
         __typename
       }
-      time
       increment
       createdAt
       updatedAt
@@ -95,7 +94,6 @@ export const updateExercise = /* GraphQL */ `
         nextToken
         __typename
       }
-      time
       increment
       createdAt
       updatedAt
@@ -119,7 +117,6 @@ export const deleteExercise = /* GraphQL */ `
         nextToken
         __typename
       }
-      time
       increment
       createdAt
       updatedAt
@@ -139,6 +136,9 @@ export const createWorkout = /* GraphQL */ `
         nextToken
         __typename
       }
+      reps
+      sets
+      rests
       createdAt
       updatedAt
       __typename
@@ -157,6 +157,9 @@ export const updateWorkout = /* GraphQL */ `
         nextToken
         __typename
       }
+      reps
+      sets
+      rests
       createdAt
       updatedAt
       __typename
@@ -175,6 +178,9 @@ export const deleteWorkout = /* GraphQL */ `
         nextToken
         __typename
       }
+      reps
+      sets
+      rests
       createdAt
       updatedAt
       __typename
@@ -191,7 +197,6 @@ export const createMyExercise = /* GraphQL */ `
       exercise {
         id
         name
-        time
         increment
         createdAt
         updatedAt
@@ -218,7 +223,6 @@ export const updateMyExercise = /* GraphQL */ `
       exercise {
         id
         name
-        time
         increment
         createdAt
         updatedAt
@@ -245,7 +249,6 @@ export const deleteMyExercise = /* GraphQL */ `
       exercise {
         id
         name
-        time
         increment
         createdAt
         updatedAt
@@ -527,7 +530,6 @@ export const createMuscleExercises = /* GraphQL */ `
       exercise {
         id
         name
-        time
         increment
         createdAt
         updatedAt
@@ -558,7 +560,6 @@ export const updateMuscleExercises = /* GraphQL */ `
       exercise {
         id
         name
-        time
         increment
         createdAt
         updatedAt
@@ -589,7 +590,6 @@ export const deleteMuscleExercises = /* GraphQL */ `
       exercise {
         id
         name
-        time
         increment
         createdAt
         updatedAt
@@ -613,7 +613,6 @@ export const createWorkoutExercises = /* GraphQL */ `
       exercise {
         id
         name
-        time
         increment
         createdAt
         updatedAt
@@ -622,6 +621,9 @@ export const createWorkoutExercises = /* GraphQL */ `
       workout {
         id
         name
+        reps
+        sets
+        rests
         createdAt
         updatedAt
         __typename
@@ -644,7 +646,6 @@ export const updateWorkoutExercises = /* GraphQL */ `
       exercise {
         id
         name
-        time
         increment
         createdAt
         updatedAt
@@ -653,6 +654,9 @@ export const updateWorkoutExercises = /* GraphQL */ `
       workout {
         id
         name
+        reps
+        sets
+        rests
         createdAt
         updatedAt
         __typename
@@ -675,7 +679,6 @@ export const deleteWorkoutExercises = /* GraphQL */ `
       exercise {
         id
         name
-        time
         increment
         createdAt
         updatedAt
@@ -684,6 +687,9 @@ export const deleteWorkoutExercises = /* GraphQL */ `
       workout {
         id
         name
+        reps
+        sets
+        rests
         createdAt
         updatedAt
         __typename

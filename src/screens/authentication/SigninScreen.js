@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button } from 'react-native';
+import { View, SafeAreaView, TextInput, Button } from 'react-native';
 import { handleSignIn, handleCheckSession } from 'functions/authentication/signin';
 
 const SigninScreen = ({ navigation }) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
   useEffect(() => {
     localHandleCheckSession();
   }, []);
-
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
 
   const localHandleCheckSession = async () => {
     const result = await handleCheckSession();
@@ -32,7 +32,7 @@ const SigninScreen = ({ navigation }) => {
   }
 
   return (
-    <View>
+    <SafeAreaView>
       <TextInput
         placeholder="Email"
         value={email}
@@ -46,7 +46,7 @@ const SigninScreen = ({ navigation }) => {
       />
       <Button title="Sign In" onPress={localHandleSignIn} />
       <Button title="Sign Up" onPress={localHandleSignUp} />
-    </View>
+    </SafeAreaView>
   );
 };
 

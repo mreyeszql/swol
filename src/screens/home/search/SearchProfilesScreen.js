@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { View, Text, TextInput, FlatList, Button } from 'react-native';
 import { generateClient } from "aws-amplify/api";
-import { listProfiles } from "graphql/queries";
-import { createFriendRequest, deleteFriendRequest, updateFriendRequest } from "graphql/mutations";
-import { handleFetchAuth } from "functions/utils/profile";
+import { handleFetchAuth, handleFetchProfiles } from "functions/utils/profile";
+import { handleFriendRequest } from "functions/utils/friends";
 
 const SearchProfilesScreen = () => {
     const client = generateClient();
@@ -20,7 +19,6 @@ const SearchProfilesScreen = () => {
         setLocalProfile(profile.data.profilesByOwnerId.items[0]);
     };
     
-
     useEffect(() => {
         localHandleFetchProfiles();
     }, [searchText, localProfile]);
@@ -29,102 +27,13 @@ const SearchProfilesScreen = () => {
         if (searchText === '') {
             setProfiles([]);
         } else {
-            const variables = {
-                filter: {
-                    username: {
-                        contains: searchText
-                    },
-                    id: {
-                        ne: localProfile.id
-                    },
-                }
-            };
-
-            const result = await client.graphql({
-                query: listProfiles,
-                variables: variables
-            });
-
-            const updatedProfiles = result.data.listProfiles.items.map(profile => {
-                const incomingRequest = localProfile.incomingRequests.items.filter(request =>
-                    request.profileOutgoingRequestsId === profile.id
-                );
-
-                const outgoingRequest = localProfile.outgoingRequests.items.filter(request =>
-                    request.profileIncomingRequestsId === profile.id
-                );
-
-                if (incomingRequest.length > 0) {
-                    if (incomingRequest[0].accepted) {
-                        return {
-                            ...profile,
-                            connectionType: "remove",
-                            requestId: incomingRequest[0].id,
-                        };
-                    } else {
-                        return {
-                            ...profile,
-                            connectionType: "accept",
-                            requestId: incomingRequest[0].id,
-                        };
-                    }
-                }
-
-                if (outgoingRequest.length > 0) {
-                    if (outgoingRequest[0].accepted) {
-                        return {
-                            ...profile,
-                            connectionType: "remove",
-                            requestId: outgoingRequest[0].id,
-                        };
-                    } else {
-                        return {
-                            ...profile,
-                            connectionType: "cancel request",
-                            requestId: outgoingRequest[0].id,
-                        };
-                    }
-                }
-
-                return {
-                    ...profile,
-                    connectionType: "connect",
-                    requestId: null,
-                };
-                
-            });
+            const updatedProfiles = await handleFetchProfiles(client, localProfile, searchText);
             setProfiles(updatedProfiles);
         }
     };
 
     const localHandleFriendRequest = async (profile, receiverProfileId, senderProfileId) => {
-        if (profile.connectionType === "connect") {
-            await client.graphql({
-                query: createFriendRequest,
-                variables: {
-                    input: {accepted: false, profileIncomingRequestsId: receiverProfileId, profileOutgoingRequestsId: senderProfileId}
-                }
-            });
-        } else if (profile.connectionType === "cancel request" || profile.connectionType === "remove") {
-            await client.graphql({
-                query: deleteFriendRequest,
-                variables: {
-                    input: {
-                        id: profile.requestId
-                    }
-                }
-            });
-        } else if (profile.connectionType === "accept") {
-            await client.graphql({
-                query: updateFriendRequest,
-                variables: {
-                    input: {
-                        id: profile.requestId,
-                        accepted: true,
-                    }
-                }
-            });
-        }
+        await handleFriendRequest(client, profile, receiverProfileId, senderProfileId);
         localHandleFetchAuth();
     }
 
