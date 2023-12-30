@@ -39,11 +39,15 @@ const handleNewExercise = async (client, exercise, weightChange) => {
         // Add other necessary fields
     };
 
-    // Create the new exercise in the database
-    await client.graphql({
-        query: createMyExercise,
-        variables: { input: newExercise }
-    });
+    if (weightChange > 0) {
+        // Create the new exercise in the database
+        await client.graphql({
+            query: createMyExercise,
+            variables: { input: newExercise }
+        });
+    }
+
+    
     return newExercise;
 };
 

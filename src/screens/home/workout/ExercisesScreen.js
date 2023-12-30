@@ -1,6 +1,8 @@
 //React
 import { useEffect, useState, useRef } from "react";
-import { View, Text, FlatList, Dimensions, Button, StyleSheet, TouchableOpacity, SafeAreaView } from "react-native";
+import { View, FlatList, Dimensions, Button, StyleSheet, TouchableOpacity } from "react-native";
+import { AntDesign } from '@expo/vector-icons';
+import LottieView from "lottie-react-native";
 
 //AWS
 import { generateClient } from 'aws-amplify/api';
@@ -9,6 +11,9 @@ import { generateClient } from 'aws-amplify/api';
 import { listMyExercises } from "graphql/queries";
 import { handleFetchAuth } from "functions/utils/profile";
 import { handleNewExercise, handleUpdatedExercise } from "functions/workout/exercise";
+import Text from "components/text";
+import SafeAreaView from "components/view";
+import { TouchableOpacityComponent } from "react-native";
 
 const ExercisesScreen = ({ route, navigation }) => {
     const client = generateClient();    
@@ -38,6 +43,8 @@ const ExercisesScreen = ({ route, navigation }) => {
     }
 
     const localHandleSetMyExercises = async (exercise, weightChange) => {
+        //TODO CHANGE SO THAT IT IS AT THE END OF WORKOUT SYNC W DTABAASE AND A BACL ARROW POP UP SAYING SYNC CURR RES?
+        //OR SYNC W DB asap with zeros and then just update cuz update is async w ids, creating and updating takes time.
         const existingExercise = myExercises[exercise.id];
 
         if (existingExercise) {
@@ -47,7 +54,7 @@ const ExercisesScreen = ({ route, navigation }) => {
                 ...myExercises,
                 [exercise.id]: updatedExercise,
             });
-        } else {
+        } else if (weightChange > 0) {
             const newExercise = await handleNewExercise(client, exercise, weightChange);
 
             setMyExercises({
@@ -59,30 +66,44 @@ const ExercisesScreen = ({ route, navigation }) => {
 
     const mockRenderItem = ({ item }) => {
         return (
-            <View style={{ width, height: '100%' }}>
+            <View style={{ width, height: '100%', paddingBottom: 30, paddingHorizontal: 28 }}>
                 { item.exercise ? (
-                    <View style={{ width: '100%', height: '100%', flexDirection: 'column', justifyContent: 'space-between', padding: 30 }}>
-                        <Text>{item.exercise.name}</Text>
+                    <View style={{ width: '100%', height: '100%', flexDirection: 'column', justifyContent: 'space-between'}}>
+                        <View style={styles.navigation}>
+                            <View style={{marginLeft: -12, paddingRight: 15}}>
+                                <TouchableOpacity onPress={() => navigation.goBack()}>
+                                    <AntDesign name="close" size={24} color="white" />
+                                </TouchableOpacity>
+                            </View>
+                            <Text style={{fontSize: 32, fontFamily: 'Inter-Bold', textTransform: 'uppercase'}}>{item.exercise.name}</Text>
+                        </View>
+                        <LottieView
+                            source={require('./../../../../assets/lotties/ccrunchlowv1.json')}
+                            autoPlay
+                            loop
+                            style={{height: 440}}
+                        />
                         <View>
-                            <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}> 
-                                <Text>{timers[item.expandedId] ? timers[item.expandedId]: 0} SEC</Text>
+                            <View style={{backgroundColor: 'white', width: '100%', height: 1}}/>
+                            <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 15}}> 
+                                <Text>{timers[item.expandedId] >= 60 && Math.floor(timers[item.expandedId] / 60)}{ timers[item.expandedId] >= 60 && " MIN "}{timers[item.expandedId] ? timers[item.expandedId] % 60: 0} SEC</Text>
                                 <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                                    <Button 
-                                        title="-"
-                                        onPress={() => localHandleSetMyExercises(item.exercise, -5)}
-                                    />
-                                    <Text>{myExercises[item.exercise.id]?.weight ?? 0} lbs.</Text>
-                                    <Button 
-                                        title="+"
-                                        onPress={() => localHandleSetMyExercises(item.exercise, 5)}
-                                    />
+                                    <TouchableOpacity onPress={() => localHandleSetMyExercises(item.exercise, -5)}>
+                                        <Text style={{fontFamily: 'Inter-Bold', fontSize: 20}}>-</Text>
+                                    </TouchableOpacity>
+                                    <Text style={{paddingHorizontal: 8}}>{myExercises[item.exercise.id]?.weight ?? 0} lbs.</Text>
+                                    <TouchableOpacity onPress={() => localHandleSetMyExercises(item.exercise, 5)}>
+                                        <Text style={{fontFamily: 'Inter-Bold', fontSize: 20}}>+</Text>
+                                    </TouchableOpacity>
                                 </View>
                             </View>
-                            <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}> 
+                            <View style={{backgroundColor: 'white', width: '100%', height: 1}}/>
+                            <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 15}}> 
                                 <Text>SET: {item.currentSet}/{item.sets}</Text>
                                 <Text>REPS: {item.reps}</Text>
                             </View>
-                            <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                            <View style={{backgroundColor: 'white', width: '100%', height: 1}}/>
+                            <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingTop: 57, paddingHorizontal: 16}}>
                                 <TouchableOpacity onPress={() => handleMockGoPage(-1)}>
                                     <Text>PREV</Text>
                                 </TouchableOpacity>
@@ -93,9 +114,19 @@ const ExercisesScreen = ({ route, navigation }) => {
                         </View>
                     </View>
                 ) : (
-                    <View>
-                        <Text>REST FOR {item.rest} SECONDS BITCH</Text>
-                        <Text>CURRENT: {timers[item.expandedId] ? timers[item.expandedId]: 0}</Text>
+                    <View style={{ width: '100%', height: '100%', flexDirection: 'column', justifyContent: 'space-between'}}>
+                        <View>
+                            <Text>REST FOR {item.rest} SECONDS BITCH</Text>
+                            <Text>CURRENT: {timers[item.expandedId] ? timers[item.expandedId]: 0}</Text>
+                        </View>
+                        <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingTop: 57, paddingHorizontal: 16}}>
+                                <TouchableOpacity onPress={() => handleMockGoPage(-1)}>
+                                    <Text>PREV</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => handleMockGoPage(1)}>
+                                    <Text>NEXT</Text>
+                                </TouchableOpacity>
+                        </View>
                     </View>
                 )}
             </View>
@@ -165,21 +196,19 @@ const ExercisesScreen = ({ route, navigation }) => {
         return () => clearInterval(interval);
     }, [timers]);
     //CLEAN UP TO HERE
+    
 
     return (
-        <SafeAreaView>
-            <View style={styles.navigation}>
-                <Button title="<" onPress={() => navigation.goBack()} />
-                <Text>{name}</Text>
-            </View>
+        <SafeAreaView style={{backgroundColor: 'black'}}>
             <FlatList
                 ref={flatListRef}
+                disableVirtualization={false}
                 horizontal
                 pagingEnabled={true}
                 showsHorizontalScrollIndicator={false}
                 data={processedExercises}
                 onMomentumScrollEnd={handleMockScrollEnd}
-                keyExtractor={(item) => item.expandedId}
+                keyExtractor={(item) => item.expandedId.toString()}
                 renderItem={mockRenderItem}
             />
         </SafeAreaView>

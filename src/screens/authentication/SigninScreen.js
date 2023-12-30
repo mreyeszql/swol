@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, SafeAreaView, TextInput, Button } from 'react-native';
+import { TextInput, Button, SafeAreaView } from 'react-native';
 import { handleSignIn, handleCheckSession } from 'functions/authentication/signin';
 
 const SigninScreen = ({ navigation }) => {
