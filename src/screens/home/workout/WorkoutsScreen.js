@@ -26,6 +26,7 @@ const WorkoutsScreen = ({ navigation }) => {
                     exercise {
                       id
                       name
+                      lottie
                       muscles {
                         items {
                           muscle {
@@ -66,22 +67,30 @@ const WorkoutsScreen = ({ navigation }) => {
       return (
           <TouchableOpacity
               onPress={handlePress}
+              style={{flexDirection: 'row', alignItems: 'center'}}
           >
-              <Text>{item.name}</Text>
+              <View style={{width: 80, height: 80, backgroundColor: 'gray', borderRadius: 10}} />
+              <View style={{flexDirection: 'column', paddingLeft: 18}}>
+                <Text style={{fontFamily: 'Inter-Bold', textTransform: 'uppercase', fontSize: 20}}>{item.name}</Text>
+                <Text style={{fontSize: 14, flexWrap: 'wrap'}}>{muscles.join(' / ')}</Text>
+              </View>
           </TouchableOpacity>
       );
     };
 
     return (
       <SafeAreaView>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <Text style={{fontSize: 32, fontFamily: 'Inter-Bold', textTransform: 'uppercase'}}>WORKOUTS</Text>
-        </View>
-        <FlatList 
+        <View style={{paddingHorizontal: 12}}>
+          <View style={{flexDirection: 'row', alignItems: 'center', paddingBottom: 26}}>
+            <Text style={{fontSize: 32, fontFamily: 'Inter-Bold', textTransform: 'uppercase'}}>WORKOUTS</Text>
+          </View>
+          <FlatList 
+            style={{height: '100%'}}
             data={workouts}
             keyExtractor={(item) => item.id}
             renderItem={mockRenderItem}
-        />
+          />
+        </View>
       </SafeAreaView>
     );
 }

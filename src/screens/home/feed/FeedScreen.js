@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
-import { View, Text, FlatList } from 'react-native';
+import { View, FlatList } from 'react-native';
 import { handleFetchPosts } from 'functions/feed/posts';
+import Text from 'components/text';
+import SafeAreaView from 'components/view';
 
 const FeedScreen = ({ navigation }) => {
     const [posts, setPosts] = useState([]);
@@ -11,6 +13,7 @@ const FeedScreen = ({ navigation }) => {
 
     const localHandleFetchPosts = async () => {
         const posts = await handleFetchPosts();
+        console.log(posts);
         setPosts(posts);
     };
 
@@ -21,14 +24,14 @@ const FeedScreen = ({ navigation }) => {
     };
 
     return (
-        <View>
+        <SafeAreaView>
             <FlatList 
                 style={{width: '100%', height: '100%'}}
                 data={posts}
                 renderItem={mockRenderItem}
                 keyExtractor={(item) => item.id.toString()}
             />
-        </View>
+        </SafeAreaView>
     );
 };
 

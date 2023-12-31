@@ -5,6 +5,8 @@ import { listPosts } from "graphql/queries";
 const handleFetchPosts = async () => {
     const client = generateClient();
     const profile = await handleFetchAuth();
+    const selfPosts = profile.data.profilesByOwnerId.items[0].posts.items;
+
     const incomingFriends = profile.data.profilesByOwnerId.items[0].incomingRequests.items
         .filter(profile => {
             return profile.accepted;
@@ -23,7 +25,7 @@ const handleFetchPosts = async () => {
     const friends = incomingFriends.concat(outgoingFriends);
     
     if (friends.length === 0) {
-        return [];
+        return selfPosts;
     } else {
         const posts = await client.graphql({
             query: listPosts,
@@ -33,7 +35,7 @@ const handleFetchPosts = async () => {
                 }
             }
         });
-        return posts.data.listPosts.items;
+        return posts.data.listPosts.items.concat(selfPosts);
     }
 }
 

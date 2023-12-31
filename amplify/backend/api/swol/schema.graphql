@@ -13,11 +13,14 @@ type Exercise @model @auth(rules: [{ allow: private }]) {
   muscles: [Muscle] @manyToMany(relationName: "MuscleExercises")
   workouts: [Workout] @manyToMany(relationName: "WorkoutExercises")
   increment: Int!
+  timePerRep: Int
+  lottie: String!
 }
 
 type Workout @model @auth(rules: [{ allow: private }]) {
   id: ID!
   name: String!
+  imageUrl: String!
   exercises: [Exercise] @manyToMany(relationName: "WorkoutExercises")
   reps: [Int]
   sets: [Int]
@@ -39,6 +42,7 @@ type Profile @model @auth(rules: [{allow: private , ownerField: "ownerId"}]) {
   incomingRequests: [FriendRequest] @hasMany
   outgoingRequests: [FriendRequest] @hasMany
   posts: [Post] @hasMany
+  profilePic: String
 }
 
 type FriendRequest @model @auth(rules: [{ allow: private }]) {
@@ -50,6 +54,7 @@ type FriendRequest @model @auth(rules: [{ allow: private }]) {
 
 type Post @model @auth(rules: [{ allow: private }]) {
   id: ID!
+  imageUrl: String
   author: Profile! @belongsTo
   text: String!
 }

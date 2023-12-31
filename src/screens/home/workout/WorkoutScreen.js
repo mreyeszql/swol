@@ -1,15 +1,36 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import { View, Button, StyleSheet, TouchableOpacity } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import SafeAreaView from 'components/view';
 import Text from 'components/text';
-import LottieView from 'lottie-react-native';
+import { getUrl } from 'aws-amplify/storage';
 
 const WorkoutScreen = ({ route, navigation }) => {
   const { name, id, exercises, reps, sets, rests, muscles } = route.params;
+  const [localVideos, setLocalVideos] = useState({});
+
+  useEffect(() => {
+      localHandleFetchVideos();
+  }, []);
+
+  const localHandleFetchVideos = async () => {
+    console.log("localHandleFetchVideos");
+    for (let i = 0; i < exercises.items.length; i++) {
+      let getUrlResult = await getUrl({
+        key: exercises.items[i].exercise.lottie,
+        options: {
+          accessLevel: 'guest'
+        },
+      });
+
+      setLocalVideos((videos) => {
+        return { ...videos, [exercises.items[i].exercise.id]: getUrlResult.url.toString() };
+      });
+    }
+  };
 
   const startWorkout = () => {
-    navigation.navigate('Exercises', { exercises: exercises.items, name, id, reps, sets, rests });
+    navigation.navigate('Exercises', { exercises: exercises.items, name, id, reps, sets, rests, videos: localVideos });
   };
 
   return (
@@ -24,10 +45,10 @@ const WorkoutScreen = ({ route, navigation }) => {
       </View>
       <View style={{paddingHorizontal: 28}}>
         <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: 28}}>
-          <Text>20 MIN</Text>
+          <Text>MISSING MIN</Text>
           <View style={{flexDirection: 'row'}}>
             <Text>Completed</Text>
-            <Text style={{fontFamily: 'Inter-Bold'}}> 80 </Text>
+            <Text style={{fontFamily: 'Inter-Bold'}}> MISSING </Text>
             <Text>times</Text>
           </View>
         </View>

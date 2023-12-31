@@ -49,6 +49,7 @@ export const getExercise = /* GraphQL */ `
         __typename
       }
       increment
+      lottie
       createdAt
       updatedAt
       __typename
@@ -66,6 +67,7 @@ export const listExercises = /* GraphQL */ `
         id
         name
         increment
+        lottie
         createdAt
         updatedAt
         __typename
@@ -123,6 +125,7 @@ export const getMyExercise = /* GraphQL */ `
         id
         name
         increment
+        lottie
         createdAt
         updatedAt
         __typename
@@ -312,6 +315,7 @@ export const getMuscleExercises = /* GraphQL */ `
         id
         name
         increment
+        lottie
         createdAt
         updatedAt
         __typename
@@ -352,6 +356,7 @@ export const getWorkoutExercises = /* GraphQL */ `
         id
         name
         increment
+        lottie
         createdAt
         updatedAt
         __typename

@@ -72,6 +72,7 @@ export const createExercise = /* GraphQL */ `
         __typename
       }
       increment
+      lottie
       createdAt
       updatedAt
       __typename
@@ -95,6 +96,7 @@ export const updateExercise = /* GraphQL */ `
         __typename
       }
       increment
+      lottie
       createdAt
       updatedAt
       __typename
@@ -118,6 +120,7 @@ export const deleteExercise = /* GraphQL */ `
         __typename
       }
       increment
+      lottie
       createdAt
       updatedAt
       __typename
@@ -198,6 +201,7 @@ export const createMyExercise = /* GraphQL */ `
         id
         name
         increment
+        lottie
         createdAt
         updatedAt
         __typename
@@ -224,6 +228,7 @@ export const updateMyExercise = /* GraphQL */ `
         id
         name
         increment
+        lottie
         createdAt
         updatedAt
         __typename
@@ -250,6 +255,7 @@ export const deleteMyExercise = /* GraphQL */ `
         id
         name
         increment
+        lottie
         createdAt
         updatedAt
         __typename
@@ -531,6 +537,7 @@ export const createMuscleExercises = /* GraphQL */ `
         id
         name
         increment
+        lottie
         createdAt
         updatedAt
         __typename
@@ -561,6 +568,7 @@ export const updateMuscleExercises = /* GraphQL */ `
         id
         name
         increment
+        lottie
         createdAt
         updatedAt
         __typename
@@ -591,6 +599,7 @@ export const deleteMuscleExercises = /* GraphQL */ `
         id
         name
         increment
+        lottie
         createdAt
         updatedAt
         __typename
@@ -614,6 +623,7 @@ export const createWorkoutExercises = /* GraphQL */ `
         id
         name
         increment
+        lottie
         createdAt
         updatedAt
         __typename
@@ -647,6 +657,7 @@ export const updateWorkoutExercises = /* GraphQL */ `
         id
         name
         increment
+        lottie
         createdAt
         updatedAt
         __typename
@@ -680,6 +691,7 @@ export const deleteWorkoutExercises = /* GraphQL */ `
         id
         name
         increment
+        lottie
         createdAt
         updatedAt
         __typename

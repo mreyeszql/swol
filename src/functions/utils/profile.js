@@ -16,6 +16,9 @@ const handleFetchAuth = async () => {
                 id
                 accepted
                 profileOutgoingRequestsId
+                sender {
+                    username
+                }
             }
             }
             outgoingRequests {
@@ -23,7 +26,17 @@ const handleFetchAuth = async () => {
                 id
                 accepted
                 profileIncomingRequestsId
+                receiver {
+                    username
+                }
             }
+            }
+            posts {
+                items {
+                    id
+                    text
+                    createdAt
+                }
             }
         }
         }

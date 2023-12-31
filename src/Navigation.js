@@ -11,15 +11,68 @@ import ExercisesScreen from 'screens/home/workout/ExercisesScreen';
 import SearchProfilesScreen from 'screens/home/search/SearchProfilesScreen';
 import FeedScreen from 'screens/home/feed/FeedScreen';
 
+import { SimpleLineIcons } from '@expo/vector-icons'; 
+import { MaterialCommunityIcons } from '@expo/vector-icons'; 
+import { Octicons } from '@expo/vector-icons'; 
+
+
+
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const TabNavigation = () => {
   return (
-    <Tab.Navigator screenOptions={{ headerShown: false }}>
-      <Tab.Screen name="Feed" component={FeedScreen} />
-      <Tab.Screen name="Search" component={SearchProfilesScreen} />
-      <Tab.Screen name="Workouts" component={WorkoutsScreen} />
+    <Tab.Navigator 
+      screenOptions={({ route }) => ({
+        headerShown: false,
+        tabBarStyle: {
+          height: 90,
+          paddingTop: 0,
+          backgroundColor: 'black',
+          position: 'absolute',
+          borderTopWidth: 0,
+        },
+        tabBarActiveTintColor: 'white',
+        tabBarInactiveTintColor: 'gray',
+        tabBarShowLabel: false,
+      })}
+    >
+      <Tab.Screen 
+        name="Feed" 
+        component={FeedScreen} 
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="lightning-bolt" size={size} color={color} />
+          )
+        }}
+      />
+      <Tab.Screen 
+        name="Search" 
+        component={SearchProfilesScreen} 
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <SimpleLineIcons name="magnifier" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen 
+        name="Workouts" 
+        component={WorkoutsScreen} 
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="dumbbell" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen 
+        name="Profile" 
+        component={WorkoutsScreen} 
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Octicons name="person" size={size} color={color} />
+          ),
+        }}
+      />
     </Tab.Navigator>
   );
 };

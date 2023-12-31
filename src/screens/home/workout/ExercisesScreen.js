@@ -3,6 +3,9 @@ import { useEffect, useState, useRef } from "react";
 import { View, FlatList, Dimensions, Button, StyleSheet, TouchableOpacity } from "react-native";
 import { AntDesign } from '@expo/vector-icons';
 import LottieView from "lottie-react-native";
+import { Video } from "expo-av";
+import { getUrl } from 'aws-amplify/storage';
+
 
 //AWS
 import { generateClient } from 'aws-amplify/api';
@@ -13,7 +16,7 @@ import { handleFetchAuth } from "functions/utils/profile";
 import { handleNewExercise, handleUpdatedExercise } from "functions/workout/exercise";
 import Text from "components/text";
 import SafeAreaView from "components/view";
-import { TouchableOpacityComponent } from "react-native";
+import TimerClock from "components/clock";
 
 const ExercisesScreen = ({ route, navigation }) => {
     const client = generateClient();    
@@ -21,7 +24,7 @@ const ExercisesScreen = ({ route, navigation }) => {
     const [localProfile, setLocalProfile] = useState({});
 
     const { width, height } = Dimensions.get('screen');
-    const { exercises, name, reps, sets, rests } = route.params;
+    const { exercises, name, reps, sets, rests, videos } = route.params;
 
     useEffect(() => {
         localHandleFetchMyExercises();
@@ -29,11 +32,13 @@ const ExercisesScreen = ({ route, navigation }) => {
     }, []);
 
     const localHandleFetchAuth = async () => {
+        console.log("localHandleFetchAuth");
         const profile = await handleFetchAuth();
         setLocalProfile(profile.data.profilesByOwnerId.items[0]);
     };
 
     const localHandleFetchMyExercises = async () => {
+        console.log("localHandleFetchMyExercises");
         const result = await client.graphql({ query: listMyExercises });
         const resultDict = result.data.listMyExercises.items.reduce((acc, item) => {
             acc[item.myExerciseExerciseId] = item;
@@ -45,6 +50,7 @@ const ExercisesScreen = ({ route, navigation }) => {
     const localHandleSetMyExercises = async (exercise, weightChange) => {
         //TODO CHANGE SO THAT IT IS AT THE END OF WORKOUT SYNC W DTABAASE AND A BACL ARROW POP UP SAYING SYNC CURR RES?
         //OR SYNC W DB asap with zeros and then just update cuz update is async w ids, creating and updating takes time.
+        console.log("localHandleSetMyExercises");
         const existingExercise = myExercises[exercise.id];
 
         if (existingExercise) {
@@ -65,6 +71,7 @@ const ExercisesScreen = ({ route, navigation }) => {
     }
 
     const mockRenderItem = ({ item }) => {
+        const videoUri = videos[item.exercise?.id];
         return (
             <View style={{ width, height: '100%', paddingBottom: 30, paddingHorizontal: 28 }}>
                 { item.exercise ? (
@@ -77,12 +84,13 @@ const ExercisesScreen = ({ route, navigation }) => {
                             </View>
                             <Text style={{fontSize: 32, fontFamily: 'Inter-Bold', textTransform: 'uppercase'}}>{item.exercise.name}</Text>
                         </View>
-                        <LottieView
-                            source={require('./../../../../assets/lotties/ccrunchlowv1.json')}
-                            autoPlay
-                            loop
-                            style={{height: 440}}
-                        />
+                        {videoUri && <Video
+                            source={{uri: videoUri}}
+                            resizeMode="cover"
+                            style={{width: '100%', height: '60%'}}
+                            isLooping
+                            shouldPlay
+                        />}
                         <View>
                             <View style={{backgroundColor: 'white', width: '100%', height: 1}}/>
                             <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 15}}> 
@@ -115,9 +123,56 @@ const ExercisesScreen = ({ route, navigation }) => {
                     </View>
                 ) : (
                     <View style={{ width: '100%', height: '100%', flexDirection: 'column', justifyContent: 'space-between'}}>
-                        <View>
-                            <Text>REST FOR {item.rest} SECONDS BITCH</Text>
-                            <Text>CURRENT: {timers[item.expandedId] ? timers[item.expandedId]: 0}</Text>
+                        <View style={styles.navigation}>
+                            <View style={{marginLeft: -12, paddingRight: 15}}>
+                                <TouchableOpacity onPress={() => navigation.goBack()}>
+                                    <AntDesign name="close" size={24} color="white" />
+                                </TouchableOpacity>
+                            </View>
+                            <Text style={{fontSize: 32, fontFamily: 'Inter-Bold', textTransform: 'uppercase'}}>REST MODE</Text>
+                        </View>
+                        <View style={{ height: '80%'}}>
+                            {timers[item.expandedId] && 
+                            <>
+                                <TimerClock n={timers[item.expandedId] ? timers[item.expandedId] : 0} />
+                                <View
+                                    style={{
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        position: 'absolute',
+                                        top: 0,
+                                        bottom: 0,
+                                        left: 0,
+                                        right: 0,
+                                    }}
+                                >
+                                    <Text>
+                                        {timers[item.expandedId] >= 60 &&
+                                        Math.floor(timers[item.expandedId] / 60)}
+                                        {timers[item.expandedId] >= 60 && ' MIN '}
+                                        {timers[item.expandedId] && (timers[item.expandedId] % 60)} SEC
+                                    </Text>
+                                </View>
+                            </>}
+                            <View
+                                style={{
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    position: 'absolute',
+                                    top: '90%',
+                                    bottom: 0,
+                                    left: 0,
+                                    right: 0,
+                                }}
+                            >
+                                <Text style={{fontFamily: 'Inter-ExtraLight', fontSize: 12}}>
+                                    Recommended rest time: {item.rest >= 60 &&
+                                    Math.floor(item.rest / 60)}
+                                    {item.rest >= 60 && ' MIN '}
+                                    {item.rest && (item.rest % 60) != 0 && (item.rest % 60)}
+                                    {item.rest && (item.rest % 60) != 0 && ' SEC '}
+                                </Text>
+                            </View>
                         </View>
                         <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingTop: 57, paddingHorizontal: 16}}>
                                 <TouchableOpacity onPress={() => handleMockGoPage(-1)}>
@@ -171,7 +226,7 @@ const ExercisesScreen = ({ route, navigation }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
 
     const handleMockGoPage = (to) => {
-        if (currentIndex + to < processedExercises.length && currentIndex + to > 0) {
+        if (currentIndex + to < processedExercises.length && currentIndex + to >= 0) {
             flatListRef.current?.scrollToIndex({
               index: currentIndex + to,
               animated: true,
