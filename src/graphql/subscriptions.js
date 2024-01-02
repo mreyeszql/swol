@@ -334,6 +334,8 @@ export const onCreateFriendRequest = /* GraphQL */ `
   ) {
     onCreateFriendRequest(filter: $filter) {
       id
+      profileOutgoingRequestsId
+      profileIncomingRequestsId
       sender {
         id
         username
@@ -355,8 +357,6 @@ export const onCreateFriendRequest = /* GraphQL */ `
       accepted
       createdAt
       updatedAt
-      profileIncomingRequestsId
-      profileOutgoingRequestsId
       __typename
     }
   }
@@ -367,6 +367,8 @@ export const onUpdateFriendRequest = /* GraphQL */ `
   ) {
     onUpdateFriendRequest(filter: $filter) {
       id
+      profileOutgoingRequestsId
+      profileIncomingRequestsId
       sender {
         id
         username
@@ -388,8 +390,6 @@ export const onUpdateFriendRequest = /* GraphQL */ `
       accepted
       createdAt
       updatedAt
-      profileIncomingRequestsId
-      profileOutgoingRequestsId
       __typename
     }
   }
@@ -400,6 +400,8 @@ export const onDeleteFriendRequest = /* GraphQL */ `
   ) {
     onDeleteFriendRequest(filter: $filter) {
       id
+      profileOutgoingRequestsId
+      profileIncomingRequestsId
       sender {
         id
         username
@@ -421,8 +423,6 @@ export const onDeleteFriendRequest = /* GraphQL */ `
       accepted
       createdAt
       updatedAt
-      profileIncomingRequestsId
-      profileOutgoingRequestsId
       __typename
     }
   }

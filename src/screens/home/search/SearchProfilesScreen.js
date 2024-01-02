@@ -16,7 +16,6 @@ const SearchProfilesScreen = () => {
                             .map((item) => {
                                 return {...item, connectionType: "accept"};
                             });
-
     useEffect(() => {
         localHandleFetchAuth();
     }, []);
@@ -30,6 +29,12 @@ const SearchProfilesScreen = () => {
     useEffect(() => {
         localHandleFetchProfiles();
     }, [searchText, localProfile]);
+
+    useEffect(() => {
+        if (searchText === '') {
+            localHandleFetchAuth();
+        }
+    }, [searchText]);
 
     const localHandleFetchProfiles = async () => {
         console.log("localHandleFetchProfiles");
@@ -52,7 +57,7 @@ const SearchProfilesScreen = () => {
             <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 20}}>
                 <View style={{flexDirection: 'row', alignItems: 'center'}}>
                     <View style={{width: 30, height: 30,backgroundColor: 'gray', marginRight: 10, borderRadius: 15}}/>
-                    <Text style={{textTransform: 'lowercase'}}>{item.username}</Text>
+                    <Text style={{textTransform: 'lowercase'}}>{item.__typename === "Profile" ? item.username : item.sender.username}</Text>
                 </View>
                 <TouchableOpacity
                     style={{borderWidth: 1, borderColor: 'white', borderRadius: 6, paddingHorizontal: 6, paddingVertical: 3}}

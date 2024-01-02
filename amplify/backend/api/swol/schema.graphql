@@ -47,8 +47,10 @@ type Profile @model @auth(rules: [{allow: private , ownerField: "ownerId"}]) {
 
 type FriendRequest @model @auth(rules: [{ allow: private }]) {
   id: ID!
-  sender: Profile! @belongsTo
-  receiver: Profile! @belongsTo
+  profileOutgoingRequestsId: ID!
+  profileIncomingRequestsId: ID!
+  sender: Profile! @belongsTo(fields: ["profileOutgoingRequestsId"])
+  receiver: Profile! @belongsTo(fields: ["profileIncomingRequestsId"])
   accepted: Boolean!
 }
 

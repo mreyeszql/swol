@@ -219,6 +219,8 @@ export const getFriendRequest = /* GraphQL */ `
   query GetFriendRequest($id: ID!) {
     getFriendRequest(id: $id) {
       id
+      profileOutgoingRequestsId
+      profileIncomingRequestsId
       sender {
         id
         username
@@ -240,8 +242,6 @@ export const getFriendRequest = /* GraphQL */ `
       accepted
       createdAt
       updatedAt
-      profileIncomingRequestsId
-      profileOutgoingRequestsId
       __typename
     }
   }
@@ -255,11 +255,11 @@ export const listFriendRequests = /* GraphQL */ `
     listFriendRequests(filter: $filter, limit: $limit, nextToken: $nextToken) {
       items {
         id
+        profileOutgoingRequestsId
+        profileIncomingRequestsId
         accepted
         createdAt
         updatedAt
-        profileIncomingRequestsId
-        profileOutgoingRequestsId
         __typename
       }
       nextToken

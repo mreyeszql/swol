@@ -17,6 +17,7 @@ import CameraScreen from 'screens/home/feed/CameraScreen';
 import { SimpleLineIcons } from '@expo/vector-icons'; 
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 import { Octicons } from '@expo/vector-icons'; 
+import ProfileScreen from 'screens/home/profile/ProfileScreen';
 
 
 
@@ -69,7 +70,7 @@ const TabNavigation = () => {
       />
       <Tab.Screen 
         name="Profile" 
-        component={WorkoutsScreen} 
+        component={ProfileScreen} 
         options={{
           tabBarIcon: ({ color, size }) => (
             <Octicons name="person" size={size} color={color} />

@@ -10,24 +10,24 @@ const handleFetchPosts = async () => {
             return profile.accepted;
         })
         .map(profile => {
-            return { id: profile.profileOutgoingRequestsId };
+            return { profilePostsId: { eq: profile.profileOutgoingRequestsId } };
         })
     const outgoingFriends = profile.data.profilesByOwnerId.items[0].outgoingRequests.items
         .filter(profile => {
             return profile.accepted;
         })
         .map(profile => {
-            return { id: profile.profileIncomingRequestsId };
+            return { profilePostsId: { eq: profile.profileIncomingRequestsId } };
         });
 
-    const friends = incomingFriends.concat(outgoingFriends).concat([{id: profile.data.profilesByOwnerId.items[0].id}]);
-    
+    const friends = incomingFriends.concat(outgoingFriends).concat([{profilePostsId: {eq: profile.data.profilesByOwnerId.items[0].id}}]);
+
     if (friends.length === 0) {
         return selfPosts;
     } else {
         const query = `
-            query MyQuery {
-                postsByDate(type: "Post", sortDirection: DESC) {
+            query MyQuery($filter: ModelPostFilterInput) {
+                postsByDate(type: "Post", sortDirection: DESC, filter: $filter) {
                 items {
                     id
                     postKind
@@ -41,15 +41,12 @@ const handleFetchPosts = async () => {
                 }
                 }
             }
-        `;
+            `;
         const posts = await client.graphql({
             query: query,
             variables: {
                 filter: {
                     or: friends,
-                    // createdAt: { 
-                    //     between: ["2024-01-01T00:00:00", "2024-01-02T00:00:00"]
-                    // }
                 }
             }
         });

@@ -1,5 +1,5 @@
 import { createFriendRequest, deleteFriendRequest, updateFriendRequest } from "graphql/mutations";
-import { listProfiles } from "graphql/queries";
+
 
 const handleFriendRequest = async (client, profile, receiverProfileId, senderProfileId) => {
     if (profile.connectionType === "connect") {
@@ -23,7 +23,7 @@ const handleFriendRequest = async (client, profile, receiverProfileId, senderPro
             query: updateFriendRequest,
             variables: {
                 input: {
-                    id: profile.requestId,
+                    id: profile?.__typename ? profile.requestId : profile.id,
                     accepted: true,
                 }
             }
