@@ -1,6 +1,7 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import SignupScreen from 'screens/authentication/SignupScreen';
 import SigninScreen from 'screens/authentication/SigninScreen';
@@ -10,6 +11,8 @@ import WorkoutScreen from 'screens/home/workout/WorkoutScreen';
 import ExercisesScreen from 'screens/home/workout/ExercisesScreen';
 import SearchProfilesScreen from 'screens/home/search/SearchProfilesScreen';
 import FeedScreen from 'screens/home/feed/FeedScreen';
+import ExercisesSummaryScreen from 'screens/home/workout/ExerciseSummaryScreen';
+import CameraScreen from 'screens/home/feed/CameraScreen';
 
 import { SimpleLineIcons } from '@expo/vector-icons'; 
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
@@ -79,20 +82,23 @@ const TabNavigation = () => {
 
 const StackNavigation = () => {
   return (
-    <NavigationContainer>
-      <Stack.Navigator 
-        initialRouteName="Signin"
-        screenOptions={{headerShown: false}}
-      >
-        <Stack.Screen name="Signin" component={SigninScreen} />
-        <Stack.Screen name="Signup" component={SignupScreen} />
-        <Stack.Screen name="ConfirmSignup" component={ConfirmSignupScreen} />
-        <Stack.Screen name="Tabs" component={TabNavigation} />
-        <Stack.Screen name="Workout" component={WorkoutScreen} />
-        <Stack.Screen name="Exercises" component={ExercisesScreen} />
-        
-      </Stack.Navigator>
-    </NavigationContainer>
+    <SafeAreaProvider>
+      <NavigationContainer>
+        <Stack.Navigator 
+          initialRouteName="Signin"
+          screenOptions={{headerShown: false}}
+        >
+          <Stack.Screen name="Signin" component={SigninScreen} />
+          <Stack.Screen name="Signup" component={SignupScreen} />
+          <Stack.Screen name="ConfirmSignup" component={ConfirmSignupScreen} />
+          <Stack.Screen name="Tabs" component={TabNavigation} />
+          <Stack.Screen name="Workout" component={WorkoutScreen} />
+          <Stack.Screen name="Exercises" component={ExercisesScreen} />
+          <Stack.Screen name="ExercisesSummary" component={ExercisesSummaryScreen} />
+          <Stack.Screen name="Camera" component={CameraScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </SafeAreaProvider>
   );
 };
 

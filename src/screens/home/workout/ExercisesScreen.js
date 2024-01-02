@@ -1,11 +1,9 @@
 //React
 import { useEffect, useState, useRef } from "react";
-import { View, FlatList, Dimensions, Button, StyleSheet, TouchableOpacity } from "react-native";
+import { View, FlatList, Dimensions, Button, StyleSheet, TouchableOpacity, TouchableWithoutFeedback } from "react-native";
 import { AntDesign } from '@expo/vector-icons';
-import LottieView from "lottie-react-native";
 import { Video } from "expo-av";
-import { getUrl } from 'aws-amplify/storage';
-
+import { useSharedValue } from "react-native-reanimated";
 
 //AWS
 import { generateClient } from 'aws-amplify/api';
@@ -16,11 +14,12 @@ import { handleFetchAuth } from "functions/utils/profile";
 import { handleNewExercise, handleUpdatedExercise } from "functions/workout/exercise";
 import Text from "components/text";
 import SafeAreaView from "components/view";
-import TimerClock from "components/clock";
+import { TimerClock, PressClock, PlaceholderClock } from "components/clock";
 
 const ExercisesScreen = ({ route, navigation }) => {
     const client = generateClient();    
     const [myExercises, setMyExercises] = useState({});
+    const [myExistingExercises, setMyExistingExercises] = useState({});
     const [localProfile, setLocalProfile] = useState({});
 
     const { width, height } = Dimensions.get('screen');
@@ -40,35 +39,97 @@ const ExercisesScreen = ({ route, navigation }) => {
     const localHandleFetchMyExercises = async () => {
         console.log("localHandleFetchMyExercises");
         const result = await client.graphql({ query: listMyExercises });
-        const resultDict = result.data.listMyExercises.items.reduce((acc, item) => {
-            acc[item.myExerciseExerciseId] = item;
-            return acc;
-        }, {});
+        const updatedList = result.data.listMyExercises.items.map((item) => {
+            return { ...item, persisted: true };
+        });
+        const resultDict = updatedList
+            .reduce((acc, item) => {
+                acc[item.myExerciseExerciseId] = item;
+                return acc;
+            }, {});
         setMyExercises(resultDict);
+        setMyExistingExercises(resultDict);
     }
+
+
+    // SET EXERCISE
+    const [timeoutId, setTimeoutId] = useState(null);
+
+    const localHandlePersistMyExercises = async (client, existingExercise, updatedExercise, exercise, localProfile) => {
+        console.log("persisting", existingExercise ? "updating" : "new", "weight", "from", existingExercise ? existingExercise.weight : 0, "to", updatedExercise.weight)
+        if (existingExercise) {
+            await handleUpdatedExercise(client, existingExercise, updatedExercise, exercise, localProfile);
+        } else {
+            await handleNewExercise(client, updatedExercise, exercise);
+            localHandleFetchMyExercises();
+        }
+
+        setMyExistingExercises({
+            ...myExistingExercises,
+            [exercise.id]: updatedExercise,
+        });
+    };
 
     const localHandleSetMyExercises = async (exercise, weightChange) => {
         //TODO CHANGE SO THAT IT IS AT THE END OF WORKOUT SYNC W DTABAASE AND A BACL ARROW POP UP SAYING SYNC CURR RES?
         //OR SYNC W DB asap with zeros and then just update cuz update is async w ids, creating and updating takes time.
         console.log("localHandleSetMyExercises");
-        const existingExercise = myExercises[exercise.id];
 
+        if (timeoutId) {
+            clearTimeout(timeoutId);
+        }
+
+        const existingExercise = myExercises[exercise.id];
         if (existingExercise) {
-            const updatedExercise = await handleUpdatedExercise(client, exercise, existingExercise, weightChange, localProfile);
+            const newWeight = Math.max(existingExercise.weight + weightChange, 0);
+            const updatedExercise = { ...existingExercise, weight: newWeight };
 
             setMyExercises({
                 ...myExercises,
                 [exercise.id]: updatedExercise,
             });
+            const newTimeoutId = setTimeout(() => {
+                localHandlePersistMyExercises(client, myExistingExercises[exercise.id], updatedExercise, exercise, localProfile);
+                if (timeoutId) {
+                    clearTimeout(timeoutId);
+                }
+                setTimeoutId(null);
+            }, 5000);
+            setTimeoutId(newTimeoutId);
         } else if (weightChange > 0) {
-            const newExercise = await handleNewExercise(client, exercise, weightChange);
-
+            const newExercise = {
+                myExerciseExerciseId: exercise.id,
+                weight: weightChange,
+            };
             setMyExercises({
                 ...myExercises,
                 [exercise.id]: newExercise,
             });
+            const newTimeoutId = setTimeout(() => {
+                localHandlePersistMyExercises(client, myExistingExercises[exercise.id], newExercise, exercise, localProfile);
+                if (timeoutId) {
+                    clearTimeout(timeoutId);
+                }
+                setTimeoutId(null);
+            }, 2000);
+            setTimeoutId(newTimeoutId);
         }
     }
+    // SET EXERCISE UP TO HERE
+
+    //MESSY ANIMATION ORGANIZE
+    const theta = useSharedValue(2 * Math.PI);
+
+    const localHandlePressIn = () => {
+        console.log("localHandlePressIn")
+        theta.value = 0;
+    }
+
+    const localHandlePressOut = () => {
+        console.log("localHandlePressOut");
+        theta.value = 2 * Math.PI;
+    }
+    //ANIMATION UP TP HERE
 
     const mockRenderItem = ({ item }) => {
         const videoUri = videos[item.exercise?.id];
@@ -84,13 +145,14 @@ const ExercisesScreen = ({ route, navigation }) => {
                             </View>
                             <Text style={{fontSize: 32, fontFamily: 'Inter-Bold', textTransform: 'uppercase'}}>{item.exercise.name}</Text>
                         </View>
-                        {videoUri && <Video
+                        <Video
                             source={{uri: videoUri}}
                             resizeMode="cover"
                             style={{width: '100%', height: '60%'}}
+                            isMuted
                             isLooping
                             shouldPlay
-                        />}
+                        />
                         <View>
                             <View style={{backgroundColor: 'white', width: '100%', height: 1}}/>
                             <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 15}}> 
@@ -122,67 +184,98 @@ const ExercisesScreen = ({ route, navigation }) => {
                         </View>
                     </View>
                 ) : (
-                    <View style={{ width: '100%', height: '100%', flexDirection: 'column', justifyContent: 'space-between'}}>
-                        <View style={styles.navigation}>
-                            <View style={{marginLeft: -12, paddingRight: 15}}>
-                                <TouchableOpacity onPress={() => navigation.goBack()}>
-                                    <AntDesign name="close" size={24} color="white" />
-                                </TouchableOpacity>
+                    item.rest ? (
+                        <View style={{ width: '100%', height: '100%', flexDirection: 'column', justifyContent: 'space-between'}}>
+                            <View style={styles.navigation}>
+                                <View style={{marginLeft: -12, paddingRight: 15}}>
+                                    <TouchableOpacity onPress={() => navigation.goBack()}>
+                                        <AntDesign name="close" size={24} color="white" />
+                                    </TouchableOpacity>
+                                </View>
+                                <Text style={{fontSize: 32, fontFamily: 'Inter-Bold', textTransform: 'uppercase'}}>REST MODE</Text>
                             </View>
-                            <Text style={{fontSize: 32, fontFamily: 'Inter-Bold', textTransform: 'uppercase'}}>REST MODE</Text>
-                        </View>
-                        <View style={{ height: '80%'}}>
-                            {timers[item.expandedId] && 
-                            <>
-                                <TimerClock n={timers[item.expandedId] ? timers[item.expandedId] : 0} />
+                            <View style={{ height: '80%'}}>
+                                {timers[item.expandedId] ? (
+                                    <>
+                                        <TimerClock n={timers[item.expandedId] ? timers[item.expandedId] : 0} />
+                                        <View
+                                            style={{
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                position: 'absolute',
+                                                top: 0,
+                                                bottom: 0,
+                                                left: 0,
+                                                right: 0,
+                                            }}
+                                        >
+                                            <Text>
+                                                {timers[item.expandedId] >= 60 &&
+                                                Math.floor(timers[item.expandedId] / 60)}
+                                                {timers[item.expandedId] >= 60 && ' MIN '}
+                                                {timers[item.expandedId] && (timers[item.expandedId] % 60)} SEC
+                                            </Text>
+                                        </View>
+                                    </>
+                                ) : (
+                                    <View style={{paddingBottom: '22%'}}>
+                                        <PlaceholderClock/>
+                                    </View>
+                                )}
                                 <View
                                     style={{
                                         alignItems: 'center',
                                         justifyContent: 'center',
                                         position: 'absolute',
-                                        top: 0,
+                                        top: '90%',
                                         bottom: 0,
                                         left: 0,
                                         right: 0,
                                     }}
                                 >
-                                    <Text>
-                                        {timers[item.expandedId] >= 60 &&
-                                        Math.floor(timers[item.expandedId] / 60)}
-                                        {timers[item.expandedId] >= 60 && ' MIN '}
-                                        {timers[item.expandedId] && (timers[item.expandedId] % 60)} SEC
+                                    <Text style={{fontFamily: 'Inter-ExtraLight', fontSize: 12}}>
+                                        Recommended rest time: {item.rest >= 60 &&
+                                        Math.floor(item.rest / 60)}
+                                        {item.rest >= 60 && ' MIN '}
+                                        {item.rest && (item.rest % 60) != 0 && (item.rest % 60)}
+                                        {item.rest && (item.rest % 60) != 0 && ' SEC '}
                                     </Text>
                                 </View>
-                            </>}
-                            <View
-                                style={{
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    position: 'absolute',
-                                    top: '90%',
-                                    bottom: 0,
-                                    left: 0,
-                                    right: 0,
-                                }}
-                            >
-                                <Text style={{fontFamily: 'Inter-ExtraLight', fontSize: 12}}>
-                                    Recommended rest time: {item.rest >= 60 &&
-                                    Math.floor(item.rest / 60)}
-                                    {item.rest >= 60 && ' MIN '}
-                                    {item.rest && (item.rest % 60) != 0 && (item.rest % 60)}
-                                    {item.rest && (item.rest % 60) != 0 && ' SEC '}
-                                </Text>
+                            </View>
+                            <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingTop: 57, paddingHorizontal: 16}}>
+                                    <TouchableOpacity onPress={() => handleMockGoPage(-1)}>
+                                        <Text>PREV</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity onPress={() => handleMockGoPage(1)}>
+                                        <Text>NEXT</Text>
+                                    </TouchableOpacity>
                             </View>
                         </View>
-                        <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingTop: 57, paddingHorizontal: 16}}>
-                                <TouchableOpacity onPress={() => handleMockGoPage(-1)}>
-                                    <Text>PREV</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity onPress={() => handleMockGoPage(1)}>
-                                    <Text>NEXT</Text>
-                                </TouchableOpacity>
-                        </View>
-                    </View>
+                    ) : (
+                        <TouchableWithoutFeedback
+                            onPressIn={localHandlePressIn}
+                            onPressOut={localHandlePressOut}
+                        >
+                            <View style={{ height: '95%'}}>
+                                <PressClock theta={theta} callback={() => navigation.navigate('ExercisesSummary', { timers, processedExercises, sets, reps })}/>
+                                <View
+                                    style={{
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        position: 'absolute',
+                                        top: '75%',
+                                        bottom: 0,
+                                        left: 0,
+                                        right: 0,
+                                    }}
+                                >
+                                    <Text style={{fontFamily: 'Inter-ExtraLight', fontSize: 12}}>
+                                        hold to complete your workout
+                                    </Text>
+                                </View>
+                            </View>
+                        </TouchableWithoutFeedback>
+                    )
                 )}
             </View>
         );
@@ -202,6 +295,9 @@ const ExercisesScreen = ({ route, navigation }) => {
             combinedList.push({ rest: restsList[i] });
             }
         }
+
+        combinedList.push({ rest: 30 });
+        combinedList.push({ complete: false });
 
         return combinedList;
     };
@@ -226,6 +322,7 @@ const ExercisesScreen = ({ route, navigation }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
 
     const handleMockGoPage = (to) => {
+        console.log("handleMockGoPage");
         if (currentIndex + to < processedExercises.length && currentIndex + to >= 0) {
             flatListRef.current?.scrollToIndex({
               index: currentIndex + to,
@@ -235,6 +332,7 @@ const ExercisesScreen = ({ route, navigation }) => {
     };
     
     const handleMockScrollEnd = (e) => {
+        console.log("handleMockScrollEnd")
         const pageNumber = Math.min(Math.max(Math.floor(e.nativeEvent.contentOffset.x / width + 0.5) + 1, 0), processedExercises.length);
         setCurrentIndex(pageNumber - 1);
     };
@@ -244,10 +342,10 @@ const ExercisesScreen = ({ route, navigation }) => {
             // Increment the seconds
             setTimers(prevTimers => {
                 return { ...prevTimers, [currentIndex]:  prevTimers[currentIndex] ? prevTimers[currentIndex] + 1 : 1};
-              });
+            });
         }, 1000);
     
-          // Clear the interval on component unmount
+        // Clear the interval on component unmount
         return () => clearInterval(interval);
     }, [timers]);
     //CLEAN UP TO HERE

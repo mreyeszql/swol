@@ -1,12 +1,8 @@
 import { createMyExercise, updateMyExercise, createPost } from "graphql/mutations";
 
-const handleUpdatedExercise = async (client, exercise, existingExercise, weightChange, localProfile) => {
-    // Exercise already exists, update the weight
-    const newWeight = Math.max(existingExercise.weight + weightChange, 0);
-    const updatedExercise = { ...existingExercise, weight: newWeight };
-
+const handleUpdatedExercise = async (client, existingExercise, updatedExercise, exercise, localProfile) => {
     // Update the exercise in the database
-    if (existingExercise.weight !== newWeight) {
+    if (existingExercise.weight !== updatedExercise.weight) {
         client.graphql({
             query: updateMyExercise,
             variables: { input: { 
@@ -16,12 +12,14 @@ const handleUpdatedExercise = async (client, exercise, existingExercise, weightC
             } }
         });
 
-        if (updatedExercise.weight > existingExercise.weight && updatedExercise.weight % exercise.increment === 0 && updatedExercise.weight > 0) {
+        if (updatedExercise.weight - (updatedExercise.weight % exercise.increment) > existingExercise.maxweight) {
             client.graphql({
                 query: createPost,
                 variables: {
                     input: {
                         profilePostsId: localProfile.id,
+                        type: "Post",
+                        postKind: "PRGoal",
                         text: `${localProfile.username} just hit a ${updatedExercise.weight} lbs. PR on ${exercise.name}!`,
                     }
                 }
@@ -31,22 +29,20 @@ const handleUpdatedExercise = async (client, exercise, existingExercise, weightC
     return updatedExercise;
 };
 
-const handleNewExercise = async (client, exercise, weightChange) => {
+const handleNewExercise = async (client, updatedExercise, exercise) => {
     // Exercise doesn't exist, create a new MyExercise entry
     const newExercise = {
         myExerciseExerciseId: exercise.id,
-        weight: weightChange,
+        weight: updatedExercise.weight,
+        maxweight: updatedExercise.weight,
         // Add other necessary fields
     };
 
-    if (weightChange > 0) {
-        // Create the new exercise in the database
-        await client.graphql({
-            query: createMyExercise,
-            variables: { input: newExercise }
-        });
-    }
-
+    // Create the new exercise in the database
+    await client.graphql({
+        query: createMyExercise,
+        variables: { input: newExercise }
+    });
     
     return newExercise;
 };

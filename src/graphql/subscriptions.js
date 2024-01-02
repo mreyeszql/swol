@@ -60,6 +60,7 @@ export const onCreateExercise = /* GraphQL */ `
         __typename
       }
       increment
+      timePerRep
       lottie
       createdAt
       updatedAt
@@ -81,6 +82,7 @@ export const onUpdateExercise = /* GraphQL */ `
         __typename
       }
       increment
+      timePerRep
       lottie
       createdAt
       updatedAt
@@ -102,6 +104,7 @@ export const onDeleteExercise = /* GraphQL */ `
         __typename
       }
       increment
+      timePerRep
       lottie
       createdAt
       updatedAt
@@ -114,6 +117,7 @@ export const onCreateWorkout = /* GraphQL */ `
     onCreateWorkout(filter: $filter) {
       id
       name
+      imageUrl
       exercises {
         nextToken
         __typename
@@ -132,6 +136,7 @@ export const onUpdateWorkout = /* GraphQL */ `
     onUpdateWorkout(filter: $filter) {
       id
       name
+      imageUrl
       exercises {
         nextToken
         __typename
@@ -150,6 +155,7 @@ export const onDeleteWorkout = /* GraphQL */ `
     onDeleteWorkout(filter: $filter) {
       id
       name
+      imageUrl
       exercises {
         nextToken
         __typename
@@ -174,6 +180,7 @@ export const onCreateMyExercise = /* GraphQL */ `
         id
         name
         increment
+        timePerRep
         lottie
         createdAt
         updatedAt
@@ -201,6 +208,7 @@ export const onUpdateMyExercise = /* GraphQL */ `
         id
         name
         increment
+        timePerRep
         lottie
         createdAt
         updatedAt
@@ -228,6 +236,7 @@ export const onDeleteMyExercise = /* GraphQL */ `
         id
         name
         increment
+        timePerRep
         lottie
         createdAt
         updatedAt
@@ -262,6 +271,7 @@ export const onCreateProfile = /* GraphQL */ `
         nextToken
         __typename
       }
+      imageUrl
       createdAt
       updatedAt
       __typename
@@ -286,6 +296,7 @@ export const onUpdateProfile = /* GraphQL */ `
         nextToken
         __typename
       }
+      imageUrl
       createdAt
       updatedAt
       __typename
@@ -310,6 +321,7 @@ export const onDeleteProfile = /* GraphQL */ `
         nextToken
         __typename
       }
+      imageUrl
       createdAt
       updatedAt
       __typename
@@ -326,6 +338,7 @@ export const onCreateFriendRequest = /* GraphQL */ `
         id
         username
         ownerId
+        imageUrl
         createdAt
         updatedAt
         __typename
@@ -334,6 +347,7 @@ export const onCreateFriendRequest = /* GraphQL */ `
         id
         username
         ownerId
+        imageUrl
         createdAt
         updatedAt
         __typename
@@ -357,6 +371,7 @@ export const onUpdateFriendRequest = /* GraphQL */ `
         id
         username
         ownerId
+        imageUrl
         createdAt
         updatedAt
         __typename
@@ -365,6 +380,7 @@ export const onUpdateFriendRequest = /* GraphQL */ `
         id
         username
         ownerId
+        imageUrl
         createdAt
         updatedAt
         __typename
@@ -388,6 +404,7 @@ export const onDeleteFriendRequest = /* GraphQL */ `
         id
         username
         ownerId
+        imageUrl
         createdAt
         updatedAt
         __typename
@@ -396,6 +413,7 @@ export const onDeleteFriendRequest = /* GraphQL */ `
         id
         username
         ownerId
+        imageUrl
         createdAt
         updatedAt
         __typename
@@ -413,15 +431,19 @@ export const onCreatePost = /* GraphQL */ `
   subscription OnCreatePost($filter: ModelSubscriptionPostFilterInput) {
     onCreatePost(filter: $filter) {
       id
+      imageUrl
       author {
         id
         username
         ownerId
+        imageUrl
         createdAt
         updatedAt
         __typename
       }
+      postKind
       text
+      type
       createdAt
       updatedAt
       profilePostsId
@@ -433,15 +455,19 @@ export const onUpdatePost = /* GraphQL */ `
   subscription OnUpdatePost($filter: ModelSubscriptionPostFilterInput) {
     onUpdatePost(filter: $filter) {
       id
+      imageUrl
       author {
         id
         username
         ownerId
+        imageUrl
         createdAt
         updatedAt
         __typename
       }
+      postKind
       text
+      type
       createdAt
       updatedAt
       profilePostsId
@@ -453,15 +479,19 @@ export const onDeletePost = /* GraphQL */ `
   subscription OnDeletePost($filter: ModelSubscriptionPostFilterInput) {
     onDeletePost(filter: $filter) {
       id
+      imageUrl
       author {
         id
         username
         ownerId
+        imageUrl
         createdAt
         updatedAt
         __typename
       }
+      postKind
       text
+      type
       createdAt
       updatedAt
       profilePostsId
@@ -488,6 +518,7 @@ export const onCreateMuscleExercises = /* GraphQL */ `
         id
         name
         increment
+        timePerRep
         lottie
         createdAt
         updatedAt
@@ -518,6 +549,7 @@ export const onUpdateMuscleExercises = /* GraphQL */ `
         id
         name
         increment
+        timePerRep
         lottie
         createdAt
         updatedAt
@@ -548,6 +580,7 @@ export const onDeleteMuscleExercises = /* GraphQL */ `
         id
         name
         increment
+        timePerRep
         lottie
         createdAt
         updatedAt
@@ -571,6 +604,7 @@ export const onCreateWorkoutExercises = /* GraphQL */ `
         id
         name
         increment
+        timePerRep
         lottie
         createdAt
         updatedAt
@@ -579,6 +613,7 @@ export const onCreateWorkoutExercises = /* GraphQL */ `
       workout {
         id
         name
+        imageUrl
         reps
         sets
         rests
@@ -604,6 +639,7 @@ export const onUpdateWorkoutExercises = /* GraphQL */ `
         id
         name
         increment
+        timePerRep
         lottie
         createdAt
         updatedAt
@@ -612,6 +648,7 @@ export const onUpdateWorkoutExercises = /* GraphQL */ `
       workout {
         id
         name
+        imageUrl
         reps
         sets
         rests
@@ -637,6 +674,7 @@ export const onDeleteWorkoutExercises = /* GraphQL */ `
         id
         name
         increment
+        timePerRep
         lottie
         createdAt
         updatedAt
@@ -645,6 +683,7 @@ export const onDeleteWorkoutExercises = /* GraphQL */ `
       workout {
         id
         name
+        imageUrl
         reps
         sets
         rests

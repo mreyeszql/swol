@@ -42,7 +42,7 @@ type Profile @model @auth(rules: [{allow: private , ownerField: "ownerId"}]) {
   incomingRequests: [FriendRequest] @hasMany
   outgoingRequests: [FriendRequest] @hasMany
   posts: [Post] @hasMany
-  profilePic: String
+  imageUrl: String
 }
 
 type FriendRequest @model @auth(rules: [{ allow: private }]) {
@@ -56,5 +56,13 @@ type Post @model @auth(rules: [{ allow: private }]) {
   id: ID!
   imageUrl: String
   author: Profile! @belongsTo
+  postKind: String!
   text: String!
+  type: String!
+    @index(
+      name: "postsByDate"
+      queryField: "postsByDate"
+      sortKeyFields: ["createdAt"]
+    )
+  createdAt: String!
 }

@@ -72,6 +72,7 @@ export const createExercise = /* GraphQL */ `
         __typename
       }
       increment
+      timePerRep
       lottie
       createdAt
       updatedAt
@@ -96,6 +97,7 @@ export const updateExercise = /* GraphQL */ `
         __typename
       }
       increment
+      timePerRep
       lottie
       createdAt
       updatedAt
@@ -120,6 +122,7 @@ export const deleteExercise = /* GraphQL */ `
         __typename
       }
       increment
+      timePerRep
       lottie
       createdAt
       updatedAt
@@ -135,6 +138,7 @@ export const createWorkout = /* GraphQL */ `
     createWorkout(input: $input, condition: $condition) {
       id
       name
+      imageUrl
       exercises {
         nextToken
         __typename
@@ -156,6 +160,7 @@ export const updateWorkout = /* GraphQL */ `
     updateWorkout(input: $input, condition: $condition) {
       id
       name
+      imageUrl
       exercises {
         nextToken
         __typename
@@ -177,6 +182,7 @@ export const deleteWorkout = /* GraphQL */ `
     deleteWorkout(input: $input, condition: $condition) {
       id
       name
+      imageUrl
       exercises {
         nextToken
         __typename
@@ -201,6 +207,7 @@ export const createMyExercise = /* GraphQL */ `
         id
         name
         increment
+        timePerRep
         lottie
         createdAt
         updatedAt
@@ -228,6 +235,7 @@ export const updateMyExercise = /* GraphQL */ `
         id
         name
         increment
+        timePerRep
         lottie
         createdAt
         updatedAt
@@ -255,6 +263,7 @@ export const deleteMyExercise = /* GraphQL */ `
         id
         name
         increment
+        timePerRep
         lottie
         createdAt
         updatedAt
@@ -292,6 +301,7 @@ export const createProfile = /* GraphQL */ `
         nextToken
         __typename
       }
+      imageUrl
       createdAt
       updatedAt
       __typename
@@ -319,6 +329,7 @@ export const updateProfile = /* GraphQL */ `
         nextToken
         __typename
       }
+      imageUrl
       createdAt
       updatedAt
       __typename
@@ -346,6 +357,7 @@ export const deleteProfile = /* GraphQL */ `
         nextToken
         __typename
       }
+      imageUrl
       createdAt
       updatedAt
       __typename
@@ -363,6 +375,7 @@ export const createFriendRequest = /* GraphQL */ `
         id
         username
         ownerId
+        imageUrl
         createdAt
         updatedAt
         __typename
@@ -371,6 +384,7 @@ export const createFriendRequest = /* GraphQL */ `
         id
         username
         ownerId
+        imageUrl
         createdAt
         updatedAt
         __typename
@@ -395,6 +409,7 @@ export const updateFriendRequest = /* GraphQL */ `
         id
         username
         ownerId
+        imageUrl
         createdAt
         updatedAt
         __typename
@@ -403,6 +418,7 @@ export const updateFriendRequest = /* GraphQL */ `
         id
         username
         ownerId
+        imageUrl
         createdAt
         updatedAt
         __typename
@@ -427,6 +443,7 @@ export const deleteFriendRequest = /* GraphQL */ `
         id
         username
         ownerId
+        imageUrl
         createdAt
         updatedAt
         __typename
@@ -435,6 +452,7 @@ export const deleteFriendRequest = /* GraphQL */ `
         id
         username
         ownerId
+        imageUrl
         createdAt
         updatedAt
         __typename
@@ -455,15 +473,19 @@ export const createPost = /* GraphQL */ `
   ) {
     createPost(input: $input, condition: $condition) {
       id
+      imageUrl
       author {
         id
         username
         ownerId
+        imageUrl
         createdAt
         updatedAt
         __typename
       }
+      postKind
       text
+      type
       createdAt
       updatedAt
       profilePostsId
@@ -478,15 +500,19 @@ export const updatePost = /* GraphQL */ `
   ) {
     updatePost(input: $input, condition: $condition) {
       id
+      imageUrl
       author {
         id
         username
         ownerId
+        imageUrl
         createdAt
         updatedAt
         __typename
       }
+      postKind
       text
+      type
       createdAt
       updatedAt
       profilePostsId
@@ -501,15 +527,19 @@ export const deletePost = /* GraphQL */ `
   ) {
     deletePost(input: $input, condition: $condition) {
       id
+      imageUrl
       author {
         id
         username
         ownerId
+        imageUrl
         createdAt
         updatedAt
         __typename
       }
+      postKind
       text
+      type
       createdAt
       updatedAt
       profilePostsId
@@ -537,6 +567,7 @@ export const createMuscleExercises = /* GraphQL */ `
         id
         name
         increment
+        timePerRep
         lottie
         createdAt
         updatedAt
@@ -568,6 +599,7 @@ export const updateMuscleExercises = /* GraphQL */ `
         id
         name
         increment
+        timePerRep
         lottie
         createdAt
         updatedAt
@@ -599,6 +631,7 @@ export const deleteMuscleExercises = /* GraphQL */ `
         id
         name
         increment
+        timePerRep
         lottie
         createdAt
         updatedAt
@@ -623,6 +656,7 @@ export const createWorkoutExercises = /* GraphQL */ `
         id
         name
         increment
+        timePerRep
         lottie
         createdAt
         updatedAt
@@ -631,6 +665,7 @@ export const createWorkoutExercises = /* GraphQL */ `
       workout {
         id
         name
+        imageUrl
         reps
         sets
         rests
@@ -657,6 +692,7 @@ export const updateWorkoutExercises = /* GraphQL */ `
         id
         name
         increment
+        timePerRep
         lottie
         createdAt
         updatedAt
@@ -665,6 +701,7 @@ export const updateWorkoutExercises = /* GraphQL */ `
       workout {
         id
         name
+        imageUrl
         reps
         sets
         rests
@@ -691,6 +728,7 @@ export const deleteWorkoutExercises = /* GraphQL */ `
         id
         name
         increment
+        timePerRep
         lottie
         createdAt
         updatedAt
@@ -699,6 +737,7 @@ export const deleteWorkoutExercises = /* GraphQL */ `
       workout {
         id
         name
+        imageUrl
         reps
         sets
         rests

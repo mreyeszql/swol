@@ -49,6 +49,7 @@ export const getExercise = /* GraphQL */ `
         __typename
       }
       increment
+      timePerRep
       lottie
       createdAt
       updatedAt
@@ -67,6 +68,7 @@ export const listExercises = /* GraphQL */ `
         id
         name
         increment
+        timePerRep
         lottie
         createdAt
         updatedAt
@@ -82,6 +84,7 @@ export const getWorkout = /* GraphQL */ `
     getWorkout(id: $id) {
       id
       name
+      imageUrl
       exercises {
         nextToken
         __typename
@@ -105,6 +108,7 @@ export const listWorkouts = /* GraphQL */ `
       items {
         id
         name
+        imageUrl
         reps
         sets
         rests
@@ -125,6 +129,7 @@ export const getMyExercise = /* GraphQL */ `
         id
         name
         increment
+        timePerRep
         lottie
         createdAt
         updatedAt
@@ -182,6 +187,7 @@ export const getProfile = /* GraphQL */ `
         nextToken
         __typename
       }
+      imageUrl
       createdAt
       updatedAt
       __typename
@@ -199,6 +205,7 @@ export const listProfiles = /* GraphQL */ `
         id
         username
         ownerId
+        imageUrl
         createdAt
         updatedAt
         __typename
@@ -216,6 +223,7 @@ export const getFriendRequest = /* GraphQL */ `
         id
         username
         ownerId
+        imageUrl
         createdAt
         updatedAt
         __typename
@@ -224,6 +232,7 @@ export const getFriendRequest = /* GraphQL */ `
         id
         username
         ownerId
+        imageUrl
         createdAt
         updatedAt
         __typename
@@ -262,15 +271,19 @@ export const getPost = /* GraphQL */ `
   query GetPost($id: ID!) {
     getPost(id: $id) {
       id
+      imageUrl
       author {
         id
         username
         ownerId
+        imageUrl
         createdAt
         updatedAt
         __typename
       }
+      postKind
       text
+      type
       createdAt
       updatedAt
       profilePostsId
@@ -287,7 +300,10 @@ export const listPosts = /* GraphQL */ `
     listPosts(filter: $filter, limit: $limit, nextToken: $nextToken) {
       items {
         id
+        imageUrl
+        postKind
         text
+        type
         createdAt
         updatedAt
         profilePostsId
@@ -315,6 +331,7 @@ export const getMuscleExercises = /* GraphQL */ `
         id
         name
         increment
+        timePerRep
         lottie
         createdAt
         updatedAt
@@ -356,6 +373,7 @@ export const getWorkoutExercises = /* GraphQL */ `
         id
         name
         increment
+        timePerRep
         lottie
         createdAt
         updatedAt
@@ -364,6 +382,7 @@ export const getWorkoutExercises = /* GraphQL */ `
       workout {
         id
         name
+        imageUrl
         reps
         sets
         rests
@@ -420,8 +439,42 @@ export const profilesByOwnerId = /* GraphQL */ `
         id
         username
         ownerId
+        imageUrl
         createdAt
         updatedAt
+        __typename
+      }
+      nextToken
+      __typename
+    }
+  }
+`;
+export const postsByDate = /* GraphQL */ `
+  query PostsByDate(
+    $type: String!
+    $createdAt: ModelStringKeyConditionInput
+    $sortDirection: ModelSortDirection
+    $filter: ModelPostFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    postsByDate(
+      type: $type
+      createdAt: $createdAt
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        imageUrl
+        postKind
+        text
+        type
+        createdAt
+        updatedAt
+        profilePostsId
         __typename
       }
       nextToken

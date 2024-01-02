@@ -36,8 +36,8 @@ const handleConfirmSignUp = async ({ email, confirmationCode }) => {
       await client.graphql({
           query: createProfile,
           variables: { input: {
-          username: preferred_username,
-          ownerId: sub,
+            username: preferred_username,
+            ownerId: sub,
           }}
       });
     };
