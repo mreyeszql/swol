@@ -39,12 +39,12 @@ const handleNewExercise = async (client, updatedExercise, exercise) => {
     };
 
     // Create the new exercise in the database
-    await client.graphql({
+    const result = await client.graphql({
         query: createMyExercise,
         variables: { input: newExercise }
     });
     
-    return newExercise;
+    return result.data.createMyExercise;
 };
 
 export { handleNewExercise, handleUpdatedExercise };

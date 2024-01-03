@@ -14,6 +14,8 @@ import SearchProfilesScreen from 'screens/home/search/SearchProfilesScreen';
 import FeedScreen from 'screens/home/feed/FeedScreen';
 import ExercisesSummaryScreen from 'screens/home/workout/ExerciseSummaryScreen';
 import CameraScreen from 'screens/home/feed/CameraScreen';
+import ScanScreen from 'screens/home/workout/ScanScreen';
+import ExerciseDetailScreen from 'screens/home/workout/ExerciseDetailScreen';
 
 import { SimpleLineIcons } from '@expo/vector-icons'; 
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
@@ -100,6 +102,8 @@ const StackNavigation = () => {
           <Stack.Screen name="Exercises" component={ExercisesScreen} options={{gestureEnabled: false}} />
           <Stack.Screen name="ExercisesSummary" component={ExercisesSummaryScreen} options={{gestureEnabled: false}} />
           <Stack.Screen name="Camera" component={CameraScreen} options={{gestureEnabled: false}} />
+          <Stack.Screen name="Scan" component={ScanScreen} options={{gestureEnabled: false}} />
+          <Stack.Screen name="ExerciseDetail" component={ExerciseDetailScreen} options={{gestureEnabled: false}} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

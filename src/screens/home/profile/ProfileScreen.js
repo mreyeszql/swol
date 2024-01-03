@@ -6,7 +6,7 @@ const ProfileScreen = ({ navigation }) => {
     const localHandleSignOut = async () => {
         const result = handleSignOut();
         if (result) {
-            navigation.navigate('Signin');
+            navigation.navigate('Initial');
         }
     }
 

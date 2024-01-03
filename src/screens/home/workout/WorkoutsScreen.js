@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { View, FlatList, TouchableOpacity } from 'react-native';
 import { generateClient } from 'aws-amplify/api';
 import Text from 'components/text';
-import { AntDesign } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons'; 
 import SafeAreaView from 'components/view';
 
 
@@ -81,8 +81,13 @@ const WorkoutsScreen = ({ navigation }) => {
     return (
       <SafeAreaView>
         <View style={{paddingHorizontal: 12}}>
-          <View style={{flexDirection: 'row', alignItems: 'center', paddingBottom: 26}}>
+          <View style={{flexDirection: 'row', alignItems: 'center', paddingBottom: 26, flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center'}}>
             <Text style={{fontSize: 32, fontFamily: 'Inter-Bold', textTransform: 'uppercase'}}>WORKOUTS</Text>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('Scan')}
+            >
+              <Feather name="maximize" size={24} color="white" />
+            </TouchableOpacity>
           </View>
           <FlatList 
             style={{height: '100%'}}

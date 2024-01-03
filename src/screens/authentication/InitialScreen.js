@@ -17,6 +17,7 @@ const InitialScreen = ({ navigation }) => {
                     <TouchableOpacity style={styles.textInput} onPress={() => navigation.navigate("Signin")}>
                         <Text style={styles.text}>Log In</Text>
                     </TouchableOpacity>
+                    <Text style={styles.lowText}>By continuing, you agree to our Terms of Use and Privacy Policy</Text>
                 </View>
             </View>
         </SafeAreaView>
@@ -50,6 +51,11 @@ const styles = StyleSheet.create({
       width: 150, 
       height: 150, 
       alignSelf: 'center'
+    },
+    lowText: {
+        marginTop: 20,
+        alignSelf: 'center',
+        fontSize: 10
     }
   });
 

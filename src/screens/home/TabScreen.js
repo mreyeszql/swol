@@ -6,7 +6,7 @@ const TabScreen = ({ navigation }) => {
     const localHandleSignOut = async () => {
         const result = await handleSignOut();
         if (result) {
-            navigation.navigate('Signin');
+            navigation.navigate('Initial');
         }
     };
 
