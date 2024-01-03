@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import InitialScreen from 'screens/authentication/InitialScreen';
 import SignupScreen from 'screens/authentication/SignupScreen';
 import SigninScreen from 'screens/authentication/SigninScreen';
 import ConfirmSignupScreen from 'screens/authentication/ConfirmSignupScreen';
@@ -82,21 +83,23 @@ const TabNavigation = () => {
 };
 
 const StackNavigation = () => {
+  
   return (
     <SafeAreaProvider>
       <NavigationContainer>
         <Stack.Navigator 
-          initialRouteName="Signin"
+          initialRouteName="Initial"
           screenOptions={{headerShown: false}}
         >
-          <Stack.Screen name="Signin" component={SigninScreen} />
-          <Stack.Screen name="Signup" component={SignupScreen} />
+          <Stack.Screen name="Initial" component={InitialScreen} options={{gestureEnabled: false}} />
+          <Stack.Screen name="Signin" component={SigninScreen} options={{gestureEnabled: false}} />
+          <Stack.Screen name="Signup" component={SignupScreen} options={{gestureEnabled: false}} />
           <Stack.Screen name="ConfirmSignup" component={ConfirmSignupScreen} />
-          <Stack.Screen name="Tabs" component={TabNavigation} />
-          <Stack.Screen name="Workout" component={WorkoutScreen} />
-          <Stack.Screen name="Exercises" component={ExercisesScreen} />
-          <Stack.Screen name="ExercisesSummary" component={ExercisesSummaryScreen} />
-          <Stack.Screen name="Camera" component={CameraScreen} />
+          <Stack.Screen name="Tabs" component={TabNavigation} options={{gestureEnabled: false}} />
+          <Stack.Screen name="Workout" component={WorkoutScreen} options={{gestureEnabled: false}} />
+          <Stack.Screen name="Exercises" component={ExercisesScreen} options={{gestureEnabled: false}} />
+          <Stack.Screen name="ExercisesSummary" component={ExercisesSummaryScreen} options={{gestureEnabled: false}} />
+          <Stack.Screen name="Camera" component={CameraScreen} options={{gestureEnabled: false}} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

@@ -35,8 +35,9 @@ const handleFetchPosts = async () => {
                     createdAt
                     imageUrl
                     author {
-                    imageUrl
-                    username
+                        id
+                        imageUrl
+                        username
                     }
                 }
                 }

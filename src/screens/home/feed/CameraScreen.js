@@ -1,10 +1,34 @@
 import { Camera, CameraType } from 'expo-camera';
-import { useState } from 'react';
-import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { Button, Image, StyleSheet, TouchableOpacity, View } from 'react-native';
+import SafeAreaView from 'components/view';
+import Text from 'components/text';
+import Svg, { Circle } from 'react-native-svg';
+import { Entypo } from '@expo/vector-icons'; 
+import { Feather } from '@expo/vector-icons';
+import { TapGestureHandler, State } from 'react-native-gesture-handler';
+
 
 const CameraScreen = ({ navigation }) => {
+  const cameraRef = useRef();
   const [type, setType] = useState(CameraType.back);
   const [permission, requestPermission] = Camera.useCameraPermissions();
+  const [picture, setPicture] = useState(null);
+
+  const handleTakePicture = async () => {
+    const options = {
+      quality: 1,
+      base64: true,
+      exif: false
+    };
+
+    const newPicture = await cameraRef.current.takePictureAsync(options);
+    setPicture(newPicture);
+  };
+
+  const handleRetakePicture = () => {
+    setPicture(null);
+  };
 
   if (!permission) {
     // Camera permissions are still loading
@@ -16,27 +40,85 @@ const CameraScreen = ({ navigation }) => {
     return (
       <View style={styles.container}>
         <Text style={{ textAlign: 'center' }}>We need your permission to show the camera</Text>
-        <Button onPress={requestPermission} title="grant permission" />
+        <Button onPress={requestPermission} title="Grant Permission" />
       </View>
     );
   }
 
-  const toggleCameraType = () => {
+  const handleToggleCameraType = () => {
     setType(current => (current === CameraType.back ? CameraType.front : CameraType.back));
   }
 
+  const localHandleClose = () => {
+    navigation.navigate('Feed', { picture, type });
+    setPicture(null);
+  };
+
   return (
     <View style={styles.container}>
-      <Camera style={styles.camera} type={type}>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={toggleCameraType}>
-            <Text style={styles.text}>Flip Camera</Text>
-          </TouchableOpacity>
+      {picture ? (
+        <View style={styles.pictureContainer}>
+          {/* Display the taken picture as the background */}
+          <Image source={{ uri: picture.uri }} style={[styles.picture, (type === 'front' ? {transform: [{scaleX: -1}]} : {})]} />
+
+          {/* Buttons container in the front */}
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.button} onPress={handleRetakePicture}>
+              <Text style={styles.text}>Retake</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={localHandleClose}
+            >
+              <Text style={styles.text}>Close</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </Camera>
+      ) : (
+        <Camera style={styles.camera} type={type} ref={cameraRef}>
+          {/* Buttons container on top of the camera preview */}
+          <TapGestureHandler
+            onHandlerStateChange={({ nativeEvent }) => {
+              if (nativeEvent.state === State.ACTIVE) {
+                handleToggleCameraType();
+              }
+            }}
+            numberOfTaps={2}
+            style={{flex:1}}
+          >
+            <View style={{flex: 1, flexDirection: 'column-reverse'}}>
+              <View style={[styles.button, styles.buttonContainer]}>
+                  <View style={styles.button}>
+                    <TouchableOpacity onPress={handleTakePicture}>
+                        <Svg height="100" width="100">
+                          <Circle
+                            cx="50"
+                            cy="50"
+                            r="40"
+                            stroke="white"
+                            strokeWidth="2"
+                            fill="none"
+                          />
+                        </Svg>
+                    </TouchableOpacity>
+                  </View>
+              </View>
+              <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                <TouchableOpacity onPress={localHandleClose}>
+                  <Feather name="x" size={24} color="white" />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={handleToggleCameraType}>
+                  <Entypo name="cycle" size={24} color="white" />
+                </TouchableOpacity>
+              </View>
+            </View>
+          </TapGestureHandler>
+        </Camera>
+      )}
     </View>
   );
-}
+};
+
 
 const styles = StyleSheet.create({
   container: {
@@ -45,12 +127,23 @@ const styles = StyleSheet.create({
   },
   camera: {
     flex: 1,
+    paddingVertical: 60,
+    paddingHorizontal: 16
+  },
+  pictureContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  picture: {
+    width: '100%',
+    height: '80%',
+    resizeMode: 'contain',
   },
   buttonContainer: {
-    flex: 1,
     flexDirection: 'row',
     backgroundColor: 'transparent',
-    margin: 64,
+    marginTop: 20,
   },
   button: {
     flex: 1,
@@ -59,8 +152,6 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: 'white',
   },
 });
 

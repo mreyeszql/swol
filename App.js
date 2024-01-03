@@ -1,6 +1,7 @@
 import Navigation from 'Navigation';
 import { useFonts } from 'expo-font';
 import { StatusBar } from 'expo-status-bar';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 
 import { Amplify } from 'aws-amplify';
@@ -16,8 +17,10 @@ const App = () => {
   });
   return (
     <>
-      <StatusBar style="light" backgroundColor="black" />
-      <Navigation />
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <StatusBar style="light" backgroundColor="black" />
+        <Navigation />
+      </GestureHandlerRootView>
     </>
   
   );

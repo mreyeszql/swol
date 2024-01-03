@@ -21,6 +21,9 @@ const ConfirmSignupScreen =  ({ route, navigation }) => {
     return (
         <View>
             <TextInput
+                style={{textTransform: 'lowercase'}}
+                autoCorrect={false}
+                autoCapitalize='none'
                 placeholder="Confirmation Code"
                 value={confirmationCode}
                 onChangeText={(text) => setConfirmationCode(text)}

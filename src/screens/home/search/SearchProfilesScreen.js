@@ -73,7 +73,9 @@ const SearchProfilesScreen = () => {
         <SafeAreaView>
             <View style={{paddingHorizontal: 28, height: '100%'}}>
                 <TextInput
-                    style={{color: 'white', borderColor: 'white', padding: 6, fontFamily: 'Inter-Bold', borderBottomColor: 'white', borderBottomWidth: 1, fontSize: 30}}
+                    autoCorrect={false}
+                    autoCapitalize='none'
+                    style={{color: 'white', borderColor: 'white', textTransform: 'lowercase', padding: 6, fontFamily: 'Inter-Bold', borderBottomColor: 'white', borderBottomWidth: 1, fontSize: 30}}
                     placeholderTextColor="grey"
                     placeholder="Add SWOLMates..."
                     value={searchText}

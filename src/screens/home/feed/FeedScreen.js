@@ -8,12 +8,18 @@ import { createPost } from 'graphql/mutations';
 import { generateClient } from 'aws-amplify/api';
 import { handleFetchAuth } from 'functions/utils/profile';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { uploadData, getUrl } from 'aws-amplify/storage';
 
 
-const FeedScreen = ({ navigation }) => {
+const FeedScreen = ({ navigation, route }) => {
+    const params = route.params;
+
     const insets = useSafeAreaInsets();
     const client = generateClient();
+    const [pictureUri, setPictureUri] = useState(null);
+    const [pictureType, setPictureType] = useState(null);
     const [posts, setPosts] = useState([]);
+    const [postText, setPostText] = useState(null);
     const [localProfile, setLocalProfile] = useState(null);
     const [modalVisible, setModalVisible] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
@@ -23,6 +29,14 @@ const FeedScreen = ({ navigation }) => {
         localHandleFetchPosts();
     }, []);
 
+    useEffect(() => {
+        if (params?.picture && params?.type) {
+            setPictureType(params.type);
+            setPictureUri(params.picture.uri);
+            setModalVisible(true);
+        }
+    }, [params?.picture])
+
     const localHandleFetchAuth = async () => {
         console.log("localHandleFetchAuth");
         const profile = await handleFetchAuth();
@@ -31,21 +45,70 @@ const FeedScreen = ({ navigation }) => {
 
     const localHandleFetchPosts = async () => {
         console.log("localHandleFetchPosts");
-        const posts = await handleFetchPosts();
+        let posts = await handleFetchPosts();
+
+        for (let i = 0; i < posts.length; i++) {
+            if (posts[i]?.imageUrl) {
+                let uri = await localHandleGetImage(posts[i]?.imageUrl, posts[i].author.id);
+                posts[i] = {...posts[i], uri }
+            }
+        }
         setPosts(posts);
         setRefreshing(false);
     };
 
+    const localHandleCloseModal = () => {
+        setPictureType(null);
+        setPictureUri(null);
+        setModalVisible(false);
+        setPostText("");
+    };
+
+    const localHandleGetImage = async (key, profileId) => {
+        console.log("localHandleGetImage");
+        let getUrlResult = await getUrl({
+            key: "posts/" + profileId + "/" + key
+        });
+        return getUrlResult.url.toString();
+    }
+
     const mockRenderItem = ({ item }) => {
         return (
-            <Text>{item.text}</Text>
+            <View style={{ marginVertical: 5}}>
+                {item.uri && <Image source={{ uri: item.uri }} style={{height: 100, width: 100}} />}
+                <Text>{item.text}</Text>
+            </View>
         );
     };
 
-    const [postText, setPostText] = useState(null);
+    const localHandleCreatePostWithImage = async (text, pictureUri) => {
+        console.log("localHandleCreatePostWithImage");
+        const base = pictureUri.split('/').pop();
+        await client.graphql({
+            query: createPost,
+            variables: {
+                input : {
+                    type: "Post",
+                    postKind: "Other",
+                    text,
+                    profilePostsId: localProfile.id,
+                    imageUrl: base
+                }
+            }
+        });
+        try {
+            const pictureData = await fetch(pictureUri).then((response) => response.arrayBuffer());
+            await uploadData({
+              key: "posts/" + localProfile.id + "/" + base,
+              data: pictureData,
+            }).result;
+          } catch (error) {
+            console.log('Error : ', error);
+          }
+    }
 
-    const localHandleCreatePost = async (text) => {
-        console.log("localHandleCreatePost");
+    const localHandleCreatePostWithText = async (text) => {
+        console.log("localHandleCreatePostWithText");
         await client.graphql({
             query: createPost,
             variables: {
@@ -59,6 +122,18 @@ const FeedScreen = ({ navigation }) => {
         });
     };
 
+    const localHandleCreatePost = async (postText, pictureUri) => {
+        if (postText !== '') {
+            if (pictureUri) {
+                localHandleCreatePostWithImage(postText, pictureUri);
+            } else {
+                localHandleCreatePostWithText(postText);
+            }
+            localHandleCloseModal();
+            localHandleFetchPosts();
+        };
+    };
+
     return (
         
         <SafeAreaView style={{marginBottom: insets.bottom * 3 - 12}}>
@@ -69,8 +144,11 @@ const FeedScreen = ({ navigation }) => {
             >
                 <View style={{height: '100%', width: '100%', justifyContent: 'center', alignContent: 'center', alignItems: 'center'}}>
                     <View style={{width: '80%', height: '60%', backgroundColor: 'black', borderWidth: 1, borderRadius: 10, borderColor: 'white'}}>
+                        {pictureUri && <Image source={{ uri: pictureUri }} style={[{height: 100, width: 100}, (pictureType === 'front' ? {transform: [{scaleX: -1}]} : {})]} />}
                         <TextInput
-                            style={{fontFamily: 'Inter-Light', color: 'white', borderWidth: 1, borderColor: 'white', margin: 10, padding: 10, borderRadius: 10}}
+                            autoCorrect={false}
+                            autoCapitalize='none'
+                            style={{fontFamily: 'Inter-Light', textTransform: 'lowercase', color: 'white', borderWidth: 1, borderColor: 'white', margin: 10, padding: 10, borderRadius: 10}}
                             placeholderTextColor="white"
                             placeholder="Post..."
                             value={postText}
@@ -78,19 +156,11 @@ const FeedScreen = ({ navigation }) => {
                         />
                         <Button 
                             title="post"
-                            onPress={() => {
-                                localHandleCreatePost(postText);
-                                setModalVisible(false);
-                                setPostText("");
-                                localHandleFetchPosts();
-                            }}
+                            onPress={() => localHandleCreatePost(postText, pictureUri)}
                         />
                         <Button 
                             title="close modal"
-                            onPress={() => {
-                                setModalVisible(false);
-                                setPostText("");
-                            }}
+                            onPress={localHandleCloseModal}
                         />
                         <Button 
                             title="add pic"
