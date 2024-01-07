@@ -16,11 +16,15 @@ import ExercisesSummaryScreen from 'screens/home/workout/ExerciseSummaryScreen';
 import CameraScreen from 'screens/home/feed/CameraScreen';
 import ScanScreen from 'screens/home/workout/ScanScreen';
 import ExerciseDetailScreen from 'screens/home/workout/ExerciseDetailScreen';
+import PersonalRecordsScreen from 'screens/home/profile/PersonalRecordsScreen';
 
 import { SimpleLineIcons } from '@expo/vector-icons'; 
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 import { Octicons } from '@expo/vector-icons'; 
 import ProfileScreen from 'screens/home/profile/ProfileScreen';
+import SettingsScreen from 'screens/home/profile/SettingsScreen';
+import CreateUsernameScreen from 'screens/authentication/CreateUsernameScreen';
+import CreatePasswordScreen from 'screens/authentication/CreatePasswordScreen';
 
 
 
@@ -44,7 +48,7 @@ const TabNavigation = () => {
         tabBarShowLabel: false,
       })}
     >
-      <Tab.Screen 
+      {/* <Tab.Screen 
         name="Feed" 
         component={FeedScreen} 
         options={{
@@ -52,8 +56,8 @@ const TabNavigation = () => {
             <MaterialCommunityIcons name="lightning-bolt" size={size} color={color} />
           )
         }}
-      />
-      <Tab.Screen 
+      /> */}
+      {/* <Tab.Screen 
         name="Search" 
         component={SearchProfilesScreen} 
         options={{
@@ -61,7 +65,7 @@ const TabNavigation = () => {
             <SimpleLineIcons name="magnifier" size={size} color={color} />
           ),
         }}
-      />
+      /> */}
       <Tab.Screen 
         name="Workouts" 
         component={WorkoutsScreen} 
@@ -96,6 +100,8 @@ const StackNavigation = () => {
           <Stack.Screen name="Initial" component={InitialScreen} options={{gestureEnabled: false}} />
           <Stack.Screen name="Signin" component={SigninScreen} options={{gestureEnabled: false}} />
           <Stack.Screen name="Signup" component={SignupScreen} options={{gestureEnabled: false}} />
+          <Stack.Screen name="CreateUsername" component={CreateUsernameScreen} options={{gestureEnabled: false}} />
+          <Stack.Screen name="CreatePassword" component={CreatePasswordScreen} options={{gestureEnabled: false}} />
           <Stack.Screen name="ConfirmSignup" component={ConfirmSignupScreen} />
           <Stack.Screen name="Tabs" component={TabNavigation} options={{gestureEnabled: false}} />
           <Stack.Screen name="Workout" component={WorkoutScreen} options={{gestureEnabled: false}} />
@@ -104,6 +110,8 @@ const StackNavigation = () => {
           <Stack.Screen name="Camera" component={CameraScreen} options={{gestureEnabled: false}} />
           <Stack.Screen name="Scan" component={ScanScreen} options={{gestureEnabled: false}} />
           <Stack.Screen name="ExerciseDetail" component={ExerciseDetailScreen} options={{gestureEnabled: false}} />
+          <Stack.Screen name="Settings" component={SettingsScreen} options={{gestureEnabled: false}} />
+          <Stack.Screen name="PersonalRecords" component={PersonalRecordsScreen} options={{gestureEnabled: false}} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

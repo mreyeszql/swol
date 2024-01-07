@@ -1,23 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { TextInput, Button, StyleSheet, View, Platform, Image, TouchableOpacity, Text, Keyboard, KeyboardAvoidingView, TouchableWithoutFeedback } from 'react-native';
-import { handleSignIn, handleCheckSession } from 'functions/authentication/signin';
+import { handleSignIn } from 'functions/authentication/signin';
 import SafeAreaView from 'components/view';
 import { AntDesign } from '@expo/vector-icons';
 
 const SigninScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
-  useEffect(() => {
-    localHandleCheckSession();
-  }, []);
-
-  const localHandleCheckSession = async () => {
-    const result = await handleCheckSession();
-    if (result) {
-      navigation.navigate('Tabs')
-    }
-  }
 
   const localHandleSignIn = async () => {
     const result = await handleSignIn({

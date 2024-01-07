@@ -1,15 +1,17 @@
 import { Camera, CameraType } from 'expo-camera';
 import React, { useState, useRef } from 'react';
-import { Button, Image, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Button, Image, StyleSheet, TouchableOpacity, View, Dimensions } from 'react-native';
 import SafeAreaView from 'components/view';
 import Text from 'components/text';
 import Svg, { Circle } from 'react-native-svg';
 import { Entypo } from '@expo/vector-icons'; 
 import { Feather } from '@expo/vector-icons';
 import { TapGestureHandler, State } from 'react-native-gesture-handler';
+import { RNHoleView } from 'react-native-hole-view';
 
 
 const CameraScreen = ({ navigation }) => {
+  const {width, height} = Dimensions.get('window');
   const cameraRef = useRef();
   const [type, setType] = useState(CameraType.back);
   const [permission, requestPermission] = Camera.useCameraPermissions();
@@ -75,45 +77,51 @@ const CameraScreen = ({ navigation }) => {
           </View>
         </View>
       ) : (
-        <Camera style={styles.camera} type={type} ref={cameraRef}>
-          {/* Buttons container on top of the camera preview */}
-          <TapGestureHandler
-            onHandlerStateChange={({ nativeEvent }) => {
-              if (nativeEvent.state === State.ACTIVE) {
-                handleToggleCameraType();
-              }
-            }}
-            numberOfTaps={2}
-            style={{flex:1}}
+        <>
+          <Camera style={styles.camera} type={type} ref={cameraRef}>
+          </Camera>
+          <RNHoleView
+            style={{ position: 'absolute', width: '100%', height: '100%', backgroundColor: 'black', opacity: 0.9, paddingTop: 56, paddingHorizontal: 28, paddingBottom: 54 }}
+            holes={[{ x: 12, y: height/2 - width /2 , width: width - 12 * 2, height: width - 12 * 2, borderRadius: 16, }]}
           >
-            <View style={{flex: 1, flexDirection: 'column-reverse'}}>
-              <View style={[styles.button, styles.buttonContainer]}>
-                  <View style={styles.button}>
-                    <TouchableOpacity onPress={handleTakePicture}>
-                        <Svg height="100" width="100">
-                          <Circle
-                            cx="50"
-                            cy="50"
-                            r="40"
-                            stroke="white"
-                            strokeWidth="2"
-                            fill="none"
-                          />
-                        </Svg>
-                    </TouchableOpacity>
-                  </View>
+              <TapGestureHandler
+              onHandlerStateChange={({ nativeEvent }) => {
+                if (nativeEvent.state === State.ACTIVE) {
+                  handleToggleCameraType();
+                }
+              }}
+              numberOfTaps={2}
+              style={{flex:1}}
+            >
+              <View style={{flex: 1, flexDirection: 'column-reverse'}}>
+                <View style={[styles.button, styles.buttonContainer]}>
+                    <View style={styles.button}>
+                      <TouchableOpacity onPress={handleTakePicture}>
+                          <Svg height="100" width="100">
+                            <Circle
+                              cx="50"
+                              cy="50"
+                              r="40"
+                              stroke="white"
+                              strokeWidth="2"
+                              fill="none"
+                            />
+                          </Svg>
+                      </TouchableOpacity>
+                    </View>
+                </View>
+                <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                  <TouchableOpacity onPress={localHandleClose}>
+                    <Feather name="x" size={24} color="white" />
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={handleToggleCameraType}>
+                    <Entypo name="cycle" size={24} color="white" />
+                  </TouchableOpacity>
+                </View>
               </View>
-              <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                <TouchableOpacity onPress={localHandleClose}>
-                  <Feather name="x" size={24} color="white" />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={handleToggleCameraType}>
-                  <Entypo name="cycle" size={24} color="white" />
-                </TouchableOpacity>
-              </View>
-            </View>
-          </TapGestureHandler>
-        </Camera>
+            </TapGestureHandler>
+          </RNHoleView>
+        </>
       )}
     </View>
   );

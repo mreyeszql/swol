@@ -1,23 +1,21 @@
 import React, { useState } from 'react';
-import { View, TextInput, Text as RNText, Button, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, Platform } from 'react-native';
-import { handleSignUp } from 'functions/authentication/signup';
+import { View, TextInput, Text, Button, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, Platform } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import SafeAreaView from 'components/view';
-import Text from 'components/text';
 
-const SignupScreen = ({ navigation }) => {
-  const [email, setEmail] = useState(null);
+const CreateUsernameScreen = ({ navigation, route }) => {
+  const { email } = route.params;
+  const [username, setUsername] = useState('');
   const [error, setError] = useState(null);
 
   const localHandleNext = () => {
-    const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
-    if (email && reg.test(email) !== false) {
-      navigation.navigate('CreateUsername', { email });
+    if (username) {
+      navigation.navigate('CreatePassword', { email, username });
     } else {
-      setError("I can't seem to reach that email :(");
-      setTimeout(() => {
-        setError(null);
-      }, 5000);
+        setError("That username is already taken :(");
+        setTimeout(() => {
+          setError(null);
+        }, 5000);
     }
   }
 
@@ -37,21 +35,21 @@ const SignupScreen = ({ navigation }) => {
             style={styles.container}
           >
             <View>
-              <Text style={styles.title}>EMAIL</Text>
+              <Text style={styles.title}>Create Username</Text>
               <TextInput
                 autoCorrect={false}
                 autoCapitalize='none'
                 style={styles.textInput}
                 placeholderTextColor={"gray"}
-                placeholder="Email"
-                value={email}
-                onChangeText={(text) => setEmail(text)}
+                placeholder="Username"
+                value={username}
+                onChangeText={(text) => setUsername(text)}
               />
               <View>
                 <TouchableOpacity style={styles.next} onPress={localHandleNext}>
-                  <RNText styles={styles.text}>
+                  <Text styles={styles.text}>
                     Next
-                  </RNText>
+                  </Text>
                 </TouchableOpacity>
                 <View style={{flexDirection: 'row', justifyContent: 'center', marginTop: 32}}>
                   <Text style={{color: error ? '#6388EC' : 'black'}}>{error ? error : '|'}</Text>
@@ -112,6 +110,6 @@ const styles = StyleSheet.create({
   }
 });
 
-export default SignupScreen;
+export default CreateUsernameScreen;
 
 

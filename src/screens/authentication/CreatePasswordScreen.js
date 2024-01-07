@@ -1,30 +1,49 @@
-import { handleConfirmSignUp } from 'functions/authentication/signup';
 import React, { useState } from 'react';
 import { View, TextInput, Text, Button, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, Platform } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import SafeAreaView from 'components/view';
+import { handleSignUp } from 'functions/authentication/signup';
 
-const ConfirmSignupScreen = ({ navigation, route }) => {
+const CreatePasswordScreen = ({ navigation, route }) => {
     const { email, username } = route.params;
-    const [confirmationCode, setConfirmationCode] = useState('');
+    const [firstPassword, setFirstPassword] = useState(null);
+    const [secondPassword, setSecondPassword] = useState(null);
     const [error, setError] = useState(null);
 
-    const localHandleNext = async () => {
-        const result = await handleConfirmSignUp({
-            email, 
-            confirmationCode,
-        })
+    const localHandleNext = () => {
+        if (firstPassword && secondPassword) {
+            if (firstPassword === secondPassword) {
+                localHandleSignUp(username, email, firstPassword);
+            } else {
+                setError("You just gave me two different passwords there :/");
+                setTimeout(() => {
+                    setError(null);
+                }, 5000);
+            }
+        } else {
+            setError("You can't just not have a password :|");
+            setTimeout(() => {
+            setError(null);
+            }, 5000);
+        }
+    };
+
+    const localHandleSignUp = async (username, email, password) => {
+        const result = await handleSignUp({
+            username,
+            email,
+            password,
+        });
 
         if (result) {
-            navigation.navigate('Tabs');
+            navigation.navigate('ConfirmSignup', { email, username });
         } else {
-            setError("That is definitely not what I sent you :|");
+            setError("Anyone could guess that weak ass password!");
             setTimeout(() => {
                 setError(null);
             }, 5000);
         }
     };
-
 
     return (
         <SafeAreaView>
@@ -42,15 +61,26 @@ const ConfirmSignupScreen = ({ navigation, route }) => {
                 style={styles.container}
             >
                 <View>
-                <Text style={styles.title}>VERIFY YOU EXIST</Text>
+                <Text style={styles.title}>Create Password</Text>
                 <TextInput
                     autoCorrect={false}
                     autoCapitalize='none'
                     style={styles.textInput}
                     placeholderTextColor={"gray"}
-                    placeholder="Verification code"
-                    value={confirmationCode}
-                    onChangeText={(text) => setConfirmationCode(text)}
+                    placeholder="Password"
+                    secureTextEntry={true}
+                    value={firstPassword}
+                    onChangeText={(text) => setFirstPassword(text)}
+                />
+                <TextInput
+                    autoCorrect={false}
+                    autoCapitalize='none'
+                    style={styles.textInput}
+                    placeholderTextColor={"gray"}
+                    placeholder="Confirm password"
+                    secureTextEntry={true}
+                    value={secondPassword}
+                    onChangeText={(text) => setSecondPassword(text)}
                 />
                 <View>
                     <TouchableOpacity style={styles.next} onPress={localHandleNext}>
@@ -117,4 +147,6 @@ const styles = StyleSheet.create({
   }
 });
 
-export default ConfirmSignupScreen;
+export default CreatePasswordScreen;
+
+

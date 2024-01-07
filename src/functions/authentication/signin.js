@@ -3,7 +3,7 @@ import { signIn, getCurrentUser } from 'aws-amplify/auth';
 const handleSignIn = async ({ email, password }) => {
     try {
         const { isSignedIn, nextStep } = await signIn({ 
-            username: email,
+            username: email.toLowerCase(),
             password: password, 
         });
 
@@ -22,6 +22,6 @@ const handleCheckSession = async () => {
         console.log(err);
         return false;
     }
-  };
+};
 
 export { handleSignIn, handleCheckSession };

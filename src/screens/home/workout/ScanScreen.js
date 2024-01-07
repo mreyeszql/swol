@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet, Button, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Button, TouchableOpacity, SafeAreaView } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import { Feather } from '@expo/vector-icons';
-import SafeAreaView from 'components/view';
+import Text from 'components/text';
 
 const ScanScreen = ({ navigation }) => {
   const [hasPermission, setHasPermission] = useState(null);
@@ -36,9 +36,20 @@ const ScanScreen = ({ navigation }) => {
         onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
         style={StyleSheet.absoluteFillObject}
       />
-      <TouchableOpacity style={styles.closeButton} onPress={() => navigation.goBack()}>
-        <Feather name="x" size={24} color="white" />
-      </TouchableOpacity>
+      <SafeAreaView style={styles.view}>
+        <View style={{flexDirection:'row'}}>
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+                <Feather name="x" size={24} color="white" />
+            </TouchableOpacity>
+        </View>
+        <View style={{marginBottom: 56}}>
+            <Text style={{marginRight: 56, fontSize: 18, textAlign: 'center', marginBottom: 12}}>Scan the QR codes on the machines at your gym to learn how to use them!</Text>
+            <TouchableOpacity style={{marginRight: 56}}>
+                <Text style={{fontSize: 12, textAlign: 'center', color: '#6388EC', textDecorationLine: 'underline'}}>No QR codes at your gym? Let us know.</Text>
+            </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+      
     </View>
   );
 }
@@ -49,10 +60,14 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'center',
     },
-    closeButton: {
+    view: {
+        justifyContent: 'space-between',
         position: 'absolute',
-        top: 56,
-        left: 28,
+        flexDirection: 'column',
+        marginHorizontal: 28,
+        width: '100%', 
+        height: '100%', 
+        backgroundColor: 'transparent'
     },
 });
 

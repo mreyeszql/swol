@@ -1,8 +1,22 @@
+import { useEffect } from "react";
+import { handleCheckSession } from "functions/authentication/signin";
 import { View, TouchableOpacity, StyleSheet, Image } from "react-native";
 import SafeAreaView from "components/view";
 import Text from "components/text";
 
 const InitialScreen = ({ navigation }) => {
+
+    useEffect(() => {
+        localHandleCheckSession();
+    }, []);
+
+    const localHandleCheckSession = async () => {
+        const result = await handleCheckSession();
+        if (result) {
+            navigation.navigate('Tabs')
+        }
+    };
+        
     return (
         <SafeAreaView>
             <View style={styles.container}>

@@ -5,11 +5,11 @@ import { createProfile } from 'graphql/mutations';
 const handleSignUp = async ({ username, email, password }) => {
   try {
     const { userId } = await signUp({
-      username: email,
+      username: email.toLowerCase(),
       password: password,
       options: {
         userAttributes: {
-          preferred_username: username
+          preferred_username: username.toLowerCase()
         },
         autoSignIn: true
       }
@@ -25,7 +25,7 @@ const handleConfirmSignUp = async ({ email, confirmationCode }) => {
   try {
     const client = generateClient();
     const { isSignUpComplete } = await confirmSignUp({
-      username: email,
+      username: email.toLowerCase(),
       confirmationCode: confirmationCode
     });
 
@@ -36,7 +36,7 @@ const handleConfirmSignUp = async ({ email, confirmationCode }) => {
       await client.graphql({
           query: createProfile,
           variables: { input: {
-            username: preferred_username,
+            username: preferred_username.toLowerCase(),
             ownerId: sub,
           }}
       });
