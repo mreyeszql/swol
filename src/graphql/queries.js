@@ -51,6 +51,8 @@ export const getExercise = /* GraphQL */ `
       increment
       timePerRep
       lottie
+      difficulty
+      hasWeight
       createdAt
       updatedAt
       __typename
@@ -70,6 +72,8 @@ export const listExercises = /* GraphQL */ `
         increment
         timePerRep
         lottie
+        difficulty
+        hasWeight
         createdAt
         updatedAt
         __typename
@@ -92,6 +96,7 @@ export const getWorkout = /* GraphQL */ `
       reps
       sets
       rests
+      percents
       createdAt
       updatedAt
       __typename
@@ -112,6 +117,7 @@ export const listWorkouts = /* GraphQL */ `
         reps
         sets
         rests
+        percents
         createdAt
         updatedAt
         __typename
@@ -131,6 +137,8 @@ export const getMyExercise = /* GraphQL */ `
         increment
         timePerRep
         lottie
+        difficulty
+        hasWeight
         createdAt
         updatedAt
         __typename
@@ -169,6 +177,54 @@ export const listMyExercises = /* GraphQL */ `
     }
   }
 `;
+export const getMyWorkout = /* GraphQL */ `
+  query GetMyWorkout($id: ID!) {
+    getMyWorkout(id: $id) {
+      id
+      workout {
+        id
+        name
+        imageUrl
+        reps
+        sets
+        rests
+        percents
+        createdAt
+        updatedAt
+        __typename
+      }
+      rating
+      completedTimes
+      createdAt
+      updatedAt
+      myWorkoutWorkoutId
+      owner
+      __typename
+    }
+  }
+`;
+export const listMyWorkouts = /* GraphQL */ `
+  query ListMyWorkouts(
+    $filter: ModelMyWorkoutFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listMyWorkouts(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        rating
+        completedTimes
+        createdAt
+        updatedAt
+        myWorkoutWorkoutId
+        owner
+        __typename
+      }
+      nextToken
+      __typename
+    }
+  }
+`;
 export const getProfile = /* GraphQL */ `
   query GetProfile($id: ID!) {
     getProfile(id: $id) {
@@ -188,8 +244,27 @@ export const getProfile = /* GraphQL */ `
         __typename
       }
       imageUrl
+      experience
+      gym {
+        id
+        name
+        latitude
+        longitude
+        phone
+        email
+        address
+        unit
+        city
+        zipcode
+        state
+        createdAt
+        updatedAt
+        __typename
+      }
       createdAt
       updatedAt
+      gymProfilesId
+      profileGymId
       __typename
     }
   }
@@ -206,6 +281,61 @@ export const listProfiles = /* GraphQL */ `
         username
         ownerId
         imageUrl
+        experience
+        createdAt
+        updatedAt
+        gymProfilesId
+        profileGymId
+        __typename
+      }
+      nextToken
+      __typename
+    }
+  }
+`;
+export const getGym = /* GraphQL */ `
+  query GetGym($id: ID!) {
+    getGym(id: $id) {
+      id
+      name
+      latitude
+      longitude
+      phone
+      email
+      address
+      unit
+      city
+      zipcode
+      state
+      profiles {
+        nextToken
+        __typename
+      }
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const listGyms = /* GraphQL */ `
+  query ListGyms(
+    $filter: ModelGymFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listGyms(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        name
+        latitude
+        longitude
+        phone
+        email
+        address
+        unit
+        city
+        zipcode
+        state
         createdAt
         updatedAt
         __typename
@@ -226,8 +356,11 @@ export const getFriendRequest = /* GraphQL */ `
         username
         ownerId
         imageUrl
+        experience
         createdAt
         updatedAt
+        gymProfilesId
+        profileGymId
         __typename
       }
       receiver {
@@ -235,8 +368,11 @@ export const getFriendRequest = /* GraphQL */ `
         username
         ownerId
         imageUrl
+        experience
         createdAt
         updatedAt
+        gymProfilesId
+        profileGymId
         __typename
       }
       accepted
@@ -277,8 +413,11 @@ export const getPost = /* GraphQL */ `
         username
         ownerId
         imageUrl
+        experience
         createdAt
         updatedAt
+        gymProfilesId
+        profileGymId
         __typename
       }
       postKind
@@ -333,6 +472,8 @@ export const getMuscleExercises = /* GraphQL */ `
         increment
         timePerRep
         lottie
+        difficulty
+        hasWeight
         createdAt
         updatedAt
         __typename
@@ -375,6 +516,8 @@ export const getWorkoutExercises = /* GraphQL */ `
         increment
         timePerRep
         lottie
+        difficulty
+        hasWeight
         createdAt
         updatedAt
         __typename
@@ -386,6 +529,7 @@ export const getWorkoutExercises = /* GraphQL */ `
         reps
         sets
         rests
+        percents
         createdAt
         updatedAt
         __typename
@@ -440,8 +584,11 @@ export const profilesByOwnerId = /* GraphQL */ `
         username
         ownerId
         imageUrl
+        experience
         createdAt
         updatedAt
+        gymProfilesId
+        profileGymId
         __typename
       }
       nextToken

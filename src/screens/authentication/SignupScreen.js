@@ -1,18 +1,36 @@
 import React, { useState } from 'react';
 import { View, TextInput, Text as RNText, Button, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, Platform } from 'react-native';
-import { handleSignUp } from 'functions/authentication/signup';
 import { AntDesign } from '@expo/vector-icons';
 import SafeAreaView from 'components/view';
 import Text from 'components/text';
+import { signIn, resendSignUpCode } from 'aws-amplify/auth';
 
 const SignupScreen = ({ navigation }) => {
   const [email, setEmail] = useState(null);
   const [error, setError] = useState(null);
 
-  const localHandleNext = () => {
+  const localHandleNext = async () => {
     const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
     if (email && reg.test(email) !== false) {
-      navigation.navigate('CreateUsername', { email });
+      try {
+        const result = await signIn({
+          username: email,
+          password: "."
+        });
+        if (result.nextStep.signInStep === "CONFIRM_SIGN_UP") {
+          await resendSignUpCode({ username: email });
+          navigation.navigate('ConfirmSignup', { email });
+        };
+      } catch (err) {
+        if (err.name === "UserNotFoundException") {
+          navigation.navigate('CreateUsername', { email });
+        } else {
+          setError("I see there is a user with that email already.");
+          setTimeout(() => {
+            setError(null);
+          }, 5000);
+        }
+      }
     } else {
       setError("I can't seem to reach that email :(");
       setTimeout(() => {

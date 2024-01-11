@@ -23,7 +23,7 @@ const ExercisesScreen = ({ route, navigation }) => {
     const [localProfile, setLocalProfile] = useState({});
 
     const { width, height } = Dimensions.get('screen');
-    const { exercises, name, reps, sets, rests, videos } = route.params;
+    const { exercises, name, percents, reps, sets, rests, videos } = route.params;
 
     useEffect(() => {
         localHandleFetchMyExercises();
@@ -133,6 +133,8 @@ const ExercisesScreen = ({ route, navigation }) => {
 
     const mockRenderItem = ({ item }) => {
         const videoUri = videos[item.exercise?.id];
+        const condition = item.percent !== 1 || !item.exercise?.hasWeight;
+        const processedWeight = item.exercise?.hasWeight ? Math.ceil(((myExercises[item.exercise?.id]?.weight ?? 0) * item.percent) / 5) * 5 : 0
         return (
             <View style={{ width, height: '100%', paddingBottom: 30, paddingHorizontal: 28 }}>
                 { item.exercise ? (
@@ -158,11 +160,11 @@ const ExercisesScreen = ({ route, navigation }) => {
                             <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 15}}> 
                                 <Text>{timers[item.expandedId] >= 60 && Math.floor(timers[item.expandedId] / 60)}{ timers[item.expandedId] >= 60 && " MIN "}{timers[item.expandedId] ? timers[item.expandedId] % 60: 0} SEC</Text>
                                 <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                                    <TouchableOpacity onPress={() => localHandleSetMyExercises(item.exercise, -5)}>
+                                    <TouchableOpacity style={{opacity: condition ? 0.25 : 1}} onPress={() => localHandleSetMyExercises(item.exercise, -5)} disabled={condition}>
                                         <Text style={{fontFamily: 'Inter-Bold', fontSize: 20}}>-</Text>
                                     </TouchableOpacity>
-                                    <Text style={{paddingHorizontal: 8}}>{myExercises[item.exercise.id]?.weight ?? 0} lbs.</Text>
-                                    <TouchableOpacity onPress={() => localHandleSetMyExercises(item.exercise, 5)}>
+                                    <Text style={{paddingHorizontal: 8, opacity: item.exercise?.hasWeight ? 1 : 0.25}}>{processedWeight} lbs.</Text>
+                                    <TouchableOpacity style={{opacity: condition ? 0.25 : 1}} onPress={() => localHandleSetMyExercises(item.exercise, 5)} disabled={condition}>
                                         <Text style={{fontFamily: 'Inter-Bold', fontSize: 20}}>+</Text>
                                     </TouchableOpacity>
                                 </View>
@@ -170,7 +172,7 @@ const ExercisesScreen = ({ route, navigation }) => {
                             <View style={{backgroundColor: 'white', width: '100%', height: 1}}/>
                             <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 15}}> 
                                 <Text>SET: {item.currentSet}/{item.sets}</Text>
-                                <Text>REPS: {item.reps}</Text>
+                                <Text>REPS: {item.reps === -1 ? "AMRAP" : item.reps }</Text>
                             </View>
                             <View style={{backgroundColor: 'white', width: '100%', height: 1}}/>
                             <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingTop: 57, paddingHorizontal: 16}}>
@@ -302,13 +304,18 @@ const ExercisesScreen = ({ route, navigation }) => {
         return combinedList;
     };
     
+    let i = 0;
     const processedExercises = combineLists(
         exercises
             .map((item, index) => {
-                return { exercise: item.exercise, sets: sets[index], reps: reps[index] };
+                return { exercise: item.exercise, sets: sets[index] };
             })
             .flatMap(({ sets, ...rest }) =>
-                Array.from({ length: sets }).map((_, index) => ({ ...rest, sets, currentSet: index + 1}))
+                Array.from({ length: sets }).map((_, index) => {
+                    const result = { ...rest, sets, currentSet: index + 1, reps: reps[i], percent: percents[i]}
+                    i += 1;
+                    return result;
+                })
             ), 
         rests
     ).map((item, index) => {

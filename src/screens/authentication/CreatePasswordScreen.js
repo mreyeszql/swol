@@ -5,7 +5,7 @@ import SafeAreaView from 'components/view';
 import { handleSignUp } from 'functions/authentication/signup';
 
 const CreatePasswordScreen = ({ navigation, route }) => {
-    const { email, username } = route.params;
+    const { email, username, userId } = route.params;
     const [firstPassword, setFirstPassword] = useState(null);
     const [secondPassword, setSecondPassword] = useState(null);
     const [error, setError] = useState(null);
@@ -34,7 +34,7 @@ const CreatePasswordScreen = ({ navigation, route }) => {
             email,
             password,
         });
-
+        console.log(result);
         if (result) {
             navigation.navigate('ConfirmSignup', { email, username });
         } else {

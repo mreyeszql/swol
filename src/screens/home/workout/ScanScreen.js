@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Button, TouchableOpacity, SafeAreaView } from 'react-native';
+import { View, StyleSheet, Button, TouchableOpacity, SafeAreaView as RNSafeAreaView } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import { Feather } from '@expo/vector-icons';
 import Text from 'components/text';
+import SafeAreaView from 'components/view';
+import { AntDesign } from '@expo/vector-icons';
+import { openSettings } from 'expo-linking';
 
 const ScanScreen = ({ navigation }) => {
   const [hasPermission, setHasPermission] = useState(null);
@@ -24,10 +27,34 @@ const ScanScreen = ({ navigation }) => {
   };
 
   if (hasPermission === null) {
-    return <Text>Requesting for camera permission</Text>;
+    return (
+      <SafeAreaView>
+        <View style={{height: '50%', width: '100%', alignItems: 'center', alignContent: 'center', justifyContent: 'center'}}>
+          <Text>Requesting for camera permission...</Text>
+        </View>
+      </SafeAreaView>
+    );
   }
   if (hasPermission === false) {
-    return <Text>No access to camera</Text>;
+    return (
+      <SafeAreaView>
+        <View style={{paddingHorizontal: 12}}>
+          <View style={{flexDirection: 'row-reverse'}}>
+              <TouchableOpacity onPress={() => navigation.navigate('Workouts')}>
+                  <AntDesign name="close" size={24} color="white" />
+              </TouchableOpacity>
+          </View>
+          <View style={{height: '100%', width: '100%', alignItems: 'center', alignContent: 'center', justifyContent: 'center'}}>
+            <Text style={{fontSize: 36, fontFamily: 'Inter-Light'}}>No camera access</Text>
+            <Text style={{textAlign: 'center', fontSize: 12, marginVertical: 4}}>We currently don't have access to your camera. To fully experience our app, please allow access to camera.
+            </Text>
+            <TouchableOpacity onPress={openSettings}>
+              <Text style={{color: "#6388EC", fontFamily: 'Inter-Bold'}}>Privacy Settings</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </SafeAreaView>
+    );
   }
 
   return (
@@ -36,7 +63,7 @@ const ScanScreen = ({ navigation }) => {
         onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
         style={StyleSheet.absoluteFillObject}
       />
-      <SafeAreaView style={styles.view}>
+      <RNSafeAreaView style={styles.view}>
         <View style={{flexDirection:'row'}}>
             <TouchableOpacity onPress={() => navigation.goBack()}>
                 <Feather name="x" size={24} color="white" />
@@ -48,7 +75,7 @@ const ScanScreen = ({ navigation }) => {
                 <Text style={{fontSize: 12, textAlign: 'center', color: '#6388EC', textDecorationLine: 'underline'}}>No QR codes at your gym? Let us know.</Text>
             </TouchableOpacity>
         </View>
-      </SafeAreaView>
+      </RNSafeAreaView>
       
     </View>
   );

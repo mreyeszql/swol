@@ -25,6 +25,8 @@ import ProfileScreen from 'screens/home/profile/ProfileScreen';
 import SettingsScreen from 'screens/home/profile/SettingsScreen';
 import CreateUsernameScreen from 'screens/authentication/CreateUsernameScreen';
 import CreatePasswordScreen from 'screens/authentication/CreatePasswordScreen';
+import ExperienceLevelScreen from 'screens/authentication/ExperienceLevelScreen';
+import SelectGymScreen from 'screens/authentication/SelectGymScreen';
 
 
 
@@ -112,6 +114,8 @@ const StackNavigation = () => {
           <Stack.Screen name="ExerciseDetail" component={ExerciseDetailScreen} options={{gestureEnabled: false}} />
           <Stack.Screen name="Settings" component={SettingsScreen} options={{gestureEnabled: false}} />
           <Stack.Screen name="PersonalRecords" component={PersonalRecordsScreen} options={{gestureEnabled: false}} />
+          <Stack.Screen name="ExperienceLevel" component={ExperienceLevelScreen} options={{gestureEnabled: false}} />
+          <Stack.Screen name="SelectGym" component={SelectGymScreen} options={{gestureEnabled: false}} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

@@ -15,6 +15,8 @@ type Exercise @model @auth(rules: [{ allow: private }]) {
   increment: Int!
   timePerRep: Int
   lottie: String!
+  difficulty: Int
+  hasWeight: Boolean!
 }
 
 type Workout @model @auth(rules: [{ allow: private }]) {
@@ -25,6 +27,7 @@ type Workout @model @auth(rules: [{ allow: private }]) {
   reps: [Int]
   sets: [Int]
   rests: [Int]
+  percents: [Float]
 }
 
 type MyExercise @model @auth(rules: [{ allow: owner }]) {
@@ -35,6 +38,14 @@ type MyExercise @model @auth(rules: [{ allow: owner }]) {
   maxweight: Int
 }
 
+
+type MyWorkout @model @auth(rules: [{ allow: owner }]) {
+  id: ID!
+  workout: Workout @hasOne
+  rating: Int
+  completedTimes: Int
+}
+
 type Profile @model @auth(rules: [{allow: private , ownerField: "ownerId"}]) {
   id: ID!
   username: String!
@@ -43,6 +54,23 @@ type Profile @model @auth(rules: [{allow: private , ownerField: "ownerId"}]) {
   outgoingRequests: [FriendRequest] @hasMany
   posts: [Post] @hasMany
   imageUrl: String
+  experience: Int!
+  gym: Gym @hasOne
+}
+
+type Gym @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  name: String!
+  latitude: Float!
+  longitude: Float!
+  phone: AWSPhone!
+  email: AWSEmail!
+  address: String!
+  unit: String
+  city: String!
+  zipcode: String!
+  state: String!
+  profiles: [Profile] @hasMany
 }
 
 type FriendRequest @model @auth(rules: [{ allow: private }]) {

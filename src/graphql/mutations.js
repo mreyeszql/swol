@@ -74,6 +74,8 @@ export const createExercise = /* GraphQL */ `
       increment
       timePerRep
       lottie
+      difficulty
+      hasWeight
       createdAt
       updatedAt
       __typename
@@ -99,6 +101,8 @@ export const updateExercise = /* GraphQL */ `
       increment
       timePerRep
       lottie
+      difficulty
+      hasWeight
       createdAt
       updatedAt
       __typename
@@ -124,6 +128,8 @@ export const deleteExercise = /* GraphQL */ `
       increment
       timePerRep
       lottie
+      difficulty
+      hasWeight
       createdAt
       updatedAt
       __typename
@@ -146,6 +152,7 @@ export const createWorkout = /* GraphQL */ `
       reps
       sets
       rests
+      percents
       createdAt
       updatedAt
       __typename
@@ -168,6 +175,7 @@ export const updateWorkout = /* GraphQL */ `
       reps
       sets
       rests
+      percents
       createdAt
       updatedAt
       __typename
@@ -190,6 +198,7 @@ export const deleteWorkout = /* GraphQL */ `
       reps
       sets
       rests
+      percents
       createdAt
       updatedAt
       __typename
@@ -209,6 +218,8 @@ export const createMyExercise = /* GraphQL */ `
         increment
         timePerRep
         lottie
+        difficulty
+        hasWeight
         createdAt
         updatedAt
         __typename
@@ -237,6 +248,8 @@ export const updateMyExercise = /* GraphQL */ `
         increment
         timePerRep
         lottie
+        difficulty
+        hasWeight
         createdAt
         updatedAt
         __typename
@@ -265,6 +278,8 @@ export const deleteMyExercise = /* GraphQL */ `
         increment
         timePerRep
         lottie
+        difficulty
+        hasWeight
         createdAt
         updatedAt
         __typename
@@ -275,6 +290,93 @@ export const deleteMyExercise = /* GraphQL */ `
       createdAt
       updatedAt
       myExerciseExerciseId
+      owner
+      __typename
+    }
+  }
+`;
+export const createMyWorkout = /* GraphQL */ `
+  mutation CreateMyWorkout(
+    $input: CreateMyWorkoutInput!
+    $condition: ModelMyWorkoutConditionInput
+  ) {
+    createMyWorkout(input: $input, condition: $condition) {
+      id
+      workout {
+        id
+        name
+        imageUrl
+        reps
+        sets
+        rests
+        percents
+        createdAt
+        updatedAt
+        __typename
+      }
+      rating
+      completedTimes
+      createdAt
+      updatedAt
+      myWorkoutWorkoutId
+      owner
+      __typename
+    }
+  }
+`;
+export const updateMyWorkout = /* GraphQL */ `
+  mutation UpdateMyWorkout(
+    $input: UpdateMyWorkoutInput!
+    $condition: ModelMyWorkoutConditionInput
+  ) {
+    updateMyWorkout(input: $input, condition: $condition) {
+      id
+      workout {
+        id
+        name
+        imageUrl
+        reps
+        sets
+        rests
+        percents
+        createdAt
+        updatedAt
+        __typename
+      }
+      rating
+      completedTimes
+      createdAt
+      updatedAt
+      myWorkoutWorkoutId
+      owner
+      __typename
+    }
+  }
+`;
+export const deleteMyWorkout = /* GraphQL */ `
+  mutation DeleteMyWorkout(
+    $input: DeleteMyWorkoutInput!
+    $condition: ModelMyWorkoutConditionInput
+  ) {
+    deleteMyWorkout(input: $input, condition: $condition) {
+      id
+      workout {
+        id
+        name
+        imageUrl
+        reps
+        sets
+        rests
+        percents
+        createdAt
+        updatedAt
+        __typename
+      }
+      rating
+      completedTimes
+      createdAt
+      updatedAt
+      myWorkoutWorkoutId
       owner
       __typename
     }
@@ -302,8 +404,27 @@ export const createProfile = /* GraphQL */ `
         __typename
       }
       imageUrl
+      experience
+      gym {
+        id
+        name
+        latitude
+        longitude
+        phone
+        email
+        address
+        unit
+        city
+        zipcode
+        state
+        createdAt
+        updatedAt
+        __typename
+      }
       createdAt
       updatedAt
+      gymProfilesId
+      profileGymId
       __typename
     }
   }
@@ -330,8 +451,27 @@ export const updateProfile = /* GraphQL */ `
         __typename
       }
       imageUrl
+      experience
+      gym {
+        id
+        name
+        latitude
+        longitude
+        phone
+        email
+        address
+        unit
+        city
+        zipcode
+        state
+        createdAt
+        updatedAt
+        __typename
+      }
       createdAt
       updatedAt
+      gymProfilesId
+      profileGymId
       __typename
     }
   }
@@ -358,6 +498,106 @@ export const deleteProfile = /* GraphQL */ `
         __typename
       }
       imageUrl
+      experience
+      gym {
+        id
+        name
+        latitude
+        longitude
+        phone
+        email
+        address
+        unit
+        city
+        zipcode
+        state
+        createdAt
+        updatedAt
+        __typename
+      }
+      createdAt
+      updatedAt
+      gymProfilesId
+      profileGymId
+      __typename
+    }
+  }
+`;
+export const createGym = /* GraphQL */ `
+  mutation CreateGym(
+    $input: CreateGymInput!
+    $condition: ModelGymConditionInput
+  ) {
+    createGym(input: $input, condition: $condition) {
+      id
+      name
+      latitude
+      longitude
+      phone
+      email
+      address
+      unit
+      city
+      zipcode
+      state
+      profiles {
+        nextToken
+        __typename
+      }
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const updateGym = /* GraphQL */ `
+  mutation UpdateGym(
+    $input: UpdateGymInput!
+    $condition: ModelGymConditionInput
+  ) {
+    updateGym(input: $input, condition: $condition) {
+      id
+      name
+      latitude
+      longitude
+      phone
+      email
+      address
+      unit
+      city
+      zipcode
+      state
+      profiles {
+        nextToken
+        __typename
+      }
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const deleteGym = /* GraphQL */ `
+  mutation DeleteGym(
+    $input: DeleteGymInput!
+    $condition: ModelGymConditionInput
+  ) {
+    deleteGym(input: $input, condition: $condition) {
+      id
+      name
+      latitude
+      longitude
+      phone
+      email
+      address
+      unit
+      city
+      zipcode
+      state
+      profiles {
+        nextToken
+        __typename
+      }
       createdAt
       updatedAt
       __typename
@@ -378,8 +618,11 @@ export const createFriendRequest = /* GraphQL */ `
         username
         ownerId
         imageUrl
+        experience
         createdAt
         updatedAt
+        gymProfilesId
+        profileGymId
         __typename
       }
       receiver {
@@ -387,8 +630,11 @@ export const createFriendRequest = /* GraphQL */ `
         username
         ownerId
         imageUrl
+        experience
         createdAt
         updatedAt
+        gymProfilesId
+        profileGymId
         __typename
       }
       accepted
@@ -412,8 +658,11 @@ export const updateFriendRequest = /* GraphQL */ `
         username
         ownerId
         imageUrl
+        experience
         createdAt
         updatedAt
+        gymProfilesId
+        profileGymId
         __typename
       }
       receiver {
@@ -421,8 +670,11 @@ export const updateFriendRequest = /* GraphQL */ `
         username
         ownerId
         imageUrl
+        experience
         createdAt
         updatedAt
+        gymProfilesId
+        profileGymId
         __typename
       }
       accepted
@@ -446,8 +698,11 @@ export const deleteFriendRequest = /* GraphQL */ `
         username
         ownerId
         imageUrl
+        experience
         createdAt
         updatedAt
+        gymProfilesId
+        profileGymId
         __typename
       }
       receiver {
@@ -455,8 +710,11 @@ export const deleteFriendRequest = /* GraphQL */ `
         username
         ownerId
         imageUrl
+        experience
         createdAt
         updatedAt
+        gymProfilesId
+        profileGymId
         __typename
       }
       accepted
@@ -479,8 +737,11 @@ export const createPost = /* GraphQL */ `
         username
         ownerId
         imageUrl
+        experience
         createdAt
         updatedAt
+        gymProfilesId
+        profileGymId
         __typename
       }
       postKind
@@ -506,8 +767,11 @@ export const updatePost = /* GraphQL */ `
         username
         ownerId
         imageUrl
+        experience
         createdAt
         updatedAt
+        gymProfilesId
+        profileGymId
         __typename
       }
       postKind
@@ -533,8 +797,11 @@ export const deletePost = /* GraphQL */ `
         username
         ownerId
         imageUrl
+        experience
         createdAt
         updatedAt
+        gymProfilesId
+        profileGymId
         __typename
       }
       postKind
@@ -569,6 +836,8 @@ export const createMuscleExercises = /* GraphQL */ `
         increment
         timePerRep
         lottie
+        difficulty
+        hasWeight
         createdAt
         updatedAt
         __typename
@@ -601,6 +870,8 @@ export const updateMuscleExercises = /* GraphQL */ `
         increment
         timePerRep
         lottie
+        difficulty
+        hasWeight
         createdAt
         updatedAt
         __typename
@@ -633,6 +904,8 @@ export const deleteMuscleExercises = /* GraphQL */ `
         increment
         timePerRep
         lottie
+        difficulty
+        hasWeight
         createdAt
         updatedAt
         __typename
@@ -658,6 +931,8 @@ export const createWorkoutExercises = /* GraphQL */ `
         increment
         timePerRep
         lottie
+        difficulty
+        hasWeight
         createdAt
         updatedAt
         __typename
@@ -669,6 +944,7 @@ export const createWorkoutExercises = /* GraphQL */ `
         reps
         sets
         rests
+        percents
         createdAt
         updatedAt
         __typename
@@ -694,6 +970,8 @@ export const updateWorkoutExercises = /* GraphQL */ `
         increment
         timePerRep
         lottie
+        difficulty
+        hasWeight
         createdAt
         updatedAt
         __typename
@@ -705,6 +983,7 @@ export const updateWorkoutExercises = /* GraphQL */ `
         reps
         sets
         rests
+        percents
         createdAt
         updatedAt
         __typename
@@ -730,6 +1009,8 @@ export const deleteWorkoutExercises = /* GraphQL */ `
         increment
         timePerRep
         lottie
+        difficulty
+        hasWeight
         createdAt
         updatedAt
         __typename
@@ -741,6 +1022,7 @@ export const deleteWorkoutExercises = /* GraphQL */ `
         reps
         sets
         rests
+        percents
         createdAt
         updatedAt
         __typename

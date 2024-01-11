@@ -42,7 +42,7 @@ const ExerciseDetailScreen = ({ navigation, route }) => {
         setExercise(exerciseResult.data.getExercise);
 
         const getUrlResult = await getUrl({
-            key: exerciseResult.data.getExercise.lottie,
+            key: "exerciseVideos/" + exerciseResult.data.getExercise.lottie,
             options: {
               accessLevel: 'guest'
             },

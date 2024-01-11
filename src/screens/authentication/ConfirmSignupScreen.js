@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { View, TextInput, Text, Button, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, Platform } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import SafeAreaView from 'components/view';
+import { fetchUserAttributes } from 'aws-amplify/auth';
 
 const ConfirmSignupScreen = ({ navigation, route }) => {
     const { email, username } = route.params;
@@ -16,7 +17,8 @@ const ConfirmSignupScreen = ({ navigation, route }) => {
         })
 
         if (result) {
-            navigation.navigate('Tabs');
+            const { preferred_username, sub } = await fetchUserAttributes();
+            navigation.navigate('ExperienceLevel', { preferred_username, sub });
         } else {
             setError("That is definitely not what I sent you :|");
             setTimeout(() => {

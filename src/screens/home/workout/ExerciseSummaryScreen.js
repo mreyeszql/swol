@@ -31,7 +31,7 @@ const ExercisesSummaryScreen = ({ navigation, route }) => {
     };
 
     const localHandleCalculateSummary = () => {
-        const totalReps = reps.map((x, i) => reps[i] * sets[i]).reduce((acc, sum) => acc + sum, 0);
+        const totalReps = reps.map((x, i) => reps[i]).reduce((acc, sum) => acc + sum, 0);
         setTotalReps(totalReps);
 
         let totalSets = 0;
