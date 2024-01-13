@@ -96,7 +96,9 @@ export const getWorkout = /* GraphQL */ `
       reps
       sets
       rests
+      nameLower
       percents
+      difficulty
       createdAt
       updatedAt
       __typename
@@ -117,7 +119,9 @@ export const listWorkouts = /* GraphQL */ `
         reps
         sets
         rests
+        nameLower
         percents
+        difficulty
         createdAt
         updatedAt
         __typename
@@ -188,7 +192,9 @@ export const getMyWorkout = /* GraphQL */ `
         reps
         sets
         rests
+        nameLower
         percents
+        difficulty
         createdAt
         updatedAt
         __typename
@@ -529,7 +535,9 @@ export const getWorkoutExercises = /* GraphQL */ `
         reps
         sets
         rests
+        nameLower
         percents
+        difficulty
         createdAt
         updatedAt
         __typename

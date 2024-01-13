@@ -15,7 +15,7 @@ type Exercise @model @auth(rules: [{ allow: private }]) {
   increment: Int!
   timePerRep: Int
   lottie: String!
-  difficulty: Int
+  difficulty: Int!
   hasWeight: Boolean!
 }
 
@@ -27,7 +27,9 @@ type Workout @model @auth(rules: [{ allow: private }]) {
   reps: [Int]
   sets: [Int]
   rests: [Int]
+  nameLower: String!
   percents: [Float]
+  difficulty: Int
 }
 
 type MyExercise @model @auth(rules: [{ allow: owner }]) {

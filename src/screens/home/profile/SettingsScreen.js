@@ -5,14 +5,11 @@ import { handleSignOut } from "functions/authentication/signout";
 import { Feather, AntDesign } from '@expo/vector-icons'; 
 import Text from "components/text";
 import { SettingsTextInput } from "components/settings";
-import { fetchUserAttributes, updateUserAttributes, updatePassword, deleteUser } from 'aws-amplify/auth';
+import { fetchUserAttributes, updateUserAttributes, updatePassword, deleteUser, confirmUserAttribute } from 'aws-amplify/auth';
 import { generateClient } from "aws-amplify/api";
 import { deleteProfile, updateProfile } from "graphql/mutations";
 import { launchImageLibraryAsync } from 'expo-image-picker';
 import { uploadData, getUrl } from "aws-amplify/storage";
-
-
-
 
 const SettingsScreen = ({ navigation }) => {
 
@@ -22,6 +19,8 @@ const SettingsScreen = ({ navigation }) => {
     const [newPassword, setNewPassword] = useState(null);
     const [imageUri, setImageUri] = useState(null);
     const [localProfileSubId, setLocalProfileSubId] = useState(null);
+    const [showConfirmEmail, setShowConfirmEmail] = useState(false);
+    const [confirmationCode, setConfirmationCode] = useState(null);
 
     useEffect(() => {
         localHandleGetCurrentUser();
@@ -69,13 +68,15 @@ const SettingsScreen = ({ navigation }) => {
         try {
             const old_attributes = await fetchUserAttributes();
             if (old_attributes.preferred_username !== username.toLowerCase() || old_attributes.email !== email.toLowerCase()) {
-                await updateUserAttributes({
+                const shouldConfirm = await updateUserAttributes({
                     userAttributes: {
                         preferred_username: username.toLowerCase(),
                         email: email.toLowerCase()
                     }
                 });
 
+                setShowConfirmEmail(shouldConfirm.email.nextStep.updateAttributeStep === "CONFIRM_ATTRIBUTE_WITH_CODE");
+     
                 client = generateClient();
                 const query = `
                 query MyQuery {
@@ -100,6 +101,16 @@ const SettingsScreen = ({ navigation }) => {
                     }
                 });
             }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const localHandleConfirmEmail = async (confirmationCode) => {
+        console.log("localHandleConfirmEmail");
+        try {
+            await confirmUserAttribute({ userAttributeKey: "email", confirmationCode });
+            setShowConfirmEmail(false);
         } catch (error) {
             console.log(error);
         }
@@ -195,7 +206,7 @@ const SettingsScreen = ({ navigation }) => {
                 onPress={() => Keyboard.dismiss()}
             >
                 <View style={{height: "100%", width: "100%"}}>
-                    <View style={{paddingHorizontal: 12, backgroundColor: 'black', paddingTop: 50, marginTop: -50, zIndex: 1, marginBottom: 16}}>
+                    <View style={{paddingHorizontal: 12, backgroundColor: 'black', paddingTop: 50, marginTop: -50, zIndex: 1, marginBottom: 12}}>
                         <View style={{flexDirection: 'row', alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center'}}>
                             <Text style={{fontSize: 32, fontFamily: 'Inter-Bold', textTransform: 'uppercase'}}>SETTINGS</Text>
                             <TouchableOpacity
@@ -204,7 +215,7 @@ const SettingsScreen = ({ navigation }) => {
                                 <Feather name="x" size={24} color="white" />
                             </TouchableOpacity>
                         </View>
-                        <View style={{width: "100%", height: 1, backgroundColor: 'white', marginTop: 16}} />
+                        <View style={{width: "100%", height: 1, backgroundColor: 'white', marginTop: 12}} />
                     </View>
                     <SafeAreaView style={{paddingHorizontal: 12, flexDirection: 'column', height: '100%', justifyContent: 'space-between'}}>
                         <KeyboardAvoidingView 
@@ -234,33 +245,50 @@ const SettingsScreen = ({ navigation }) => {
                                     </TouchableOpacity>
                                 </View>
                             </View>
-                            <Text style={{fontFamily: "Inter-Bold", fontSize: 20, marginBottom: 16}}>ACCOUNT</Text>
-                            <View style={{width: "100%", height: 1, backgroundColor: 'white', marginBottom: 16}} />
+                            <Text style={{fontFamily: "Inter-Bold", fontSize: 20, marginBottom: 12}}>ACCOUNT</Text>
+                            <View style={{width: "100%", height: 1, backgroundColor: 'white', marginBottom: 12}} />
                             <View>
-                                <SettingsTextInput style={{marginBottom: 16}} setText={setUsername} text={username} label="Username" placeholder="@username"/>
-                                <SettingsTextInput style={{marginBottom: 16}} setText={setEmail} text={email} label="Email" placeholder="example@email.com" />
+                                <SettingsTextInput style={{marginBottom: 12}} setText={setUsername} text={username} label="Username" placeholder="@username"/>
+                                <SettingsTextInput style={{marginBottom: 12}} setText={setEmail} text={email} label="Email" placeholder="example@email.com" />
                             </View>
-                            <View style={{marginBottom: 16, flexDirection: 'row', justifyContent: 'flex-end'}}>
-                                <TouchableOpacity
-                                    onPress={() => localHandleChangeUsernameEmail()}
-                                    style={{borderWidth: 1, borderColor: 'grey', borderRadius: 10, paddingHorizontal: 10, paddingVertical: 5}}
-                                >
-                                    <Text style={{fontSize: 16, color: 'grey'}}>Change</Text>
-                                </TouchableOpacity>
-                            </View>
-                    
-                            <Text style={{fontFamily: "Inter-Bold", fontSize: 20, marginBottom: 16}}>CHANGE PASSWORD</Text>
-                            <View style={{width: "100%", height: 1, backgroundColor: 'white', marginBottom: 16  }} />
+                            { !showConfirmEmail && 
+                                <View style={{marginBottom: 12, flexDirection: 'row', justifyContent: 'flex-end'}}>
+                                    <TouchableOpacity
+                                        onPress={() => localHandleChangeUsernameEmail()}
+                                        style={{borderWidth: 1, borderColor: 'grey', borderRadius: 10, paddingHorizontal: 10, paddingVertical: 5}}
+                                    >
+                                        <Text style={{fontSize: 14, color: 'grey'}}>Change</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            }
+                            { showConfirmEmail &&
+                            <>
+                                <View>
+                                    <SettingsTextInput style={{marginBottom: 12}} setText={setConfirmationCode} text={confirmationCode} label="Confirmation Code" placeholder="code"/>
+                                </View>
+                                <View style={{marginBottom: 12, flexDirection: 'row', justifyContent: 'flex-end'}}>
+                                    <TouchableOpacity
+                                        onPress={() => localHandleConfirmEmail(confirmationCode)}
+                                        style={{borderWidth: 1, borderColor: 'grey', borderRadius: 10, paddingHorizontal: 10, paddingVertical: 5}}
+                                    >
+                                        <Text style={{fontSize: 12, color: 'grey'}}>Confirm</Text>
+                                    </TouchableOpacity>
+                                </View>
+                             </>
+                            }
+
+                            <Text style={{fontFamily: "Inter-Bold", fontSize: 20, marginBottom: 12}}>CHANGE PASSWORD</Text>
+                            <View style={{width: "100%", height: 1, backgroundColor: 'white', marginBottom: 12  }} />
                             <View>
-                                <SettingsTextInput style={{marginBottom: 16}} setText={setOldPassword} text={oldPassword} label="Old Password" placeholder="password" secureTextEntry={true} />
-                                <SettingsTextInput style={{marginBottom: 16}} setText={setNewPassword} text={newPassword} label="New Password" placeholder="password" secureTextEntry={true} />
+                                <SettingsTextInput style={{marginBottom: 12}} setText={setOldPassword} text={oldPassword} label="Old Password" placeholder="password" secureTextEntry={true} />
+                                <SettingsTextInput style={{marginBottom: 12}} setText={setNewPassword} text={newPassword} label="New Password" placeholder="password" secureTextEntry={true} />
                             </View>
-                            <View style={{marginBottom: 16, flexDirection: 'row', justifyContent: 'flex-end'}}>
+                            <View style={{marginBottom: 12, flexDirection: 'row', justifyContent: 'flex-end'}}>
                                 <TouchableOpacity
                                     onPress={() => localHandleChangePassword()}
                                     style={{borderWidth: 1, borderColor: 'gray', borderRadius: 10, paddingHorizontal: 10, paddingVertical: 5}}
                                 >
-                                    <Text style={{fontSize: 16, color: 'gray'}}>Change</Text>
+                                    <Text style={{fontSize: 14, color: 'gray'}}>Change</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -273,12 +301,12 @@ const SettingsScreen = ({ navigation }) => {
                                     <Text style={{fontSize: 20}}>Sign Out</Text>
                                 </TouchableOpacity>
                             </View>
-                            <View style={{width: "100%", height: 1, backgroundColor: 'grey', marginVertical: 16}} />
+                            <View style={{width: "100%", height: 1, backgroundColor: 'grey', marginVertical: 12}} />
                             <View style={{flexDirection: 'row', justifyContent: 'center'}}>
                                 <TouchableOpacity
                                     onPress={() => localHandleDeleteAccount()}
                                 >
-                                    <Text style={{fontSize: 16, color: 'grey'}}>Delete Account</Text>
+                                    <Text style={{fontSize: 12, color: 'grey'}}>Delete Account</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>

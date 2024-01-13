@@ -131,7 +131,9 @@ export const onCreateWorkout = /* GraphQL */ `
       reps
       sets
       rests
+      nameLower
       percents
+      difficulty
       createdAt
       updatedAt
       __typename
@@ -151,7 +153,9 @@ export const onUpdateWorkout = /* GraphQL */ `
       reps
       sets
       rests
+      nameLower
       percents
+      difficulty
       createdAt
       updatedAt
       __typename
@@ -171,7 +175,9 @@ export const onDeleteWorkout = /* GraphQL */ `
       reps
       sets
       rests
+      nameLower
       percents
+      difficulty
       createdAt
       updatedAt
       __typename
@@ -282,7 +288,9 @@ export const onCreateMyWorkout = /* GraphQL */ `
         reps
         sets
         rests
+        nameLower
         percents
+        difficulty
         createdAt
         updatedAt
         __typename
@@ -311,7 +319,9 @@ export const onUpdateMyWorkout = /* GraphQL */ `
         reps
         sets
         rests
+        nameLower
         percents
+        difficulty
         createdAt
         updatedAt
         __typename
@@ -340,7 +350,9 @@ export const onDeleteMyWorkout = /* GraphQL */ `
         reps
         sets
         rests
+        nameLower
         percents
+        difficulty
         createdAt
         updatedAt
         __typename
@@ -883,7 +895,9 @@ export const onCreateWorkoutExercises = /* GraphQL */ `
         reps
         sets
         rests
+        nameLower
         percents
+        difficulty
         createdAt
         updatedAt
         __typename
@@ -921,7 +935,9 @@ export const onUpdateWorkoutExercises = /* GraphQL */ `
         reps
         sets
         rests
+        nameLower
         percents
+        difficulty
         createdAt
         updatedAt
         __typename
@@ -959,7 +975,9 @@ export const onDeleteWorkoutExercises = /* GraphQL */ `
         reps
         sets
         rests
+        nameLower
         percents
+        difficulty
         createdAt
         updatedAt
         __typename

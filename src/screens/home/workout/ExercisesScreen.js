@@ -21,9 +21,10 @@ const ExercisesScreen = ({ route, navigation }) => {
     const [myExercises, setMyExercises] = useState({});
     const [myExistingExercises, setMyExistingExercises] = useState({});
     const [localProfile, setLocalProfile] = useState({});
+    const [personalRecords, setPersonalRecords] = useState([]);
 
     const { width, height } = Dimensions.get('screen');
-    const { exercises, name, percents, reps, sets, rests, videos } = route.params;
+    const { exercises, id, name, percents, reps, sets, rests, videos, myWorkout } = route.params;
 
     useEffect(() => {
         localHandleFetchMyExercises();
@@ -59,6 +60,11 @@ const ExercisesScreen = ({ route, navigation }) => {
         console.log("persisting", existingExercise ? "updating" : "new", "weight", "from", existingExercise ? existingExercise.weight : 0, "to", updatedExercise.weight)
         if (existingExercise) {
             await handleUpdatedExercise(client, existingExercise, updatedExercise, exercise, localProfile);
+            if (updatedExercise.weight - (updatedExercise.weight % exercise.increment) > existingExercise.maxweight) {
+                setPersonalRecords((items) => {
+                    return [...items, {personalRecordWeight: updatedExercise.weight, exerciseName: exercise.name}]
+                })                
+            }
         } else {
             await handleNewExercise(client, updatedExercise, exercise);
             localHandleFetchMyExercises();
@@ -259,7 +265,7 @@ const ExercisesScreen = ({ route, navigation }) => {
                             onPressOut={localHandlePressOut}
                         >
                             <View style={{ height: '95%'}}>
-                                <PressClock theta={theta} callback={() => navigation.navigate('ExercisesSummary', { timers, processedExercises, sets, reps })}/>
+                                <PressClock theta={theta} callback={() => navigation.navigate('ExercisesSummary', { timers, id, processedExercises, name, sets, reps, myWorkout, personalRecords })}/>
                                 <View
                                     style={{
                                         alignItems: 'center',
@@ -272,7 +278,7 @@ const ExercisesScreen = ({ route, navigation }) => {
                                     }}
                                 >
                                     <Text style={{fontFamily: 'Inter-ExtraLight', fontSize: 12}}>
-                                        hold to complete your workout
+                                        Hold to complete your workout.
                                     </Text>
                                 </View>
                             </View>
@@ -297,8 +303,6 @@ const ExercisesScreen = ({ route, navigation }) => {
             combinedList.push({ rest: restsList[i] });
             }
         }
-
-        combinedList.push({ rest: 30 });
         combinedList.push({ complete: false });
 
         return combinedList;

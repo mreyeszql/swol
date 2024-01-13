@@ -1,69 +1,116 @@
 import { useEffect, useState } from 'react';
-import { View, FlatList, TouchableOpacity, Image } from 'react-native';
+import { View, FlatList, TouchableOpacity, Image, TextInput } from 'react-native';
 import { generateClient } from 'aws-amplify/api';
 import Text from 'components/text';
-import { Feather } from '@expo/vector-icons'; 
+import { Feather, AntDesign } from '@expo/vector-icons'; 
 import SafeAreaView from 'components/view';
-import { getUrl } from 'aws-amplify/storage';
+import { getUrl, list } from 'aws-amplify/storage';
+import { getCurrentUser } from 'aws-amplify/auth';
+
 
 
 const WorkoutsScreen = ({ navigation }) => {
     const client = generateClient();
-    const [workouts, setWorkouts] = useState([]);
+    const [recommendedWorkouts, setRecommendedWorkouts] = useState([]);
+    const [searchText, setSearchText] = useState('');
+    const [searchedWorkouts, setSearchedWorkouts] = useState([]);
 
-    useEffect(() => {
-        localHandleFetchWorkouts();
-    }, []);
+    //MISSING IN EXERCISE:  
+    // difficulty
+    // hasWeight
+    // increment
 
-    const localHandleFetchWorkouts = async () => {
-        //MISSING IN EXERCISE:  
-        // difficulty
-        // hasWeight
-        // increment
-
-        const customQuery = `
-        query MyCustomQuery {
-          listWorkouts {
-            items {
-              id
-              name
-              exercises {
-                items {
-                  exercise {
-                    id
-                    name
-                    lottie
-                    hasWeight
-                    muscles {
-                      items {
-                        muscle {
-                          name
-                        }
+    const customQuery = (filterExp) => {
+      const query = 
+      `
+      query MyCustomQuery {
+        listWorkouts${filterExp} {
+          items {
+            id
+            name
+            nameLower
+            imageUrl
+            exercises {
+              items {
+                exercise {
+                  id
+                  name
+                  lottie
+                  hasWeight
+                  muscles {
+                    items {
+                      muscle {
+                        name
                       }
                     }
-                    increment
                   }
+                  increment
                 }
               }
-              reps
-              sets
-              percents
-              rests
             }
+            reps
+            sets
+            percents
+            rests
           }
         }
-        `;
-        
-        const result = await client.graphql({ query: customQuery });
-        
-        let workouts = result.data.listWorkouts.items;
+      }
+      `;
+      return query;
+    };
+
+    useEffect(() => {
+        localHandleFetchRecommendedWorkouts();
+    }, []);
+
+    useEffect(() => {
+      if (searchText !== '') {
+        localHandleFetchSearchWorkouts();
+      }
+    }, [searchText]);
+
+    const localHandleFetchProfile = async () => {
+      const { userId } = await getCurrentUser();
+      const query = `
+      query MyQuery {
+          profilesByOwnerId(ownerId: "${userId}") {
+          items {
+              id
+              experience
+          }
+          }
+      }
+      `;
+      const profile = await client.graphql({
+          query: query,
+      });
+  
+      return profile.data.profilesByOwnerId.items[0];
+    };
+
+    const localHandleFetchSearchWorkouts = async () => {
+      console.log("localHandleFetchSearchExercises");
+      result = await client.graphql({
+        query: customQuery(`(filter: {nameLower: {contains: "${searchText.toLowerCase()}"}})`)
+      })
+      localHandleProcessWorkouts(result, setSearchedWorkouts);
+    };
+
+    const localHandleFetchRecommendedWorkouts = async () => {
+      const profile = await localHandleFetchProfile();
+      const result = await client.graphql({ query: customQuery(`(filter: {difficulty: {le: ${profile?.experience}}})`) });
+      localHandleProcessWorkouts(result, setRecommendedWorkouts);
+    }
+
+    const localHandleProcessWorkouts = async (result, setFunction) => {
+      let workouts = result.data.listWorkouts.items;
         for (let i = 0; i < workouts.length; i++) {
-          if (workouts[i]?.lottie) {
-              let uri = await localHandleGetImage(workouts[i]?.lottie, workouts[i].id);
+          if (workouts[i]?.imageUrl) {
+              let uri = await localHandleGetImage(workouts[i]?.imageUrl, workouts[i].id);
               workouts[i] = {...workouts[i], uri }
           }
         }
-        setWorkouts(workouts);
+        setFunction(workouts);
     }
 
     const localHandleGetImage = async (key, id) => {
@@ -94,7 +141,8 @@ const WorkoutsScreen = ({ navigation }) => {
               style={{flexDirection: 'row', alignItems: 'center'}}
           >
               <Image 
-                defaultSource={require('../../../../assets/img/leg_crusher.png')}
+                source={{uri: item.uri}}
+                defaultSource={require('../../../../assets/logo.png')} //TODO Santi: better placeholder
                 style={{width: 80, height: 80, backgroundColor: 'gray', borderRadius: 10, borderWidth: 0.5}}
               />
               <View style={{flexDirection: 'column', paddingLeft: 18}}>
@@ -109,19 +157,43 @@ const WorkoutsScreen = ({ navigation }) => {
       <SafeAreaView>
         <View style={{paddingHorizontal: 12}}>
           <View style={{flexDirection: 'row', alignItems: 'center', paddingBottom: 26, flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center'}}>
-            <Text style={{fontSize: 32, fontFamily: 'Inter-Bold', textTransform: 'uppercase'}}>WORKOUTS</Text>
+            <Text style={{fontSize: 32, fontFamily: 'Inter-Bold', textTransform: 'uppercase', fontWeight: 'bold'}}>Workouts</Text>
             <TouchableOpacity
               onPress={() => navigation.navigate('Scan')}
             >
               <Feather name="maximize" size={24} color="white" />
             </TouchableOpacity>
           </View>
-          <FlatList 
-            style={{height: '100%'}}
-            data={workouts}
-            keyExtractor={(item) => item.id}
-            renderItem={mockRenderItem}
-          />
+          <View style={{flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderRadius: 10, borderColor: 'white', paddingHorizontal: 12, paddingVertical: 4}}>
+            <AntDesign name="search1" size={16} color="grey" />
+            <TextInput
+              autoCorrect={false}
+              autoCapitalize='none'
+              style={{color: 'white', width: '100%', textTransform: 'lowercase', padding: 6, fontFamily: 'Inter-Light', borderBottomWidth: 1, fontSize: 16}}
+              placeholderTextColor="grey"
+              placeholder="Search Workouts..."
+              value={searchText}
+              onChangeText={(text) => setSearchText(text)}
+            />
+          </View>
+          {searchText === '' ? (
+            <>
+              <Text style={{fontFamily: 'Inter-Bold', fontSize: 20, marginVertical: 12}}>Recommended</Text>
+              <FlatList 
+                style={{height: '100%'}}
+                data={recommendedWorkouts}
+                keyExtractor={(item) => item.id}
+                renderItem={mockRenderItem}
+              />
+              </>
+          ) : (
+            <FlatList 
+              style={{height: '100%', marginTop: 12}}
+              data={searchedWorkouts}
+              keyExtractor={(item) => item.id}
+              renderItem={mockRenderItem}
+            />
+          )}
         </View>
       </SafeAreaView>
     );

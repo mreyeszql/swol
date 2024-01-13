@@ -12,19 +12,19 @@ const handleUpdatedExercise = async (client, existingExercise, updatedExercise, 
             } }
         });
 
-        if (updatedExercise.weight - (updatedExercise.weight % exercise.increment) > existingExercise.maxweight) {
-            client.graphql({
-                query: createPost,
-                variables: {
-                    input: {
-                        profilePostsId: localProfile.id,
-                        type: "Post",
-                        postKind: "PRGoal",
-                        text: `${localProfile.username} just hit a ${updatedExercise.weight} lbs. PR on ${exercise.name}!`,
-                    }
-                }
-            });
-        }
+        // if (updatedExercise.weight - (updatedExercise.weight % exercise.increment) > existingExercise.maxweight) {
+        //     client.graphql({
+        //         query: createPost,
+        //         variables: {
+        //             input: {
+        //                 profilePostsId: localProfile.id,
+        //                 type: "Post",
+        //                 postKind: "PRGoal",
+        //                 text: `${localProfile.username} just hit a ${updatedExercise.weight} lbs. PR on ${exercise.name}!`,
+        //             }
+        //         }
+        //     });
+        // }
     }
     return updatedExercise;
 };

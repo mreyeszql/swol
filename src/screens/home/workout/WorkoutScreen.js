@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { View, Button, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Button, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import SafeAreaView from 'components/view';
 import Text from 'components/text';
@@ -8,7 +8,7 @@ import { generateClient } from 'aws-amplify/api';
 import { listMyWorkouts } from 'graphql/queries';
 
 const WorkoutScreen = ({ route, navigation }) => {
-  const { name, id, exercises, reps, percents, sets, rests, muscles } = route.params;
+  const { name, id, exercises, reps, percents, sets, rests, muscles, uri } = route.params;
   const [localVideos, setLocalVideos] = useState({});
   const [myWorkout, setMyWorkout] = useState(null);
   const [workoutTime, setWorkoutTime] = useState(null);
@@ -66,7 +66,7 @@ const WorkoutScreen = ({ route, navigation }) => {
   };
 
   const startWorkout = () => {
-    navigation.navigate('Exercises', { exercises: exercises.items, name, id, reps, percents, sets, rests, videos: localVideos });
+    navigation.navigate('Exercises', { exercises: exercises.items, name, id, reps, percents, sets, rests, videos: localVideos, myWorkout });
   };
 
   return (
@@ -79,47 +79,54 @@ const WorkoutScreen = ({ route, navigation }) => {
         </View>
         <Text style={{fontSize: 40, fontFamily: 'Inter-Bold', textTransform: 'uppercase'}}>{name}</Text>
       </View>
-      <View style={{paddingHorizontal: 28}}>
-        <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: 28}}>
-          <Text>{Math.round(workoutTime / 60)} MIN</Text>
-          <View style={{flexDirection: 'row'}}>
-            {myWorkout?.completedTimes ? (
-              <>
-                <Text>Completed</Text>
-                <Text style={{fontFamily: 'Inter-Bold'}}> {myWorkout?.completedTimes ?? 0} </Text>
-                <Text>times</Text>
-              </>
-            ) : (
-              <>
-              <Text style={{fontFamily: 'Inter-Bold'}}>First-timer </Text>
-              <Text>:D</Text>
-              </>
-            )}
-          </View>
-        </View>
-        <View style={{width: '100%', height: 1, backgroundColor: 'white', marginVertical: 12}}/>
+      <View style={{paddingHorizontal: 28, justifyContent: 'space-between', flex: 1, paddingBottom: 24}}>
         <View>
-          <Text style={{fontFamily: 'Inter-Bold', fontSize: 22}}>Exercises</Text>
-          <View style={{flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start', marginLeft: -4, paddingTop: 4}}>
-          {exercises.items.map((exercise, index) => (
-            <View key={index} style={{borderColor: 'white', borderWidth: 0.5, borderRadius: 6, paddingHorizontal: 8, paddingVertical: 4, margin: 4}}>
-              <Text style={{color: 'white', fontSize: 12, fontFamily: 'Inter-Light'}}>{exercise.exercise.name}</Text>
+          <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: 28}}>
+            <Text>{Math.round(workoutTime / 60)} MIN</Text>
+            <View style={{flexDirection: 'row'}}>
+              {myWorkout?.completedTimes ? (
+                <>
+                  <Text>Completed</Text>
+                  <Text style={{fontFamily: 'Inter-Bold'}}> {myWorkout?.completedTimes ?? 0} </Text>
+                  <Text>times</Text>
+                </>
+              ) : (
+                <>
+                <Text style={{fontFamily: 'Inter-Bold'}}>First-timer </Text>
+                <Text>:D</Text>
+                </>
+              )}
             </View>
-           ))}
           </View>
-        </View>
-        <View style={{width: '100%', height: 1, backgroundColor: 'white', marginVertical: 12}}/>
-        <View>
-          <Text style={{fontFamily: 'Inter-Bold', fontSize: 22}}>Muscle Groups</Text>
-          <View style={{flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start', marginLeft: -4, paddingTop: 4}}>
-          {muscles.map((muscle, index) => (
-            <View key={index} style={{borderColor: 'white', borderWidth: 0.5, borderRadius: 6, paddingHorizontal: 8, paddingVertical: 4, margin: 4}}>
-              <Text style={{color: 'white', fontSize: 12, fontFamily: 'Inter-Light'}}>{muscle}</Text>
+          <View style={{width: '100%', height: 1, backgroundColor: 'white', marginVertical: 12}}/>
+          <View>
+            <Text style={{fontFamily: 'Inter-Bold', fontSize: 22}}>Exercises</Text>
+            <View style={{flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start', marginLeft: -4, paddingTop: 4}}>
+            {exercises.items.map((exercise, index) => (
+              <View key={index} style={{borderColor: 'white', borderWidth: 0.5, borderRadius: 6, paddingHorizontal: 8, paddingVertical: 4, margin: 4}}>
+                <Text style={{color: 'white', fontSize: 12, fontFamily: 'Inter-Light'}}>{exercise.exercise.name}</Text>
+              </View>
+            ))}
             </View>
-           ))}
           </View>
+          <View style={{width: '100%', height: 1, backgroundColor: 'white', marginVertical: 12}}/>
+          <View>
+            <Text style={{fontFamily: 'Inter-Bold', fontSize: 22}}>Muscle Groups</Text>
+            <View style={{flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start', marginLeft: -4, paddingTop: 4}}>
+            {muscles.map((muscle, index) => (
+              <View key={index} style={{borderColor: 'white', borderWidth: 0.5, borderRadius: 6, paddingHorizontal: 8, paddingVertical: 4, margin: 4}}>
+                <Text style={{color: 'white', fontSize: 12, fontFamily: 'Inter-Light'}}>{muscle}</Text>
+              </View>
+            ))}
+            </View>
+          </View>
+          <View style={{width: '100%', height: 1, backgroundColor: 'white', marginVertical: 12}}/> 
         </View>
-        <View style={{width: '100%', height: 1, backgroundColor: 'white', marginVertical: 12}}/>  
+        <Image 
+          source={{uri: uri}}
+          defaultSource={require('../../../../assets/logo.png')} //TODO Santi: better placeholder
+          style={{width: "100%", aspectRatio: 1, backgroundColor: 'gray', borderRadius: 50}}
+        /> 
         <View>
           <TouchableOpacity onPress={startWorkout} style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
             <Text style={{fontFamily: 'Inter-Bold', fontSize: 30}}>START</Text>
