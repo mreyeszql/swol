@@ -5,10 +5,11 @@ import SafeAreaView from 'components/view';
 import { handleSignUp } from 'functions/authentication/signup';
 
 const CreatePasswordScreen = ({ navigation, route }) => {
-    const { email, username, userId } = route.params;
+    const { email } = route.params;
     const [firstPassword, setFirstPassword] = useState(null);
     const [secondPassword, setSecondPassword] = useState(null);
     const [error, setError] = useState(null);
+    const username = 'username';
 
     const localHandleNext = () => {
         if (firstPassword && secondPassword) {
@@ -89,7 +90,7 @@ const CreatePasswordScreen = ({ navigation, route }) => {
                     </Text>
                     </TouchableOpacity>
                     <View style={{flexDirection: 'row', justifyContent: 'center', marginTop: 32}}>
-                    <Text style={{color: error ? '#6388EC' : 'black'}}>{error ? error : '|'}</Text>
+                    <Text style={{color: error ? '#6388EC' : 'black', fontSize: 16}}>{error ? error : '|'}</Text>
                     </View>
                 </View>
                 </View>

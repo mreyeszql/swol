@@ -50,28 +50,33 @@ type MyWorkout @model @auth(rules: [{ allow: owner }]) {
 
 type Profile @model @auth(rules: [{allow: private , ownerField: "ownerId"}]) {
   id: ID!
-  username: String!
+  username: String! 
   ownerId: ID! @index
   incomingRequests: [FriendRequest] @hasMany
   outgoingRequests: [FriendRequest] @hasMany
   posts: [Post] @hasMany
   imageUrl: String
-  experience: Int!
+  experience: Int
   gym: Gym @hasOne
+  streak: Int
+  thisWeekTime: [Int]
+}
+
+type GymWeeklyAttendance @model @auth(rules: [{allow: owner}]) {
+  id: ID!
+  weekStart: AWSDateTime!
+  weekTime: [Int]
 }
 
 type Gym @model @auth(rules: [{ allow: private }]) {
   id: ID!
-  name: String!
-  latitude: Float!
-  longitude: Float!
-  phone: AWSPhone!
-  email: AWSEmail!
-  address: String!
-  unit: String
-  city: String!
-  zipcode: String!
-  state: String!
+  name: String
+  rating: Float,
+  ratingTotal: Int,
+  address: String,
+  phone: String,
+  isRegistered: Boolean, 
+  demandNumber: Int,
   profiles: [Profile] @hasMany
 }
 

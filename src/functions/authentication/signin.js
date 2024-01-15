@@ -1,4 +1,4 @@
-import { signIn, getCurrentUser } from 'aws-amplify/auth';
+import { signIn } from 'aws-amplify/auth';
 
 const handleSignIn = async ({ email, password }) => {
     try {
@@ -14,14 +14,4 @@ const handleSignIn = async ({ email, password }) => {
     }
 };
 
-const handleCheckSession = async () => {
-    try {
-        const { username, userId, signInDetails } = await getCurrentUser();
-        return true;
-    } catch (err) {
-        console.log(err);
-        return false;
-    }
-};
-
-export { handleSignIn, handleCheckSession };
+export { handleSignIn };

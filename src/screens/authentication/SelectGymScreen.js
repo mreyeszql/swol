@@ -1,55 +1,115 @@
-import { SelectList } from 'react-native-dropdown-select-list';
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Text, Button, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, TextInput, ScrollView, Text as RNText, Button, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, Platform, Dimensions } from 'react-native';
 import SafeAreaView from 'components/view';
-import { listGyms } from "graphql/queries";
+import Text from 'components/text';
+import { getGym } from "graphql/queries";
 import { generateClient } from "aws-amplify/api";
-import { updateProfile } from "graphql/mutations";
+import { createGym, updateGym, updateProfile } from "graphql/mutations";
 import { FontAwesome, Feather, AntDesign } from '@expo/vector-icons';
-
-
+import { requestForegroundPermissionsAsync } from 'expo-location';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 
 const SelectGymScreen = ({ navigation, route }) => {
     const { profile_id } = route.params;
-    const [open, setOpen] = useState(false);
-    const [value, setValue] = useState(null);
-    const [items, setItems] = useState([]);
+    const [gymId, setGymId] = useState(null);
+    const [gymName, setGymName] = useState(null);
+    const [gymRating, setGymRating] = useState(null);
+    const [gymRatingsTotal, setGymRatingsTotal] = useState(null);
+    const [gymAddress, setGymAddress] = useState(null);
+    const [gymPhone, setGymPhone] = useState(null);
+    const {width, height} = Dimensions.get('window')
 
     useEffect(() => {
-        localHandleFetchGyms();
+        (async () => {
+            let { status } = await requestForegroundPermissionsAsync();
+        })();
     },[]);
 
-    const localHandleFetchGyms = async () => {
-        const client = generateClient();
+    const localHandleGetGym = async (id) => {
+        client = generateClient();
         const result = await client.graphql({
-            query: listGyms,
-        })
-        setItems(
-            result.data.listGyms.items.map((item) => {
-                return {...item, key: item.name, value: item.id}
-            })
-        );
+            query: getGym,
+            variables: { 
+                id
+            }
+        });
+        const gym = result.data.getGym;
+        if (gym && gym.isRegistered) {
+            await client.graphql({
+                query: updateProfile,
+                variables: { input: {
+                    id: profile_id,
+                    profileGymId: gymId,
+                }}
+            });
+            navigation.navigate("Tabs");
+        } else if (gym && !gym.isRegistered) {
+            await client.graphql({
+                query: updateProfile,
+                variables: { input: {
+                    id: profile_id,
+                    profileGymId: gymId,
+                }}
+            });
+
+            await client.graphql({
+                query: updateGym,
+                variables: { input: {
+                    id: gymId,
+                    demandNumber: gym.demandNumber + 1
+                }}
+            });
+
+            navigation.navigate("ProvideUnlistedGym", { profile_id });
+        } else {
+            await client.graphql({
+                query: createGym,
+                variables: { input: {
+                    id: gymId,
+                    name: gymName,
+                    rating: gymRating,
+                    ratingTotal: gymRatingsTotal,
+                    address: gymAddress,
+                    phone: gymPhone,
+                    isRegistered: false,
+                    demandNumber: 1
+                }}
+            });
+
+            await client.graphql({
+                query: updateProfile,
+                variables: { input: {
+                    id: profile_id,
+                    profileGymId: gymId,
+                }}
+            });
+            
+            navigation.navigate("ProvideUnlistedGym", { profile_id });
+        };
     };
 
     const localHandleNext = async () => {
-        if (value) {
-            const client = generateClient();
-            const result = await client.graphql({
-                query: updateProfile,
-                variables: {
-                    id: profile_id,
-                    profileGymId: value
-                }
-            });
-            console.log(result);
-            navigation.navigate("Tabs");
-        }
-    }
+        if (gymId) {
+            await localHandleGetGym(gymId);
+        };
+    } 
+
+    const localHandleInputs = (data, details) => {
+        setGymId(data.place_id);
+        setGymName(data.name);
+        setGymRating(data.rating);
+        setGymRatingsTotal(data.user_ratings_total);
+        setGymAddress(details.formatted_address);
+        setGymPhone(details.formatted_phone_number);
+    };
 
     return (
-        <SafeAreaView>
+        <SafeAreaView
+            keyboardShouldPersistTaps='handled'
+        >
         <TouchableWithoutFeedback 
             onPress={() => Keyboard.dismiss()}
+            keyboardShouldPersistTaps='handled'
         >
             <View style={{padding: 16}}>
             <View style={{flexDirection: 'row'}}>
@@ -60,13 +120,77 @@ const SelectGymScreen = ({ navigation, route }) => {
             <KeyboardAvoidingView 
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 style={styles.container}
+                keyboardShouldPersistTaps='handled'
             >
-                <View>
+                <View
+                    keyboardShouldPersistTaps='handled'
+                >
                     <Text style={styles.title}>SELECT GYM</Text>
-                    <SelectList 
+                    <ScrollView
+                        scrollEnabled={false}
+                        horizontal={true}
+                        nestedScrollEnabled={true}
+                        keyboardShouldPersistTaps='handled'
+                        contentContainerStyle={{ flexGrow: 1 }}
+                    >
+                        <GooglePlacesAutocomplete
+                            placeholder="Type a place"
+                            query={{
+                                key: "AIzaSyA6q1IEwstySs7Sjbm23sSAFskK9tGdQts",
+                                type: 'gym',
+                                rankby: 'distance',
+                            }}
+                            GooglePlacesSearchQuery={{
+                                type: 'gym',
+                                rankby: 'distance'
+                            }}
+                            currentLocation={true}
+                            fetchDetails={true}
+                            listViewDisplayed={false}
+                            currentLocationLabel='Search nearby'
+                            enablePoweredByContainer={false}
+                            onPress={(data, details = null) => {
+                                localHandleInputs(data, details);
+                            }}
+                            onFail={error => console.log(error)}
+                            onNotFound={() => console.log('no results')}
+                            textInputProps={{
+                                placeholderTextColor: 'grey',
+                                fontFamily: 'Inter-Light'
+                            }}
+                            styles={{
+                                textInput: {
+                                    color: 'white',
+                                    backgroundColor: 'black',
+                                    borderWidth: 1,
+                                    borderColor: 'white',
+                                    borderRadius: 12,
+                                    fontFamily: 'Inter-Light'
+                                },
+                                row: {
+                                    backgroundColor: 'transparent',
+                                },
+                                description: {
+                                    color: 'white',
+                                    fontFamily: 'Inter-Light'
+                                },
+                                listView: {
+                                    borderWidth: 1,
+                                    borderColor: 'white',
+                                    borderRadius: 12,
+                                    maxHeight: 264,
+                                    overflow: 'hidden'
+                                },
+                                container: {
+                                    maxWidth: width - 2 * 16
+                                }
+                            }}
+                        />
+                    </ScrollView>
+                    {/* <SelectList 
                         setSelected={(val) => setValue(val)} 
                         data={items} 
-                        save="value"
+                        save="key"
                         fontFamily='Inter-Light'
                         dropdownTextStyles={{color: 'white', fontFamily: 'Inter-Light'}}
                         boxStyles={{borderWidth: 1}}
@@ -74,24 +198,14 @@ const SelectGymScreen = ({ navigation, route }) => {
                         arrowicon={<AntDesign name="down" size={16} color={'white'} style={{paddingTop: 4}} />} 
                         searchicon={<AntDesign name="search1" size={16} color="white" style={{paddingRight: 16}}/>}
                         closeicon={<AntDesign name="close" size={20} color="white" />} 
-                    />
-                    {/* <DropDownPicker
-                        open={open}
-                        searchable={true}
-                        value={value}
-                        items={items}
-                        setOpen={setOpen}
-                        setValue={setValue}
-                        setItems={setItems}
-                        placeholder="Select a gym"
-                    /> */}
+                    />*/}
                     <View>
                         <TouchableOpacity style={styles.next} onPress={localHandleNext}>
-                        <Text styles={styles.text}>
-                            Next
-                        </Text>
+                            <RNText styles={styles.text}>
+                                Next
+                            </RNText>
                         </TouchableOpacity>
-                    </View>
+                    </View> 
                 </View>
             </KeyboardAvoidingView>
             </View>

@@ -3,7 +3,7 @@ import { View, TextInput, Text as RNText, Button, TouchableOpacity, StyleSheet, 
 import { AntDesign } from '@expo/vector-icons';
 import SafeAreaView from 'components/view';
 import Text from 'components/text';
-import { signIn, resendSignUpCode } from 'aws-amplify/auth';
+import { signIn } from 'aws-amplify/auth';
 
 const SignupScreen = ({ navigation }) => {
   const [email, setEmail] = useState(null);
@@ -18,12 +18,14 @@ const SignupScreen = ({ navigation }) => {
           password: "."
         });
         if (result.nextStep.signInStep === "CONFIRM_SIGN_UP") {
-          await resendSignUpCode({ username: email });
-          navigation.navigate('ConfirmSignup', { email });
+          setError("I see there is a user with that email already.");
+          setTimeout(() => {
+            setError(null);
+          }, 5000);
         };
       } catch (err) {
         if (err.name === "UserNotFoundException") {
-          navigation.navigate('CreateUsername', { email });
+          navigation.navigate('CreatePassword', { email });
         } else {
           setError("I see there is a user with that email already.");
           setTimeout(() => {
@@ -72,7 +74,7 @@ const SignupScreen = ({ navigation }) => {
                   </RNText>
                 </TouchableOpacity>
                 <View style={{flexDirection: 'row', justifyContent: 'center', marginTop: 32}}>
-                  <Text style={{color: error ? '#6388EC' : 'black'}}>{error ? error : '|'}</Text>
+                  <Text style={{color: error ? '#6388EC' : 'black', fontSize: 16}}>{error ? error : '|'}</Text>
                 </View>
               </View>
             </View>

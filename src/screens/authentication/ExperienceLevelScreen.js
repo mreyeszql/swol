@@ -10,7 +10,7 @@ import { updateProfile } from 'graphql/mutations';
 const ExperienceLevelScreen = ({ navigation, route }) => {
     const { sub } = route.params;
     const [profile_id, setProfile_id] = useState(null);
-    const [value, setValue] = useState(1/2);
+    const [value, setValue] = useState(5);
 
     useEffect(() => {
         localHandleFetchAuth();
@@ -24,6 +24,7 @@ const ExperienceLevelScreen = ({ navigation, route }) => {
             items {
                 id
                 imageUrl
+                experience
             }
             }
         }
@@ -33,6 +34,7 @@ const ExperienceLevelScreen = ({ navigation, route }) => {
         });
 
         const profile_id = profile.data.profilesByOwnerId.items[0]?.id;
+        setValue(profile.data.profilesByOwnerId.items[0]?.experience);
         setProfile_id(profile_id);
     };
 
@@ -41,12 +43,11 @@ const ExperienceLevelScreen = ({ navigation, route }) => {
             const client = generateClient();
             const result = await client.graphql({
                 query: updateProfile,
-                variables: {
+                variables: { input: {
                     id: profile_id,
                     experience: Math.round(value)
-                }
+                }}
             });
-            console.log(result);
             navigation.navigate("SelectGym", { profile_id });
         }
     }
@@ -71,7 +72,7 @@ const ExperienceLevelScreen = ({ navigation, route }) => {
                     <Slider
                         style={{width: "100%", height: 10}}
                         minimumValue={0}
-                        maximumValue={1}
+                        maximumValue={10}
                         value={value}
                         minimumTrackTintColor="#FFFFFF"
                         maximumTrackTintColor="#000000"

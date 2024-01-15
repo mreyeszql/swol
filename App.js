@@ -4,10 +4,11 @@ import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 
-import { Amplify } from 'aws-amplify';
+import { Amplify } from 'aws-amplify';  
 import amplifyconfig from './amplifyconfiguration.json';
 Amplify.configure(amplifyconfig);
 
+navigator.geolocation = require('react-native-geolocation-service');
 
 const App = () => {
   const [fontsLoaded] = useFonts({

@@ -10,6 +10,8 @@ const handleFetchAuth = async () => {
         profilesByOwnerId(ownerId: "${userId}") {
         items {
             id
+            thisWeekTime
+            streak
             username
             incomingRequests {
             items {

@@ -10,9 +10,12 @@ import { generateClient } from "aws-amplify/api";
 import { deleteProfile, updateProfile } from "graphql/mutations";
 import { launchImageLibraryAsync } from 'expo-image-picker';
 import { uploadData, getUrl } from "aws-amplify/storage";
+import { listProfiles } from "graphql/queries";
 
 const SettingsScreen = ({ navigation }) => {
 
+    const [accountError, setAccountError] = useState(null);
+    const [passwordError, setPasswordError] = useState(null);
     const [username, setUsername] = useState('mreyes');
     const [email, setEmail] = useState('mreyes@gmail.com');
     const [oldPassword, setOldPassword] = useState(null);
@@ -59,8 +62,13 @@ const SettingsScreen = ({ navigation }) => {
     const localHandleChangePassword = async () => {
         try {
             await updatePassword({ oldPassword, newPassword });
+            setOldPassword(null);
+            setNewPassword(null);
         } catch (err) {
-            console.log(err);
+            setPasswordError("That doesn't seem right. Try again.");
+            setTimeout(() => {
+                setPasswordError(null);
+            }, 5000);
         }
     };
 
@@ -68,39 +76,64 @@ const SettingsScreen = ({ navigation }) => {
         try {
             const old_attributes = await fetchUserAttributes();
             if (old_attributes.preferred_username !== username.toLowerCase() || old_attributes.email !== email.toLowerCase()) {
-                const shouldConfirm = await updateUserAttributes({
-                    userAttributes: {
-                        preferred_username: username.toLowerCase(),
-                        email: email.toLowerCase()
-                    }
-                });
-
-                setShowConfirmEmail(shouldConfirm.email.nextStep.updateAttributeStep === "CONFIRM_ATTRIBUTE_WITH_CODE");
-     
+                
                 client = generateClient();
-                const query = `
-                query MyQuery {
-                    profilesByOwnerId(ownerId: "${old_attributes.sub}") {
-                    items {
-                        id
-                    }
-                    }
-                }
-                `;
-                const profile = await client.graphql({
-                    query: query,
-                });
-
-                await client.graphql({
-                    query: updateProfile,
-                    variables: {
-                        input: {
-                            id: profile.data.profilesByOwnerId.items[0].id,
-                            username: username.toLowerCase()
+                const result = await client.graphql({
+                    query: listProfiles,
+                    variables: { 
+                        filter: {
+                            username: {
+                                eq: username.toLowerCase()
+                            }
                         }
                     }
                 });
-            }
+
+                if (result.data.listProfiles.items.length === 0) {
+                    const shouldConfirm = await updateUserAttributes({
+                        userAttributes: {
+                            preferred_username: username.toLowerCase(),
+                            email: email.toLowerCase()
+                        }
+                    });
+    
+                    setShowConfirmEmail(shouldConfirm.email.nextStep.updateAttributeStep === "CONFIRM_ATTRIBUTE_WITH_CODE");
+         
+                    client = generateClient();
+                    const query = `
+                    query MyQuery {
+                        profilesByOwnerId(ownerId: "${old_attributes.sub}") {
+                        items {
+                            id
+                        }
+                        }
+                    }
+                    `;
+                    const profile = await client.graphql({
+                        query: query,
+                    });
+    
+                    await client.graphql({
+                        query: updateProfile,
+                        variables: {
+                            input: {
+                                id: profile.data.profilesByOwnerId.items[0].id,
+                                username: username.toLowerCase()
+                            }
+                        }
+                    });
+                } else {
+                    setAccountError("That username is taken :(");
+                        setTimeout(() => {
+                            setAccountError(null);
+                        }, 5000);
+                    };
+            } else {
+                setAccountError("Those credentials look the same as before :|");
+                setTimeout(() => {
+                    setAccountError(null);
+                }, 5000);
+            };
         } catch (error) {
             console.log(error);
         }
@@ -240,8 +273,11 @@ const SettingsScreen = ({ navigation }) => {
                                     </View>
                                 </TouchableOpacity>
                                 <View style={{justifyContent: 'flex-end', flex: 1, flexDirection: 'row'}}>
-                                    <TouchableOpacity style={{borderWidth: 1, borderColor: 'white', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8}}>
-                                        <Text>Request QR Codes</Text>
+                                    <TouchableOpacity
+                                        onPress={() => navigation.navigate('ExperienceLevel', { sub: localProfileSubId })}
+                                        style={{borderWidth: 1, borderColor: 'white', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8}}
+                                    >
+                                        <Text>Change Gym Location</Text>
                                     </TouchableOpacity>
                                 </View>
                             </View>
@@ -276,6 +312,9 @@ const SettingsScreen = ({ navigation }) => {
                                 </View>
                              </>
                             }
+                            <View style={{flexDirection: 'row', justifyContent: 'center', paddingBottom: 12}}>
+                                <Text style={{color: accountError ? '#6388EC' : 'black', fontSize: 16}}>{accountError ? accountError : '|'}</Text>
+                            </View>
 
                             <Text style={{fontFamily: "Inter-Bold", fontSize: 20, marginBottom: 12}}>CHANGE PASSWORD</Text>
                             <View style={{width: "100%", height: 1, backgroundColor: 'white', marginBottom: 12  }} />
@@ -290,6 +329,9 @@ const SettingsScreen = ({ navigation }) => {
                                 >
                                     <Text style={{fontSize: 14, color: 'gray'}}>Change</Text>
                                 </TouchableOpacity>
+                            </View>
+                            <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+                                <Text style={{color: passwordError ? '#6388EC' : 'black', fontSize: 16, paddingBottom: 12}}>{passwordError ? passwordError : '|'}</Text>
                             </View>
                         </View>
                         </KeyboardAvoidingView>
@@ -306,7 +348,7 @@ const SettingsScreen = ({ navigation }) => {
                                 <TouchableOpacity
                                     onPress={() => localHandleDeleteAccount()}
                                 >
-                                    <Text style={{fontSize: 12, color: 'grey'}}>Delete Account</Text>
+                                    <Text style={{fontSize: 16, color: 'grey'}}>Delete Account</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>

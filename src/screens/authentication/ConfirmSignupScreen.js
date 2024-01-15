@@ -18,7 +18,7 @@ const ConfirmSignupScreen = ({ navigation, route }) => {
 
         if (result) {
             const { preferred_username, sub } = await fetchUserAttributes();
-            navigation.navigate('ExperienceLevel', { preferred_username, sub });
+            navigation.navigate('CreateUsername', { email, preferred_username, sub });
         } else {
             setError("That is definitely not what I sent you :|");
             setTimeout(() => {
@@ -61,7 +61,7 @@ const ConfirmSignupScreen = ({ navigation, route }) => {
                     </Text>
                     </TouchableOpacity>
                     <View style={{flexDirection: 'row', justifyContent: 'center', marginTop: 32}}>
-                    <Text style={{color: error ? '#6388EC' : 'black'}}>{error ? error : '|'}</Text>
+                    <Text style={{color: error ? '#6388EC' : 'black', fontSize: 16}}>{error ? error : '|'}</Text>
                     </View>
                 </View>
                 </View>

@@ -2,17 +2,56 @@ import React, { useState } from 'react';
 import { View, TextInput, Text, Button, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, Platform } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import SafeAreaView from 'components/view';
+import { generateClient } from 'aws-amplify/api';
+import { listProfiles } from 'graphql/queries';
+import { updateUserAttributes } from 'aws-amplify/auth';
+import { createProfile } from 'graphql/mutations';
 
 const CreateUsernameScreen = ({ navigation, route }) => {
-  const { email } = route.params;
+  const { email, sub } = route.params;
   const [username, setUsername] = useState('');
   const [error, setError] = useState(null);
 
-  const localHandleNext = () => {
+  const localHandleNext = async () => {
     if (username) {
-      navigation.navigate('CreatePassword', { email, username });
-    } else {
+      client = generateClient();
+      const result = await client.graphql({
+        query: listProfiles,
+        variables: { 
+          filter: {
+            username: {
+              eq: username.toLowerCase()
+            }
+          }
+        }
+      });
+
+      if (result.data.listProfiles.items.length === 0) {
+
+        await client.graphql({
+            query: createProfile,
+            variables: { input: {
+              username: username.toLowerCase(),
+              ownerId: sub
+            }}
+        });
+        
+        await updateUserAttributes({
+          userAttributes: {
+              preferred_username: username.toLowerCase(),
+          }
+        });
+
+        navigation.navigate('ExperienceLevel', { sub });
+      } else {
         setError("That username is already taken :(");
+        setTimeout(() => {
+          setError(null);
+        }, 5000);
+      };
+
+    } else {
+        setError("Please enter a longer username.");
         setTimeout(() => {
           setError(null);
         }, 5000);
@@ -52,7 +91,7 @@ const CreateUsernameScreen = ({ navigation, route }) => {
                   </Text>
                 </TouchableOpacity>
                 <View style={{flexDirection: 'row', justifyContent: 'center', marginTop: 32}}>
-                  <Text style={{color: error ? '#6388EC' : 'black'}}>{error ? error : '|'}</Text>
+                  <Text style={{color: error ? '#6388EC' : 'black', fontSize: 16}}>{error ? error : '|'}</Text>
                 </View>
               </View>
             </View>

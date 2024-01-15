@@ -3,19 +3,83 @@ import { TextInput, Button, StyleSheet, View, Platform, Image, TouchableOpacity,
 import { handleSignIn } from 'functions/authentication/signin';
 import SafeAreaView from 'components/view';
 import { AntDesign } from '@expo/vector-icons';
+import { signIn, resendSignUpCode, getCurrentUser } from 'aws-amplify/auth';
+import { generateClient } from 'aws-amplify/api';
 
-const SigninScreen = ({ navigation }) => {
+
+const SigninScreen = ({ navigation, route }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState(null);
+  const params = route?.params;
+
+  useEffect(() => {
+    if (params?.signup_email) {
+      setEmail(signup_email);
+    }
+  }, []);
 
   const localHandleSignIn = async () => {
-    const result = await handleSignIn({
-        email,
-        password,
-    });
-    if (result) {
-        navigation.navigate('Tabs');
-    }
+    try {
+      const result = await signIn({
+        username: email,
+        password: password
+      });
+      if (result.nextStep.signInStep === "CONFIRM_SIGN_UP") {
+        await resendSignUpCode({ username: email });
+        navigation.navigate('ConfirmSignup', { email });
+      } else if (result.nextStep.signInStep === "DONE") {
+        
+        try {
+          const { username, userId } = await getCurrentUser();
+          client = generateClient();
+          const query = `
+          query MyQuery {
+              profilesByOwnerId(ownerId: "${userId}") {
+              items {
+                  id
+                  experience
+                  profileGymId
+                  username
+              }
+              }
+          }
+          `;
+          const profile = await client.graphql({
+              query: query,
+          });
+    
+          const profile_list = profile.data.profilesByOwnerId.items;
+          if (profile_list[0]?.username) {
+              if (profile_list[0]?.experience) {
+                  if (profile_list[0]?.profileGymId) {
+                      navigation.navigate('Tabs');
+                  } else {
+                      navigation.navigate('SelectGym', { profile_id: profile_list[0].id });
+                  }
+              } else {
+                  navigation.navigate('ExperienceLevel', { sub: userId });
+              }
+          } else {
+              navigation.navigate('CreateUsername', { email: email, sub: userId })
+          }
+          
+        } catch (err) {
+            console.log(err);
+        }
+      } else {
+        setError("I am having trouble signing you in :(");
+        setTimeout(() => {
+            setError(null);
+        }, 5000);
+      };
+    } catch (err) {
+      console.log(err);
+      setError("I don't recognize that email or password :/");
+      setTimeout(() => {
+          setError(null);
+      }, 5000);
+    } 
   };
 
   return (
@@ -60,6 +124,9 @@ const SigninScreen = ({ navigation }) => {
                     Next
                   </Text>
                 </TouchableOpacity>
+                <View style={{flexDirection: 'row', justifyContent: 'center', marginTop: 32}}>
+                  <Text style={{color: error ? '#6388EC' : 'black', fontSize: 16}}>{error ? error : '|'}</Text>
+                </View>
               </View>
             </View>
           </KeyboardAvoidingView>

@@ -71,9 +71,6 @@ const ScanScreen = ({ navigation }) => {
         </View>
         <View style={{marginBottom: 56}}>
             <Text style={{marginRight: 56, fontSize: 18, textAlign: 'center', marginBottom: 12}}>Scan the QR codes on the machines at your gym to learn how to use them!</Text>
-            <TouchableOpacity style={{marginRight: 56}}>
-                <Text style={{fontSize: 12, textAlign: 'center', color: '#6388EC', textDecorationLine: 'underline'}}>No QR codes at your gym? Let us know.</Text>
-            </TouchableOpacity>
         </View>
       </RNSafeAreaView>
       

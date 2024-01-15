@@ -1,8 +1,9 @@
 import { useEffect } from "react";
-import { handleCheckSession } from "functions/authentication/signin";
 import { View, TouchableOpacity, StyleSheet, Image } from "react-native";
 import SafeAreaView from "components/view";
 import Text from "components/text";
+import { generateClient } from 'aws-amplify/api';
+import { getCurrentUser } from "aws-amplify/auth";
 
 const InitialScreen = ({ navigation }) => {
 
@@ -11,9 +12,42 @@ const InitialScreen = ({ navigation }) => {
     }, []);
 
     const localHandleCheckSession = async () => {
-        const result = await handleCheckSession();
-        if (result) {
-            navigation.navigate('Tabs')
+        try {
+            const { username, userId } = await getCurrentUser();
+            client = generateClient();
+            const query = `
+            query MyQuery {
+                profilesByOwnerId(ownerId: "${userId}") {
+                items {
+                    id
+                    experience
+                    profileGymId
+                    username
+                }
+                }
+            }
+            `;
+            const profile = await client.graphql({
+                query: query,
+            });
+    
+            const profile_list = profile.data.profilesByOwnerId.items;
+            if (profile_list[0]?.username) {
+                if (profile_list[0]?.experience) {
+                    if (profile_list[0]?.profileGymId) {
+                        navigation.navigate('Tabs');
+                    } else {
+                        navigation.navigate('SelectGym', { profile_id: profile_list[0].id });
+                    }
+                } else {
+                    navigation.navigate('ExperienceLevel', { sub: userId });
+                }
+            } else {
+                navigation.navigate('CreateUsername', { email: username, sub: userId })
+            }
+            
+        } catch (err) {
+            console.log(err);
         }
     };
         

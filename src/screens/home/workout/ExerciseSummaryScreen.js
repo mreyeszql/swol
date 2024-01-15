@@ -3,7 +3,7 @@ import SafeAreaView from "components/view";
 import { Button, TouchableOpacity, View } from "react-native";
 import { useEffect, useState } from "react";
 import { generateClient } from "aws-amplify/api";
-import { createMyWorkout, updateMyWorkout } from "graphql/mutations";
+import { createMyWorkout, updateMyWorkout, updateProfile } from "graphql/mutations";
 
 const ExercisesSummaryScreen = ({ navigation, route }) => {
     const [restTime, setRestTime] = useState(0);
@@ -11,7 +11,7 @@ const ExercisesSummaryScreen = ({ navigation, route }) => {
     const [totalReps, setTotalReps] = useState(0);
     const [totalSets, setTotalSets] = useState(0);
 
-    const { timers, processedExercises, name, sets, reps, myWorkout, personalRecords, id } = route.params;
+    const { timers, processedExercises, name, sets, reps, myWorkout, personalRecords, id, localProfile } = route.params;
     
 
     useEffect(() => {
@@ -67,8 +67,25 @@ const ExercisesSummaryScreen = ({ navigation, route }) => {
 
     const localHandleExit = () => {
         localHandleMyWorkout();
+        localHandleUpdateWeekTime();
         navigation.navigate('Workouts');
     };
+
+    const localHandleUpdateWeekTime = async () => {
+        let thisWeekTime = localProfile.thisWeekTime ?? [0, 0, 0, 0, 0, 0, 0];
+        const date = new Date();
+        const day = date.getDay();
+        thisWeekTime[day] += Math.round((exerciseTime + restTime) / 60);
+
+        const client = generateClient();
+        await client.graphql({
+            query: updateProfile,
+            variables: {input: {
+                id: localProfile.id,
+                thisWeekTime
+            }}
+        })
+    }
 
     return (
         <SafeAreaView>
@@ -94,7 +111,7 @@ const ExercisesSummaryScreen = ({ navigation, route }) => {
                             </Text>
                             <View style={{flexDirection: 'row', alignItems: 'flex-end'}}>
                                 <Text style={{fontFamily: 'Inter-Bold', fontSize: 40, textTransform: 'uppercase'}}>
-                                    {exerciseTime + restTime}
+                                    {Math.round((exerciseTime + restTime) / 60)}
                                 </Text>
                                 <Text style={{fontFamily: 'Inter-Light', fontSize: 24, textTransform: 'uppercase', marginBottom: 4}}>
                                     {} MIN
@@ -108,7 +125,7 @@ const ExercisesSummaryScreen = ({ navigation, route }) => {
                             </Text>
                             <View style={{flexDirection: 'row', alignItems: 'flex-end'}}>
                                 <Text style={{fontFamily: 'Inter-Bold', fontSize: 40, textTransform: 'uppercase'}}>
-                                    {restTime}
+                                    {Math.round((restTime) / 60)}
                                 </Text>
                                 <Text style={{fontFamily: 'Inter-Light', fontSize: 24, textTransform: 'uppercase', marginBottom: 4}}>
                                     {} MIN
@@ -150,7 +167,7 @@ const ExercisesSummaryScreen = ({ navigation, route }) => {
                             </Text>
                             <View style={{flexDirection: 'row', alignItems: 'flex-end'}}>
                                 <Text style={{fontFamily: 'Inter-Bold', fontSize: 40, textTransform: 'uppercase'}}>
-                                    {myWorkout?.completedTimes ?? 1}
+                                    {myWorkout?.completedTimes ? myWorkout.completedTimes + 1 : 1}
                                 </Text>
                                 <Text style={{fontFamily: 'Inter-Light', fontSize: 24, textTransform: 'uppercase', marginBottom: 4}}>
                                     {} TIMES

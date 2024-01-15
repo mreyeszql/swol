@@ -420,19 +420,18 @@ export const createProfile = /* GraphQL */ `
       gym {
         id
         name
-        latitude
-        longitude
-        phone
-        email
+        rating
+        ratingTotal
         address
-        unit
-        city
-        zipcode
-        state
+        phone
+        isRegistered
+        demandNumber
         createdAt
         updatedAt
         __typename
       }
+      streak
+      thisWeekTime
       createdAt
       updatedAt
       gymProfilesId
@@ -467,19 +466,18 @@ export const updateProfile = /* GraphQL */ `
       gym {
         id
         name
-        latitude
-        longitude
-        phone
-        email
+        rating
+        ratingTotal
         address
-        unit
-        city
-        zipcode
-        state
+        phone
+        isRegistered
+        demandNumber
         createdAt
         updatedAt
         __typename
       }
+      streak
+      thisWeekTime
       createdAt
       updatedAt
       gymProfilesId
@@ -514,23 +512,70 @@ export const deleteProfile = /* GraphQL */ `
       gym {
         id
         name
-        latitude
-        longitude
-        phone
-        email
+        rating
+        ratingTotal
         address
-        unit
-        city
-        zipcode
-        state
+        phone
+        isRegistered
+        demandNumber
         createdAt
         updatedAt
         __typename
       }
+      streak
+      thisWeekTime
       createdAt
       updatedAt
       gymProfilesId
       profileGymId
+      __typename
+    }
+  }
+`;
+export const createGymWeeklyAttendance = /* GraphQL */ `
+  mutation CreateGymWeeklyAttendance(
+    $input: CreateGymWeeklyAttendanceInput!
+    $condition: ModelGymWeeklyAttendanceConditionInput
+  ) {
+    createGymWeeklyAttendance(input: $input, condition: $condition) {
+      id
+      weekStart
+      weekTime
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+  }
+`;
+export const updateGymWeeklyAttendance = /* GraphQL */ `
+  mutation UpdateGymWeeklyAttendance(
+    $input: UpdateGymWeeklyAttendanceInput!
+    $condition: ModelGymWeeklyAttendanceConditionInput
+  ) {
+    updateGymWeeklyAttendance(input: $input, condition: $condition) {
+      id
+      weekStart
+      weekTime
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+  }
+`;
+export const deleteGymWeeklyAttendance = /* GraphQL */ `
+  mutation DeleteGymWeeklyAttendance(
+    $input: DeleteGymWeeklyAttendanceInput!
+    $condition: ModelGymWeeklyAttendanceConditionInput
+  ) {
+    deleteGymWeeklyAttendance(input: $input, condition: $condition) {
+      id
+      weekStart
+      weekTime
+      createdAt
+      updatedAt
+      owner
       __typename
     }
   }
@@ -543,15 +588,12 @@ export const createGym = /* GraphQL */ `
     createGym(input: $input, condition: $condition) {
       id
       name
-      latitude
-      longitude
-      phone
-      email
+      rating
+      ratingTotal
       address
-      unit
-      city
-      zipcode
-      state
+      phone
+      isRegistered
+      demandNumber
       profiles {
         nextToken
         __typename
@@ -570,15 +612,12 @@ export const updateGym = /* GraphQL */ `
     updateGym(input: $input, condition: $condition) {
       id
       name
-      latitude
-      longitude
-      phone
-      email
+      rating
+      ratingTotal
       address
-      unit
-      city
-      zipcode
-      state
+      phone
+      isRegistered
+      demandNumber
       profiles {
         nextToken
         __typename
@@ -597,15 +636,12 @@ export const deleteGym = /* GraphQL */ `
     deleteGym(input: $input, condition: $condition) {
       id
       name
-      latitude
-      longitude
-      phone
-      email
+      rating
+      ratingTotal
       address
-      unit
-      city
-      zipcode
-      state
+      phone
+      isRegistered
+      demandNumber
       profiles {
         nextToken
         __typename
@@ -631,6 +667,8 @@ export const createFriendRequest = /* GraphQL */ `
         ownerId
         imageUrl
         experience
+        streak
+        thisWeekTime
         createdAt
         updatedAt
         gymProfilesId
@@ -643,6 +681,8 @@ export const createFriendRequest = /* GraphQL */ `
         ownerId
         imageUrl
         experience
+        streak
+        thisWeekTime
         createdAt
         updatedAt
         gymProfilesId
@@ -671,6 +711,8 @@ export const updateFriendRequest = /* GraphQL */ `
         ownerId
         imageUrl
         experience
+        streak
+        thisWeekTime
         createdAt
         updatedAt
         gymProfilesId
@@ -683,6 +725,8 @@ export const updateFriendRequest = /* GraphQL */ `
         ownerId
         imageUrl
         experience
+        streak
+        thisWeekTime
         createdAt
         updatedAt
         gymProfilesId
@@ -711,6 +755,8 @@ export const deleteFriendRequest = /* GraphQL */ `
         ownerId
         imageUrl
         experience
+        streak
+        thisWeekTime
         createdAt
         updatedAt
         gymProfilesId
@@ -723,6 +769,8 @@ export const deleteFriendRequest = /* GraphQL */ `
         ownerId
         imageUrl
         experience
+        streak
+        thisWeekTime
         createdAt
         updatedAt
         gymProfilesId
@@ -750,6 +798,8 @@ export const createPost = /* GraphQL */ `
         ownerId
         imageUrl
         experience
+        streak
+        thisWeekTime
         createdAt
         updatedAt
         gymProfilesId
@@ -780,6 +830,8 @@ export const updatePost = /* GraphQL */ `
         ownerId
         imageUrl
         experience
+        streak
+        thisWeekTime
         createdAt
         updatedAt
         gymProfilesId
@@ -810,6 +862,8 @@ export const deletePost = /* GraphQL */ `
         ownerId
         imageUrl
         experience
+        streak
+        thisWeekTime
         createdAt
         updatedAt
         gymProfilesId

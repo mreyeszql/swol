@@ -31,15 +31,6 @@ const handleConfirmSignUp = async ({ email, confirmationCode }) => {
 
     if (isSignUpComplete) {
       await autoSignIn();
-      const { preferred_username, sub } = await fetchUserAttributes();
-
-      await client.graphql({
-          query: createProfile,
-          variables: { input: {
-            username: preferred_username.toLowerCase(),
-            ownerId: sub,
-          }}
-      });
     };
 
     return isSignUpComplete;

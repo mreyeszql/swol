@@ -146,12 +146,14 @@ const ExercisesScreen = ({ route, navigation }) => {
                 { item.exercise ? (
                     <View style={{ width: '100%', height: '100%', flexDirection: 'column', justifyContent: 'space-between'}}>
                         <View style={styles.navigation}>
-                            <View style={{marginLeft: -12, paddingRight: 15}}>
+                            <View style={{marginLeft: -12, paddingRight: 15, zIndex: 1}}>
                                 <TouchableOpacity onPress={() => navigation.goBack()}>
                                     <AntDesign name="close" size={24} color="white" />
                                 </TouchableOpacity>
                             </View>
-                            <Text style={{fontSize: 32, fontFamily: 'Inter-Bold', textTransform: 'uppercase'}}>{item.exercise.name}</Text>
+                            <View style={{flexDirection: 'row', flex: 1, justifyContent: 'center', marginLeft: -(15 + 12), zIndex: 0}}>
+                                <Text style={{fontSize: 32, fontFamily: 'Inter-Bold', textTransform: 'uppercase'}}>{item.exercise.name}</Text>
+                            </View>
                         </View>
                         <Video
                             source={{uri: videoUri}}
@@ -195,12 +197,14 @@ const ExercisesScreen = ({ route, navigation }) => {
                     item.rest ? (
                         <View style={{ width: '100%', height: '100%', flexDirection: 'column', justifyContent: 'space-between'}}>
                             <View style={styles.navigation}>
-                                <View style={{marginLeft: -12, paddingRight: 15}}>
+                                <View style={{marginLeft: -12, paddingRight: 15, zIndex: 1}}>
                                     <TouchableOpacity onPress={() => navigation.goBack()}>
                                         <AntDesign name="close" size={24} color="white" />
                                     </TouchableOpacity>
                                 </View>
-                                <Text style={{fontSize: 32, fontFamily: 'Inter-Bold', textTransform: 'uppercase'}}>REST MODE</Text>
+                                <View style={{flexDirection: 'row', flex: 1, justifyContent: 'center', marginLeft: -(15 + 12), zIndex: 0}}>
+                                    <Text style={{fontSize: 32, fontFamily: 'Inter-Bold', textTransform: 'uppercase'}}>REST MODE</Text>
+                                </View>
                             </View>
                             <View style={{ height: '80%'}}>
                                 {timers[item.expandedId] ? (
@@ -265,7 +269,7 @@ const ExercisesScreen = ({ route, navigation }) => {
                             onPressOut={localHandlePressOut}
                         >
                             <View style={{ height: '95%'}}>
-                                <PressClock theta={theta} callback={() => navigation.navigate('ExercisesSummary', { timers, id, processedExercises, name, sets, reps, myWorkout, personalRecords })}/>
+                                <PressClock theta={theta} callback={() => navigation.navigate('ExercisesSummary', { timers, id, processedExercises, name, sets, reps, myWorkout, personalRecords, localProfile })}/>
                                 <View
                                     style={{
                                         alignItems: 'center',

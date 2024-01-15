@@ -254,19 +254,18 @@ export const getProfile = /* GraphQL */ `
       gym {
         id
         name
-        latitude
-        longitude
-        phone
-        email
+        rating
+        ratingTotal
         address
-        unit
-        city
-        zipcode
-        state
+        phone
+        isRegistered
+        demandNumber
         createdAt
         updatedAt
         __typename
       }
+      streak
+      thisWeekTime
       createdAt
       updatedAt
       gymProfilesId
@@ -288,10 +287,50 @@ export const listProfiles = /* GraphQL */ `
         ownerId
         imageUrl
         experience
+        streak
+        thisWeekTime
         createdAt
         updatedAt
         gymProfilesId
         profileGymId
+        __typename
+      }
+      nextToken
+      __typename
+    }
+  }
+`;
+export const getGymWeeklyAttendance = /* GraphQL */ `
+  query GetGymWeeklyAttendance($id: ID!) {
+    getGymWeeklyAttendance(id: $id) {
+      id
+      weekStart
+      weekTime
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+  }
+`;
+export const listGymWeeklyAttendances = /* GraphQL */ `
+  query ListGymWeeklyAttendances(
+    $filter: ModelGymWeeklyAttendanceFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listGymWeeklyAttendances(
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        weekStart
+        weekTime
+        createdAt
+        updatedAt
+        owner
         __typename
       }
       nextToken
@@ -304,15 +343,12 @@ export const getGym = /* GraphQL */ `
     getGym(id: $id) {
       id
       name
-      latitude
-      longitude
-      phone
-      email
+      rating
+      ratingTotal
       address
-      unit
-      city
-      zipcode
-      state
+      phone
+      isRegistered
+      demandNumber
       profiles {
         nextToken
         __typename
@@ -333,15 +369,12 @@ export const listGyms = /* GraphQL */ `
       items {
         id
         name
-        latitude
-        longitude
-        phone
-        email
+        rating
+        ratingTotal
         address
-        unit
-        city
-        zipcode
-        state
+        phone
+        isRegistered
+        demandNumber
         createdAt
         updatedAt
         __typename
@@ -363,6 +396,8 @@ export const getFriendRequest = /* GraphQL */ `
         ownerId
         imageUrl
         experience
+        streak
+        thisWeekTime
         createdAt
         updatedAt
         gymProfilesId
@@ -375,6 +410,8 @@ export const getFriendRequest = /* GraphQL */ `
         ownerId
         imageUrl
         experience
+        streak
+        thisWeekTime
         createdAt
         updatedAt
         gymProfilesId
@@ -420,6 +457,8 @@ export const getPost = /* GraphQL */ `
         ownerId
         imageUrl
         experience
+        streak
+        thisWeekTime
         createdAt
         updatedAt
         gymProfilesId
@@ -593,6 +632,8 @@ export const profilesByOwnerId = /* GraphQL */ `
         ownerId
         imageUrl
         experience
+        streak
+        thisWeekTime
         createdAt
         updatedAt
         gymProfilesId

@@ -1,5 +1,5 @@
 PODS:
-  - AmplifyRTNCore (1.0.11):
+  - AmplifyRTNCore (1.0.12):
     - React-Core
   - boost (1.76.0)
   - DoubleConversion (1.1.6)
@@ -24,6 +24,8 @@ PODS:
   - EXImageLoader (4.3.0):
     - ExpoModulesCore
     - React-Core
+  - EXLocation (16.1.0):
+    - ExpoModulesCore
   - Expo (49.0.21):
     - ExpoModulesCore
   - ExpoImagePicker (14.3.2):
@@ -366,6 +368,8 @@ PODS:
     - React-Core
   - react-native-camera/RN (4.2.1):
     - React-Core
+  - react-native-geolocation-service (5.3.1):
+    - React
   - react-native-get-random-values (1.10.0):
     - React-Core
   - react-native-hole-view (3.0.0-alpha3):
@@ -497,7 +501,7 @@ PODS:
     - React-Core
   - RNCPicker (2.4.10):
     - React-Core
-  - RNGestureHandler (2.14.0):
+  - RNGestureHandler (2.14.1):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
   - RNKeychain (8.1.2):
@@ -533,6 +537,7 @@ DEPENDENCIES:
   - EXFileSystem (from `../node_modules/expo-file-system/ios`)
   - EXFont (from `../node_modules/expo-font/ios`)
   - EXImageLoader (from `../node_modules/expo-image-loader/ios`)
+  - EXLocation (from `../node_modules/expo-location/ios`)
   - Expo (from `../node_modules/expo`)
   - ExpoImagePicker (from `../node_modules/expo-image-picker/ios`)
   - ExpoKeepAwake (from `../node_modules/expo-keep-awake/ios`)
@@ -562,6 +567,7 @@ DEPENDENCIES:
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - react-native-camera (from `../node_modules/react-native-camera`)
+  - react-native-geolocation-service (from `../node_modules/react-native-geolocation-service`)
   - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
   - react-native-hole-view (from `../node_modules/react-native-hole-view`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
@@ -626,6 +632,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo-font/ios"
   EXImageLoader:
     :path: "../node_modules/expo-image-loader/ios"
+  EXLocation:
+    :path: "../node_modules/expo-location/ios"
   Expo:
     :path: "../node_modules/expo"
   ExpoImagePicker:
@@ -681,6 +689,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/logger"
   react-native-camera:
     :path: "../node_modules/react-native-camera"
+  react-native-geolocation-service:
+    :path: "../node_modules/react-native-geolocation-service"
   react-native-get-random-values:
     :path: "../node_modules/react-native-get-random-values"
   react-native-hole-view:
@@ -749,8 +759,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  AmplifyRTNCore: e5656206f1822edaa2864f73fdde25fa6834d88c
-  boost: 0a937fbcfdd646fca221c4f1d9750d7ccfdfc2dc
+  AmplifyRTNCore: 193763385b67c18d4f2abca718eeb7886b03aa00
+  boost: 57d2868c099736d80fcd648bf211b4431e51a558
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   EXApplication: 042aa2e3f05258a16962ea1a9914bf288db9c9a1
   EXAV: f393dfc0b28214d62855a31e06eb21d426d6e2da
@@ -760,6 +770,7 @@ SPEC CHECKSUMS:
   EXFileSystem: f8b838a880254de42a5a7da20ed5ce12e2697c1b
   EXFont: b3ca70589cdbdfd725b154f280dc507c3b56749a
   EXImageLoader: 34b214f9387e98f3c73989f15d8d5b399c9ab3f7
+  EXLocation: a425ace19c0445e7ea9702982fc6b9a402791510
   Expo: 61a8e1aa94311557c137c0a4dfd4fe78281cfbb4
   ExpoImagePicker: c58fdf28be551681a8edc550bcec76c397a8dfcd
   ExpoKeepAwake: be4cbd52d9b177cde0fd66daa1913afa3161fc1d
@@ -789,6 +800,7 @@ SPEC CHECKSUMS:
   React-jsinspector: 194e32c6aab382d88713ad3dd0025c5f5c4ee072
   React-logger: cebf22b6cf43434e471dc561e5911b40ac01d289
   react-native-camera: 3eae183c1d111103963f3dd913b65d01aef8110f
+  react-native-geolocation-service: 608e1da71a1ac31b4de64d9ef2815f697978c55b
   react-native-get-random-values: 384787fd76976f5aec9465aff6fa9e9129af1e74
   react-native-hole-view: dc2724033ed88b9245e9a7ea287f09d36d01fafc
   react-native-netinfo: 8a7fd3f7130ef4ad2fb4276d5c9f8d3f28d2df3d
@@ -815,7 +827,7 @@ SPEC CHECKSUMS:
   ReactCommon: dd03c17275c200496f346af93a7b94c53f3093a4
   RNCAsyncStorage: 618d03a5f52fbccb3d7010076bc54712844c18ef
   RNCPicker: 0bc2f0a29abcca7b7ed44a2d036aac9ab6d25700
-  RNGestureHandler: 32a01c29ecc9bb0b5bf7bc0a33547f61b4dc2741
+  RNGestureHandler: fe2be3be5598dc74329b211c58c9f2d231461769
   RNKeychain: a65256b6ca6ba6976132cc4124b238a5b13b3d9c
   RNPermissions: 9610ef04ff03bdfe3156722c5c8f8910b628abf0
   RNReanimated: fdbaa9c964bbab7fac50c90862b6cc5f041679b9

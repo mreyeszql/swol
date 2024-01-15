@@ -28,6 +28,7 @@ import CreatePasswordScreen from 'screens/authentication/CreatePasswordScreen';
 import ExperienceLevelScreen from 'screens/authentication/ExperienceLevelScreen';
 import SelectGymScreen from 'screens/authentication/SelectGymScreen';
 import PostWorkoutCameraScreen from 'screens/home/workout/PostWorkoutCameraScreen';
+import ProvideUnlistedGymScreen from 'screens/home/utils/ProvideUnlistedGymScreen';
 
 
 
@@ -118,6 +119,7 @@ const StackNavigation = () => {
           <Stack.Screen name="ExperienceLevel" component={ExperienceLevelScreen} options={{gestureEnabled: false}} />
           <Stack.Screen name="SelectGym" component={SelectGymScreen} options={{gestureEnabled: false}} />
           <Stack.Screen name="PostWorkoutCamera" component={PostWorkoutCameraScreen} options={{gestureEnabled: false}} />
+          <Stack.Screen name="ProvideUnlistedGym" component={ProvideUnlistedGymScreen} options={{gestureEnabled: false}} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

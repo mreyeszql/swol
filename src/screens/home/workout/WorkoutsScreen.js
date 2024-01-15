@@ -35,6 +35,7 @@ const WorkoutsScreen = ({ navigation }) => {
                 exercise {
                   id
                   name
+                  timePerRep
                   lottie
                   hasWeight
                   muscles {
