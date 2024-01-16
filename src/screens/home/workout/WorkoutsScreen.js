@@ -45,6 +45,7 @@ const WorkoutsScreen = ({ navigation }) => {
                       }
                     }
                   }
+                  incrementPR
                   increment
                 }
               }
@@ -99,7 +100,7 @@ const WorkoutsScreen = ({ navigation }) => {
 
     const localHandleFetchRecommendedWorkouts = async () => {
       const profile = await localHandleFetchProfile();
-      const result = await client.graphql({ query: customQuery(`(filter: {difficulty: {le: ${profile?.experience}}})`) });
+      const result = await client.graphql({ query: customQuery(`(filter: {and: [{difficulty: {le: ${profile?.experience + 1}}}, {difficulty: {ge: ${profile?.experience - 1}}}]})`) });
       localHandleProcessWorkouts(result, setRecommendedWorkouts);
     }
 

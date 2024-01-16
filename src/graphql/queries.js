@@ -35,12 +35,54 @@ export const listMuscles = /* GraphQL */ `
     }
   }
 `;
+export const getMachine = /* GraphQL */ `
+  query GetMachine($id: ID!) {
+    getMachine(id: $id) {
+      id
+      name
+      exercises {
+        nextToken
+        __typename
+      }
+      gyms {
+        nextToken
+        __typename
+      }
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const listMachines = /* GraphQL */ `
+  query ListMachines(
+    $filter: ModelMachineFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listMachines(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        name
+        createdAt
+        updatedAt
+        __typename
+      }
+      nextToken
+      __typename
+    }
+  }
+`;
 export const getExercise = /* GraphQL */ `
   query GetExercise($id: ID!) {
     getExercise(id: $id) {
       id
       name
       muscles {
+        nextToken
+        __typename
+      }
+      macines {
         nextToken
         __typename
       }
@@ -53,6 +95,7 @@ export const getExercise = /* GraphQL */ `
       lottie
       difficulty
       hasWeight
+      incrementPR
       createdAt
       updatedAt
       __typename
@@ -74,6 +117,7 @@ export const listExercises = /* GraphQL */ `
         lottie
         difficulty
         hasWeight
+        incrementPR
         createdAt
         updatedAt
         __typename
@@ -99,8 +143,22 @@ export const getWorkout = /* GraphQL */ `
       nameLower
       percents
       difficulty
+      creator {
+        id
+        name
+        rating
+        ratingTotal
+        address
+        phone
+        isRegistered
+        demandNumber
+        createdAt
+        updatedAt
+        __typename
+      }
       createdAt
       updatedAt
+      workoutCreatorId
       __typename
     }
   }
@@ -124,6 +182,7 @@ export const listWorkouts = /* GraphQL */ `
         difficulty
         createdAt
         updatedAt
+        workoutCreatorId
         __typename
       }
       nextToken
@@ -143,6 +202,7 @@ export const getMyExercise = /* GraphQL */ `
         lottie
         difficulty
         hasWeight
+        incrementPR
         createdAt
         updatedAt
         __typename
@@ -197,6 +257,7 @@ export const getMyWorkout = /* GraphQL */ `
         difficulty
         createdAt
         updatedAt
+        workoutCreatorId
         __typename
       }
       rating
@@ -350,6 +411,10 @@ export const getGym = /* GraphQL */ `
       isRegistered
       demandNumber
       profiles {
+        nextToken
+        __typename
+      }
+      machines {
         nextToken
         __typename
       }
@@ -519,6 +584,7 @@ export const getMuscleExercises = /* GraphQL */ `
         lottie
         difficulty
         hasWeight
+        incrementPR
         createdAt
         updatedAt
         __typename
@@ -549,6 +615,114 @@ export const listMuscleExercises = /* GraphQL */ `
     }
   }
 `;
+export const getMachineExercises = /* GraphQL */ `
+  query GetMachineExercises($id: ID!) {
+    getMachineExercises(id: $id) {
+      id
+      machineId
+      exerciseId
+      machine {
+        id
+        name
+        createdAt
+        updatedAt
+        __typename
+      }
+      exercise {
+        id
+        name
+        increment
+        timePerRep
+        lottie
+        difficulty
+        hasWeight
+        incrementPR
+        createdAt
+        updatedAt
+        __typename
+      }
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const listMachineExercises = /* GraphQL */ `
+  query ListMachineExercises(
+    $filter: ModelMachineExercisesFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listMachineExercises(
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        machineId
+        exerciseId
+        createdAt
+        updatedAt
+        __typename
+      }
+      nextToken
+      __typename
+    }
+  }
+`;
+export const getMachineGyms = /* GraphQL */ `
+  query GetMachineGyms($id: ID!) {
+    getMachineGyms(id: $id) {
+      id
+      machineId
+      gymId
+      machine {
+        id
+        name
+        createdAt
+        updatedAt
+        __typename
+      }
+      gym {
+        id
+        name
+        rating
+        ratingTotal
+        address
+        phone
+        isRegistered
+        demandNumber
+        createdAt
+        updatedAt
+        __typename
+      }
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const listMachineGyms = /* GraphQL */ `
+  query ListMachineGyms(
+    $filter: ModelMachineGymsFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listMachineGyms(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        machineId
+        gymId
+        createdAt
+        updatedAt
+        __typename
+      }
+      nextToken
+      __typename
+    }
+  }
+`;
 export const getWorkoutExercises = /* GraphQL */ `
   query GetWorkoutExercises($id: ID!) {
     getWorkoutExercises(id: $id) {
@@ -563,6 +737,7 @@ export const getWorkoutExercises = /* GraphQL */ `
         lottie
         difficulty
         hasWeight
+        incrementPR
         createdAt
         updatedAt
         __typename
@@ -579,6 +754,7 @@ export const getWorkoutExercises = /* GraphQL */ `
         difficulty
         createdAt
         updatedAt
+        workoutCreatorId
         __typename
       }
       createdAt
@@ -725,6 +901,118 @@ export const muscleExercisesByExerciseId = /* GraphQL */ `
         id
         muscleId
         exerciseId
+        createdAt
+        updatedAt
+        __typename
+      }
+      nextToken
+      __typename
+    }
+  }
+`;
+export const machineExercisesByMachineId = /* GraphQL */ `
+  query MachineExercisesByMachineId(
+    $machineId: ID!
+    $sortDirection: ModelSortDirection
+    $filter: ModelMachineExercisesFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    machineExercisesByMachineId(
+      machineId: $machineId
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        machineId
+        exerciseId
+        createdAt
+        updatedAt
+        __typename
+      }
+      nextToken
+      __typename
+    }
+  }
+`;
+export const machineExercisesByExerciseId = /* GraphQL */ `
+  query MachineExercisesByExerciseId(
+    $exerciseId: ID!
+    $sortDirection: ModelSortDirection
+    $filter: ModelMachineExercisesFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    machineExercisesByExerciseId(
+      exerciseId: $exerciseId
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        machineId
+        exerciseId
+        createdAt
+        updatedAt
+        __typename
+      }
+      nextToken
+      __typename
+    }
+  }
+`;
+export const machineGymsByMachineId = /* GraphQL */ `
+  query MachineGymsByMachineId(
+    $machineId: ID!
+    $sortDirection: ModelSortDirection
+    $filter: ModelMachineGymsFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    machineGymsByMachineId(
+      machineId: $machineId
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        machineId
+        gymId
+        createdAt
+        updatedAt
+        __typename
+      }
+      nextToken
+      __typename
+    }
+  }
+`;
+export const machineGymsByGymId = /* GraphQL */ `
+  query MachineGymsByGymId(
+    $gymId: ID!
+    $sortDirection: ModelSortDirection
+    $filter: ModelMachineGymsFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    machineGymsByGymId(
+      gymId: $gymId
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        machineId
+        gymId
         createdAt
         updatedAt
         __typename

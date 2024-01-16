@@ -46,12 +46,73 @@ export const onDeleteMuscle = /* GraphQL */ `
     }
   }
 `;
+export const onCreateMachine = /* GraphQL */ `
+  subscription OnCreateMachine($filter: ModelSubscriptionMachineFilterInput) {
+    onCreateMachine(filter: $filter) {
+      id
+      name
+      exercises {
+        nextToken
+        __typename
+      }
+      gyms {
+        nextToken
+        __typename
+      }
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const onUpdateMachine = /* GraphQL */ `
+  subscription OnUpdateMachine($filter: ModelSubscriptionMachineFilterInput) {
+    onUpdateMachine(filter: $filter) {
+      id
+      name
+      exercises {
+        nextToken
+        __typename
+      }
+      gyms {
+        nextToken
+        __typename
+      }
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const onDeleteMachine = /* GraphQL */ `
+  subscription OnDeleteMachine($filter: ModelSubscriptionMachineFilterInput) {
+    onDeleteMachine(filter: $filter) {
+      id
+      name
+      exercises {
+        nextToken
+        __typename
+      }
+      gyms {
+        nextToken
+        __typename
+      }
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
 export const onCreateExercise = /* GraphQL */ `
   subscription OnCreateExercise($filter: ModelSubscriptionExerciseFilterInput) {
     onCreateExercise(filter: $filter) {
       id
       name
       muscles {
+        nextToken
+        __typename
+      }
+      macines {
         nextToken
         __typename
       }
@@ -64,6 +125,7 @@ export const onCreateExercise = /* GraphQL */ `
       lottie
       difficulty
       hasWeight
+      incrementPR
       createdAt
       updatedAt
       __typename
@@ -79,6 +141,10 @@ export const onUpdateExercise = /* GraphQL */ `
         nextToken
         __typename
       }
+      macines {
+        nextToken
+        __typename
+      }
       workouts {
         nextToken
         __typename
@@ -88,6 +154,7 @@ export const onUpdateExercise = /* GraphQL */ `
       lottie
       difficulty
       hasWeight
+      incrementPR
       createdAt
       updatedAt
       __typename
@@ -103,6 +170,10 @@ export const onDeleteExercise = /* GraphQL */ `
         nextToken
         __typename
       }
+      macines {
+        nextToken
+        __typename
+      }
       workouts {
         nextToken
         __typename
@@ -112,6 +183,7 @@ export const onDeleteExercise = /* GraphQL */ `
       lottie
       difficulty
       hasWeight
+      incrementPR
       createdAt
       updatedAt
       __typename
@@ -134,8 +206,22 @@ export const onCreateWorkout = /* GraphQL */ `
       nameLower
       percents
       difficulty
+      creator {
+        id
+        name
+        rating
+        ratingTotal
+        address
+        phone
+        isRegistered
+        demandNumber
+        createdAt
+        updatedAt
+        __typename
+      }
       createdAt
       updatedAt
+      workoutCreatorId
       __typename
     }
   }
@@ -156,8 +242,22 @@ export const onUpdateWorkout = /* GraphQL */ `
       nameLower
       percents
       difficulty
+      creator {
+        id
+        name
+        rating
+        ratingTotal
+        address
+        phone
+        isRegistered
+        demandNumber
+        createdAt
+        updatedAt
+        __typename
+      }
       createdAt
       updatedAt
+      workoutCreatorId
       __typename
     }
   }
@@ -178,8 +278,22 @@ export const onDeleteWorkout = /* GraphQL */ `
       nameLower
       percents
       difficulty
+      creator {
+        id
+        name
+        rating
+        ratingTotal
+        address
+        phone
+        isRegistered
+        demandNumber
+        createdAt
+        updatedAt
+        __typename
+      }
       createdAt
       updatedAt
+      workoutCreatorId
       __typename
     }
   }
@@ -199,6 +313,7 @@ export const onCreateMyExercise = /* GraphQL */ `
         lottie
         difficulty
         hasWeight
+        incrementPR
         createdAt
         updatedAt
         __typename
@@ -229,6 +344,7 @@ export const onUpdateMyExercise = /* GraphQL */ `
         lottie
         difficulty
         hasWeight
+        incrementPR
         createdAt
         updatedAt
         __typename
@@ -259,6 +375,7 @@ export const onDeleteMyExercise = /* GraphQL */ `
         lottie
         difficulty
         hasWeight
+        incrementPR
         createdAt
         updatedAt
         __typename
@@ -293,6 +410,7 @@ export const onCreateMyWorkout = /* GraphQL */ `
         difficulty
         createdAt
         updatedAt
+        workoutCreatorId
         __typename
       }
       rating
@@ -324,6 +442,7 @@ export const onUpdateMyWorkout = /* GraphQL */ `
         difficulty
         createdAt
         updatedAt
+        workoutCreatorId
         __typename
       }
       rating
@@ -355,6 +474,7 @@ export const onDeleteMyWorkout = /* GraphQL */ `
         difficulty
         createdAt
         updatedAt
+        workoutCreatorId
         __typename
       }
       rating
@@ -559,6 +679,10 @@ export const onCreateGym = /* GraphQL */ `
         nextToken
         __typename
       }
+      machines {
+        nextToken
+        __typename
+      }
       createdAt
       updatedAt
       __typename
@@ -580,6 +704,10 @@ export const onUpdateGym = /* GraphQL */ `
         nextToken
         __typename
       }
+      machines {
+        nextToken
+        __typename
+      }
       createdAt
       updatedAt
       __typename
@@ -598,6 +726,10 @@ export const onDeleteGym = /* GraphQL */ `
       isRegistered
       demandNumber
       profiles {
+        nextToken
+        __typename
+      }
+      machines {
         nextToken
         __typename
       }
@@ -846,6 +978,7 @@ export const onCreateMuscleExercises = /* GraphQL */ `
         lottie
         difficulty
         hasWeight
+        incrementPR
         createdAt
         updatedAt
         __typename
@@ -879,6 +1012,7 @@ export const onUpdateMuscleExercises = /* GraphQL */ `
         lottie
         difficulty
         hasWeight
+        incrementPR
         createdAt
         updatedAt
         __typename
@@ -912,6 +1046,211 @@ export const onDeleteMuscleExercises = /* GraphQL */ `
         lottie
         difficulty
         hasWeight
+        incrementPR
+        createdAt
+        updatedAt
+        __typename
+      }
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const onCreateMachineExercises = /* GraphQL */ `
+  subscription OnCreateMachineExercises(
+    $filter: ModelSubscriptionMachineExercisesFilterInput
+  ) {
+    onCreateMachineExercises(filter: $filter) {
+      id
+      machineId
+      exerciseId
+      machine {
+        id
+        name
+        createdAt
+        updatedAt
+        __typename
+      }
+      exercise {
+        id
+        name
+        increment
+        timePerRep
+        lottie
+        difficulty
+        hasWeight
+        incrementPR
+        createdAt
+        updatedAt
+        __typename
+      }
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const onUpdateMachineExercises = /* GraphQL */ `
+  subscription OnUpdateMachineExercises(
+    $filter: ModelSubscriptionMachineExercisesFilterInput
+  ) {
+    onUpdateMachineExercises(filter: $filter) {
+      id
+      machineId
+      exerciseId
+      machine {
+        id
+        name
+        createdAt
+        updatedAt
+        __typename
+      }
+      exercise {
+        id
+        name
+        increment
+        timePerRep
+        lottie
+        difficulty
+        hasWeight
+        incrementPR
+        createdAt
+        updatedAt
+        __typename
+      }
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const onDeleteMachineExercises = /* GraphQL */ `
+  subscription OnDeleteMachineExercises(
+    $filter: ModelSubscriptionMachineExercisesFilterInput
+  ) {
+    onDeleteMachineExercises(filter: $filter) {
+      id
+      machineId
+      exerciseId
+      machine {
+        id
+        name
+        createdAt
+        updatedAt
+        __typename
+      }
+      exercise {
+        id
+        name
+        increment
+        timePerRep
+        lottie
+        difficulty
+        hasWeight
+        incrementPR
+        createdAt
+        updatedAt
+        __typename
+      }
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const onCreateMachineGyms = /* GraphQL */ `
+  subscription OnCreateMachineGyms(
+    $filter: ModelSubscriptionMachineGymsFilterInput
+  ) {
+    onCreateMachineGyms(filter: $filter) {
+      id
+      machineId
+      gymId
+      machine {
+        id
+        name
+        createdAt
+        updatedAt
+        __typename
+      }
+      gym {
+        id
+        name
+        rating
+        ratingTotal
+        address
+        phone
+        isRegistered
+        demandNumber
+        createdAt
+        updatedAt
+        __typename
+      }
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const onUpdateMachineGyms = /* GraphQL */ `
+  subscription OnUpdateMachineGyms(
+    $filter: ModelSubscriptionMachineGymsFilterInput
+  ) {
+    onUpdateMachineGyms(filter: $filter) {
+      id
+      machineId
+      gymId
+      machine {
+        id
+        name
+        createdAt
+        updatedAt
+        __typename
+      }
+      gym {
+        id
+        name
+        rating
+        ratingTotal
+        address
+        phone
+        isRegistered
+        demandNumber
+        createdAt
+        updatedAt
+        __typename
+      }
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const onDeleteMachineGyms = /* GraphQL */ `
+  subscription OnDeleteMachineGyms(
+    $filter: ModelSubscriptionMachineGymsFilterInput
+  ) {
+    onDeleteMachineGyms(filter: $filter) {
+      id
+      machineId
+      gymId
+      machine {
+        id
+        name
+        createdAt
+        updatedAt
+        __typename
+      }
+      gym {
+        id
+        name
+        rating
+        ratingTotal
+        address
+        phone
+        isRegistered
+        demandNumber
         createdAt
         updatedAt
         __typename
@@ -938,6 +1277,7 @@ export const onCreateWorkoutExercises = /* GraphQL */ `
         lottie
         difficulty
         hasWeight
+        incrementPR
         createdAt
         updatedAt
         __typename
@@ -954,6 +1294,7 @@ export const onCreateWorkoutExercises = /* GraphQL */ `
         difficulty
         createdAt
         updatedAt
+        workoutCreatorId
         __typename
       }
       createdAt
@@ -978,6 +1319,7 @@ export const onUpdateWorkoutExercises = /* GraphQL */ `
         lottie
         difficulty
         hasWeight
+        incrementPR
         createdAt
         updatedAt
         __typename
@@ -994,6 +1336,7 @@ export const onUpdateWorkoutExercises = /* GraphQL */ `
         difficulty
         createdAt
         updatedAt
+        workoutCreatorId
         __typename
       }
       createdAt
@@ -1018,6 +1361,7 @@ export const onDeleteWorkoutExercises = /* GraphQL */ `
         lottie
         difficulty
         hasWeight
+        incrementPR
         createdAt
         updatedAt
         __typename
@@ -1034,6 +1378,7 @@ export const onDeleteWorkoutExercises = /* GraphQL */ `
         difficulty
         createdAt
         updatedAt
+        workoutCreatorId
         __typename
       }
       createdAt
