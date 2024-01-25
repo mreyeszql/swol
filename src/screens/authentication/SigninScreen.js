@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { TextInput, Button, StyleSheet, View, Platform, Image, TouchableOpacity, Text, Keyboard, KeyboardAvoidingView, TouchableWithoutFeedback } from 'react-native';
+import { TextInput, Button, StyleSheet, View, Platform, Image, TouchableOpacity, Dimensions, Text as RNText, Keyboard, KeyboardAvoidingView, TouchableWithoutFeedback } from 'react-native';
 import { handleSignIn } from 'functions/authentication/signin';
 import SafeAreaView from 'components/view';
 import { AntDesign } from '@expo/vector-icons';
 import { signIn, resendSignUpCode, getCurrentUser } from 'aws-amplify/auth';
 import { generateClient } from 'aws-amplify/api';
+import Text from 'components/text';
 
 
 const SigninScreen = ({ navigation, route }) => {
@@ -12,6 +13,7 @@ const SigninScreen = ({ navigation, route }) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const params = route?.params;
+  const {height} = Dimensions.get('window');
 
   useEffect(() => {
     if (params?.signup_email) {
@@ -98,7 +100,7 @@ const SigninScreen = ({ navigation, route }) => {
             style={styles.container}
           >
             <View>
-              <Text style={styles.title}>Log In</Text>
+              <RNText style={styles.title}>Log In</RNText>
               <TextInput
                 autoCorrect={false}
                 autoCapitalize='none'
@@ -120,16 +122,22 @@ const SigninScreen = ({ navigation, route }) => {
               />
               <View>
                 <TouchableOpacity style={styles.next} onPress={localHandleSignIn}>
-                  <Text styles={styles.text}>
+                  <RNText styles={styles.text}>
                     Next
-                  </Text>
+                  </RNText>
                 </TouchableOpacity>
                 <View style={{flexDirection: 'row', justifyContent: 'center', marginTop: 32}}>
-                  <Text style={{color: error ? '#6388EC' : 'black', fontSize: 16}}>{error ? error : '|'}</Text>
+                  <RNText style={{color: error ? '#6388EC' : 'black', fontSize: 16}}>{error ? error : '|'}</RNText>
                 </View>
               </View>
             </View>
           </KeyboardAvoidingView>
+          <View  style={{position: 'absolute', width: '100%', transform: [{translateY: height - 150}, {translateX: 16}], justifyContent: 'center', flexDirection: 'row'}}>
+              <Text>Forgot password?</Text>
+              <TouchableOpacity onPress={() => navigation.navigate('ForgotPasswordUsername', { email })}>
+                  <Text style={{fontFamily: 'Inter-Bold', textDecorationLine: 'underline'}}> click here</Text>
+              </TouchableOpacity>
+          </View>
         </View>
       </TouchableWithoutFeedback>
     </SafeAreaView>

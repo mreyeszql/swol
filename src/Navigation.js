@@ -32,6 +32,9 @@ import ProvideUnlistedGymScreen from 'screens/home/utils/ProvideUnlistedGymScree
 import NoGymScreen from 'screens/home/utils/NoGymScreen';
 import SpecifyTypeGymScreen from 'screens/authentication/SpecifyTypeGymScreen';
 import ListExerciseDetailsScreen from 'screens/home/workout/ListExerciseDetailsScreen';
+import ForgotPasswordUsernameScreen from 'screens/authentication/passwordReset/ForgotPasswordUsernameScreen';
+import ForgotPasswordConfirmCodeScreen from 'screens/authentication/passwordReset/ForgotPasswordConfirmCodeScreen';
+import ForgotPasswordNewPasswordScreen from 'screens/authentication/passwordReset/ForgotPasswordNewPasswordScreen';
 
 
 
@@ -126,6 +129,9 @@ const StackNavigation = () => {
           <Stack.Screen name="NoGym" component={NoGymScreen} options={{gestureEnabled: false}} />
           <Stack.Screen name="SpecifyTypeGym" component={SpecifyTypeGymScreen} options={{gestureEnabled: false}} />
           <Stack.Screen name="ListExerciseDetails" component={ListExerciseDetailsScreen} options={{gestureEnabled: false}} />
+          <Stack.Screen name="ForgotPasswordUsername" component={ForgotPasswordUsernameScreen} options={{gestureEnabled: false}} />
+          <Stack.Screen name="ForgotPasswordConfirmCode" component={ForgotPasswordConfirmCodeScreen} options={{gestureEnabled: false}} />
+          <Stack.Screen name="ForgotPasswordNewPassword" component={ForgotPasswordNewPasswordScreen} options={{gestureEnabled: false}} />
 
         </Stack.Navigator>
       </NavigationContainer>
