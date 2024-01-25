@@ -4,6 +4,7 @@ import SafeAreaView from "components/view";
 import Text from "components/text";
 import { generateClient } from 'aws-amplify/api';
 import { getCurrentUser } from "aws-amplify/auth";
+import { openURL } from "expo-linking";
 
 const InitialScreen = ({ navigation }) => {
 
@@ -37,7 +38,7 @@ const InitialScreen = ({ navigation }) => {
                     if (profile_list[0]?.profileGymId) {
                         navigation.navigate('Tabs');
                     } else {
-                        navigation.navigate('SelectGym', { profile_id: profile_list[0].id });
+                        navigation.navigate('SpecifyTypeGym', { profile_id: profile_list[0].id });
                     }
                 } else {
                     navigation.navigate('ExperienceLevel', { sub: userId });
@@ -65,7 +66,16 @@ const InitialScreen = ({ navigation }) => {
                     <TouchableOpacity style={styles.textInput} onPress={() => navigation.navigate("Signin")}>
                         <Text style={styles.text}>Log In</Text>
                     </TouchableOpacity>
-                    <Text style={styles.lowText}>By continuing, you agree to our Terms of Use and Privacy Policy</Text>
+                    <View style={{flexDirection: 'row', justifyContent: 'center', marginTop: 20}}>
+                        <Text style={{fontSize: 10}}>By continuing, you agree to our </Text>
+                        <TouchableOpacity onPress={() => openURL('https://www.swol.app/terms')}>
+                            <Text style={{fontSize: 10,textDecorationLine: 'underline'}}>Terms of Use</Text>
+                        </TouchableOpacity>
+                        <Text style={{fontSize: 10}}> and </Text>
+                        <TouchableOpacity onPress={() => openURL('https://www.swol.app/privacy')}>
+                            <Text style={{fontSize: 10,textDecorationLine: 'underline'}}>Privacy Policy</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             </View>
         </SafeAreaView>
@@ -100,11 +110,6 @@ const styles = StyleSheet.create({
       height: 150, 
       alignSelf: 'center'
     },
-    lowText: {
-        marginTop: 20,
-        alignSelf: 'center',
-        fontSize: 10
-    }
   });
 
 export default InitialScreen;

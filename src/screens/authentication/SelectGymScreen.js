@@ -67,10 +67,7 @@ const SelectGymScreen = ({ navigation, route }) => {
                 variables: { input: {
                     id: gymId,
                     name: gymName,
-                    rating: gymRating,
-                    ratingTotal: gymRatingsTotal,
                     address: gymAddress,
-                    phone: gymPhone,
                     isRegistered: false,
                     demandNumber: 1
                 }}
@@ -94,13 +91,14 @@ const SelectGymScreen = ({ navigation, route }) => {
         };
     } 
 
-    const localHandleInputs = (data, details) => {
+    const localHandleNextNoGym = async () => {
+        navigation.navigate('NoGym', { profile_id });
+    }
+
+    const localHandleInputs = (data) => {
         setGymId(data.place_id);
-        setGymName(data.name);
-        setGymRating(data.rating);
-        setGymRatingsTotal(data.user_ratings_total);
-        setGymAddress(details.formatted_address);
-        setGymPhone(details.formatted_phone_number);
+        setGymName(data.structured_formatting.main_text);
+        setGymAddress(data.structured_formatting.secondary_text);
     };
 
     return (
@@ -112,102 +110,97 @@ const SelectGymScreen = ({ navigation, route }) => {
             keyboardShouldPersistTaps='handled'
         >
             <View style={{padding: 16}}>
-            <View style={{flexDirection: 'row'}}>
-                <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <AntDesign name="left" size={30} color="white" />
-                </TouchableOpacity>
-            </View>
-            <KeyboardAvoidingView 
-                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                style={styles.container}
-                keyboardShouldPersistTaps='handled'
-            >
-                <View
+                <View style={{flexDirection: 'row'}}>
+                    <TouchableOpacity onPress={() => navigation.goBack()}>
+                        <AntDesign name="left" size={30} color="white" />
+                    </TouchableOpacity>
+                </View>
+                <KeyboardAvoidingView 
+                    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                    style={styles.container}
                     keyboardShouldPersistTaps='handled'
                 >
-                    <Text style={styles.title}>SELECT GYM</Text>
-                    <ScrollView
-                        scrollEnabled={false}
-                        horizontal={true}
-                        nestedScrollEnabled={true}
+                    <View
                         keyboardShouldPersistTaps='handled'
-                        contentContainerStyle={{ flexGrow: 1 }}
                     >
-                        <GooglePlacesAutocomplete
-                            placeholder="Type a place"
-                            query={{
-                                key: "AIzaSyA6q1IEwstySs7Sjbm23sSAFskK9tGdQts",
-                                type: 'gym',
-                                rankby: 'distance',
-                            }}
-                            GooglePlacesSearchQuery={{
-                                type: 'gym',
-                                rankby: 'distance'
-                            }}
-                            currentLocation={true}
-                            fetchDetails={true}
-                            listViewDisplayed={false}
-                            currentLocationLabel='Search nearby'
-                            enablePoweredByContainer={false}
-                            onPress={(data, details = null) => {
-                                localHandleInputs(data, details);
-                            }}
-                            onFail={error => console.log(error)}
-                            onNotFound={() => console.log('no results')}
-                            textInputProps={{
-                                placeholderTextColor: 'grey',
-                                fontFamily: 'Inter-Light'
-                            }}
-                            styles={{
-                                textInput: {
-                                    color: 'white',
-                                    backgroundColor: 'black',
-                                    borderWidth: 1,
-                                    borderColor: 'white',
-                                    borderRadius: 12,
+                        <Text style={styles.title}>SELECT GYM</Text>
+                        <ScrollView
+                            scrollEnabled={false}
+                            horizontal={true}
+                            nestedScrollEnabled={true}
+                            keyboardShouldPersistTaps='handled'
+                            contentContainerStyle={{ flexGrow: 1 }}
+                        >
+                            <GooglePlacesAutocomplete
+                                placeholder="Type a place"
+                                query={{
+                                    key: "AIzaSyA6q1IEwstySs7Sjbm23sSAFskK9tGdQts",
+                                    type: 'gym',
+                                    rankby: 'distance',
+                                    sessiontoken: profile_id,
+                                }}
+                                listViewDisplayed={false}
+                                enablePoweredByContainer={false}
+                                onPress={(data, details = null) => {
+                                    console.log(data);
+                                    localHandleInputs(data);
+                                }}
+                                onFail={error => console.log(error)}
+                                onNotFound={() => console.log('no results')}
+                                textInputProps={{
+                                    placeholderTextColor: 'grey',
                                     fontFamily: 'Inter-Light'
-                                },
-                                row: {
-                                    backgroundColor: 'transparent',
-                                },
-                                description: {
-                                    color: 'white',
-                                    fontFamily: 'Inter-Light'
-                                },
-                                listView: {
-                                    borderWidth: 1,
-                                    borderColor: 'white',
-                                    borderRadius: 12,
-                                    maxHeight: 264,
-                                    overflow: 'hidden'
-                                },
-                                container: {
-                                    maxWidth: width - 2 * 16
-                                }
-                            }}
-                        />
-                    </ScrollView>
-                    {/* <SelectList 
-                        setSelected={(val) => setValue(val)} 
-                        data={items} 
-                        save="key"
-                        fontFamily='Inter-Light'
-                        dropdownTextStyles={{color: 'white', fontFamily: 'Inter-Light'}}
-                        boxStyles={{borderWidth: 1}}
-                        inputStyles={{color: 'white', fontFamily: 'Inter-Light'}}
-                        arrowicon={<AntDesign name="down" size={16} color={'white'} style={{paddingTop: 4}} />} 
-                        searchicon={<AntDesign name="search1" size={16} color="white" style={{paddingRight: 16}}/>}
-                        closeicon={<AntDesign name="close" size={20} color="white" />} 
-                    />*/}
-                    <View>
-                        <TouchableOpacity style={styles.next} onPress={localHandleNext}>
-                            <RNText styles={styles.text}>
-                                Next
-                            </RNText>
-                        </TouchableOpacity>
-                    </View> 
-                </View>
-            </KeyboardAvoidingView>
+                                }}
+                                styles={{
+                                    textInput: {
+                                        color: 'white',
+                                        backgroundColor: 'black',
+                                        borderWidth: 1,
+                                        borderColor: 'white',
+                                        borderRadius: 12,
+                                        fontFamily: 'Inter-Light'
+                                    },
+                                    row: {
+                                        backgroundColor: 'transparent',
+                                    },
+                                    description: {
+                                        color: 'white',
+                                        fontFamily: 'Inter-Light'
+                                    },
+                                    listView: {
+                                        borderWidth: 1,
+                                        borderColor: 'white',
+                                        borderRadius: 12,
+                                        maxHeight: 264,
+                                        overflow: 'hidden'
+                                    },
+                                    container: {
+                                        maxWidth: width - 2 * 16
+                                    }
+                                }}
+                            />
+                        </ScrollView>
+                        {/* <SelectList 
+                            setSelected={(val) => setValue(val)} 
+                            data={items} 
+                            save="key"
+                            fontFamily='Inter-Light'
+                            dropdownTextStyles={{color: 'white', fontFamily: 'Inter-Light'}}
+                            boxStyles={{borderWidth: 1}}
+                            inputStyles={{color: 'white', fontFamily: 'Inter-Light'}}
+                            arrowicon={<AntDesign name="down" size={16} color={'white'} style={{paddingTop: 4}} />} 
+                            searchicon={<AntDesign name="search1" size={16} color="white" style={{paddingRight: 16}}/>}
+                            closeicon={<AntDesign name="close" size={20} color="white" />} 
+                        />*/}
+                        <View>
+                            <TouchableOpacity style={styles.next} onPress={localHandleNext}>
+                                <RNText styles={styles.text}>
+                                    Next
+                                </RNText>
+                            </TouchableOpacity>
+                        </View> 
+                    </View>
+                </KeyboardAvoidingView>
             </View>
         </TouchableWithoutFeedback>
         </SafeAreaView>
@@ -227,6 +220,7 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'center',
     alignContent: 'center',
+    flexDirection: 'column',
   },
   textInput: {
     textTransform: 'lowercase',

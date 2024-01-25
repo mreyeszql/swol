@@ -13,13 +13,13 @@ import { handleFetchAuth } from "functions/utils/profile";
 
 const ExerciseDetailScreen = ({ navigation, route }) => {
     const client = generateClient();
+    const { data, machine_name, machine_increment, fromList } = route.params;
     const [videoUri, setVideoUri] = useState(null);
-    const [exercise, setExercise] = useState(null);
+    const [exercise, setExercise] = useState(data);
     const [timeoutId, setTimeoutId] = useState(null)
     const [myExercise, setMyExercise] = useState(null);
     const [myExistingExercise, setMyExistingExercise] = useState(null);
     const [localProfile, setLocalProfile] = useState({});
-    const { data } = route.params;
 
     useEffect(() => {
         localHandleFetchAuth();
@@ -33,16 +33,8 @@ const ExerciseDetailScreen = ({ navigation, route }) => {
     };
 
     const localHandleGetExercise = async () => {
-        const exerciseResult = await client.graphql({
-            query: getExercise, 
-            variables: {
-                id: data
-            }
-        });
-        setExercise(exerciseResult.data.getExercise);
-
         const getUrlResult = await getUrl({
-            key: "exerciseVideos/" + exerciseResult.data.getExercise.lottie,
+            key: "exerciseVideos/" + data.exercise.lottie,
             options: {
               accessLevel: 'guest'
             },
@@ -53,7 +45,7 @@ const ExerciseDetailScreen = ({ navigation, route }) => {
             query: listMyExercises,
             variables: {
                 filter: {
-                    myExerciseExerciseId: {eq: data}
+                    myExerciseExerciseId: {eq: data.exercise.id}
                 }
             }
         });
@@ -102,7 +94,6 @@ const ExerciseDetailScreen = ({ navigation, route }) => {
     const localHandlePersistMyExercises = async (client, existingExercise, updatedExercise, exercise, localProfile) => {
         console.log("persisting", existingExercise ? "updating" : "new", "weight", "from", existingExercise ? existingExercise.weight : 0, "to", updatedExercise.weight)
         if (existingExercise) {
-            console.log(existingExercise, updatedExercise, exercise);
             await handleUpdatedExercise(client, existingExercise, updatedExercise, exercise, localProfile);
             setMyExistingExercise(updatedExercise);
         } else {
@@ -117,11 +108,17 @@ const ExerciseDetailScreen = ({ navigation, route }) => {
             <View style={{ width: '100%', height: '100%', flexDirection: 'column', justifyContent: 'space-between', paddingHorizontal: 28}}>
                 <View style={styles.navigation}>
                     <View style={{marginLeft: -12, paddingRight: 15}}>
-                        <TouchableOpacity onPress={() => navigation.navigate('Workouts')}>
-                            <AntDesign name="close" size={24} color="white" />
+                        <TouchableOpacity onPress={() => {
+                            if (fromList) {
+                                navigation.goBack();
+                            } else {
+                                navigation.navigate('Workouts');
+                            }
+                        }}>
+                            <AntDesign name={fromList ? "left" : "close"} size={24} color="white" />
                         </TouchableOpacity>
                     </View>
-                    {exercise?.name && <Text style={{fontSize: 32, fontFamily: 'Inter-Bold', textTransform: 'uppercase'}}>{exercise.name}</Text>}
+                    {exercise?.exercise?.name && <Text style={{fontSize: 32, fontFamily: 'Inter-Bold', textTransform: 'uppercase'}}>{exercise.exercise.name}</Text>}
                 </View>
                 {videoUri && <Video
                     source={{uri: videoUri}}
@@ -133,11 +130,11 @@ const ExerciseDetailScreen = ({ navigation, route }) => {
                 />}
                 <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
                     <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
-                        <TouchableOpacity onPress={() => localHandleSetMyExercise(myExercise, -5)}>
+                        <TouchableOpacity onPress={() => localHandleSetMyExercise(myExercise, -(machine_increment ?? 5))}>
                             <Text style={{fontFamily: 'Inter-Bold', fontSize: 20}}>-</Text>
                         </TouchableOpacity>
                         <Text style={{paddingHorizontal: 8}}>{myExercise ? (myExercise?.weight ?? 0) : 0} lbs.</Text>
-                        <TouchableOpacity onPress={() => localHandleSetMyExercise(myExercise, 5)}>
+                        <TouchableOpacity onPress={() => localHandleSetMyExercise(myExercise, machine_increment ?? 5)}>
                             <Text style={{fontFamily: 'Inter-Bold', fontSize: 20}}>+</Text>
                         </TouchableOpacity>
                     </View>

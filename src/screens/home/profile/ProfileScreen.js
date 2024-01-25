@@ -9,7 +9,8 @@ import { getUrl } from "aws-amplify/storage";
 import { BarChart } from "react-native-chart-kit";
 
 
-const ProfileScreen = ({ navigation }) => {
+const ProfileScreen = ({ route, navigation }) => {
+    const params = route.params;
     const [username, setUsername] = useState(null);
     const [imageUri, setImageUri] = useState(null);
     const [thisWeekTime, setThisWeekTime] = useState([0,0,0,0,0,0,0]);
@@ -53,13 +54,13 @@ const ProfileScreen = ({ navigation }) => {
         }
     };
 
-    const thisWeekTotalTime = thisWeekTime.reduce((partialSum, a) => partialSum + a, 0);
+    const thisWeekTotalTime = (params?.thisWeekTime ?? thisWeekTime).reduce((partialSum, a) => partialSum + a, 0);
 
     const chartData = {
         labels: ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"],
         datasets: [
           {
-            data: thisWeekTime
+            data: params?.thisWeekTime ?? thisWeekTime
           }
         ]
     };
@@ -85,7 +86,7 @@ const ProfileScreen = ({ navigation }) => {
                     <View style={{flexDirection: 'row', alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center'}}>
                         <Text style={{fontSize: 32, fontFamily: 'Inter-Bold', textTransform: 'uppercase'}}>PROFILE</Text>
                         <TouchableOpacity
-                        onPress={() => navigation.navigate('Settings')}
+                        onPress={() => navigation.navigate('Settings', { imageUri })}
                         >
                             <Feather name="settings" size={24} color="white" />
                         </TouchableOpacity>
@@ -97,7 +98,7 @@ const ProfileScreen = ({ navigation }) => {
                         <Image 
                             style={{height: 125, width: 125, borderRadius: 75}}
                             defaultSource={require('../../../../assets/img/avatar.png')}
-                            source={{uri: imageUri}}
+                            source={{uri: params?.imageUri ?? imageUri}}
                         />
                     </View>
                     <View style={{flexDirection: 'column', flex: 1, alignItems: 'center'}}>

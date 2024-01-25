@@ -63,16 +63,28 @@ export const createMachine = /* GraphQL */ `
     createMachine(input: $input, condition: $condition) {
       id
       name
+      increment
       exercises {
         nextToken
         __typename
       }
-      gyms {
-        nextToken
+      gym {
+        id
+        name
+        rating
+        ratingTotal
+        address
+        phone
+        isRegistered
+        demandNumber
+        createdAt
+        updatedAt
         __typename
       }
       createdAt
       updatedAt
+      gymMachinesId
+      machineGymId
       __typename
     }
   }
@@ -85,16 +97,28 @@ export const updateMachine = /* GraphQL */ `
     updateMachine(input: $input, condition: $condition) {
       id
       name
+      increment
       exercises {
         nextToken
         __typename
       }
-      gyms {
-        nextToken
+      gym {
+        id
+        name
+        rating
+        ratingTotal
+        address
+        phone
+        isRegistered
+        demandNumber
+        createdAt
+        updatedAt
         __typename
       }
       createdAt
       updatedAt
+      gymMachinesId
+      machineGymId
       __typename
     }
   }
@@ -107,16 +131,28 @@ export const deleteMachine = /* GraphQL */ `
     deleteMachine(input: $input, condition: $condition) {
       id
       name
+      increment
       exercises {
         nextToken
         __typename
       }
-      gyms {
-        nextToken
+      gym {
+        id
+        name
+        rating
+        ratingTotal
+        address
+        phone
+        isRegistered
+        demandNumber
+        createdAt
+        updatedAt
         __typename
       }
       createdAt
       updatedAt
+      gymMachinesId
+      machineGymId
       __typename
     }
   }
@@ -133,7 +169,7 @@ export const createExercise = /* GraphQL */ `
         nextToken
         __typename
       }
-      macines {
+      machines {
         nextToken
         __typename
       }
@@ -165,7 +201,7 @@ export const updateExercise = /* GraphQL */ `
         nextToken
         __typename
       }
-      macines {
+      machines {
         nextToken
         __typename
       }
@@ -197,7 +233,7 @@ export const deleteExercise = /* GraphQL */ `
         nextToken
         __typename
       }
-      macines {
+      machines {
         nextToken
         __typename
       }
@@ -249,6 +285,10 @@ export const createWorkout = /* GraphQL */ `
         updatedAt
         __typename
       }
+      gyms {
+        nextToken
+        __typename
+      }
       createdAt
       updatedAt
       workoutCreatorId
@@ -288,6 +328,10 @@ export const updateWorkout = /* GraphQL */ `
         updatedAt
         __typename
       }
+      gyms {
+        nextToken
+        __typename
+      }
       createdAt
       updatedAt
       workoutCreatorId
@@ -325,6 +369,10 @@ export const deleteWorkout = /* GraphQL */ `
         demandNumber
         createdAt
         updatedAt
+        __typename
+      }
+      gyms {
+        nextToken
         __typename
       }
       createdAt
@@ -731,6 +779,10 @@ export const createGym = /* GraphQL */ `
         nextToken
         __typename
       }
+      workouts {
+        nextToken
+        __typename
+      }
       createdAt
       updatedAt
       __typename
@@ -759,6 +811,10 @@ export const updateGym = /* GraphQL */ `
         nextToken
         __typename
       }
+      workouts {
+        nextToken
+        __typename
+      }
       createdAt
       updatedAt
       __typename
@@ -784,6 +840,10 @@ export const deleteGym = /* GraphQL */ `
         __typename
       }
       machines {
+        nextToken
+        __typename
+      }
+      workouts {
         nextToken
         __typename
       }
@@ -1138,8 +1198,11 @@ export const createMachineExercises = /* GraphQL */ `
       machine {
         id
         name
+        increment
         createdAt
         updatedAt
+        gymMachinesId
+        machineGymId
         __typename
       }
       exercise {
@@ -1173,8 +1236,11 @@ export const updateMachineExercises = /* GraphQL */ `
       machine {
         id
         name
+        increment
         createdAt
         updatedAt
+        gymMachinesId
+        machineGymId
         __typename
       }
       exercise {
@@ -1208,8 +1274,11 @@ export const deleteMachineExercises = /* GraphQL */ `
       machine {
         id
         name
+        increment
         createdAt
         updatedAt
+        gymMachinesId
+        machineGymId
         __typename
       }
       exercise {
@@ -1221,111 +1290,6 @@ export const deleteMachineExercises = /* GraphQL */ `
         difficulty
         hasWeight
         incrementPR
-        createdAt
-        updatedAt
-        __typename
-      }
-      createdAt
-      updatedAt
-      __typename
-    }
-  }
-`;
-export const createMachineGyms = /* GraphQL */ `
-  mutation CreateMachineGyms(
-    $input: CreateMachineGymsInput!
-    $condition: ModelMachineGymsConditionInput
-  ) {
-    createMachineGyms(input: $input, condition: $condition) {
-      id
-      machineId
-      gymId
-      machine {
-        id
-        name
-        createdAt
-        updatedAt
-        __typename
-      }
-      gym {
-        id
-        name
-        rating
-        ratingTotal
-        address
-        phone
-        isRegistered
-        demandNumber
-        createdAt
-        updatedAt
-        __typename
-      }
-      createdAt
-      updatedAt
-      __typename
-    }
-  }
-`;
-export const updateMachineGyms = /* GraphQL */ `
-  mutation UpdateMachineGyms(
-    $input: UpdateMachineGymsInput!
-    $condition: ModelMachineGymsConditionInput
-  ) {
-    updateMachineGyms(input: $input, condition: $condition) {
-      id
-      machineId
-      gymId
-      machine {
-        id
-        name
-        createdAt
-        updatedAt
-        __typename
-      }
-      gym {
-        id
-        name
-        rating
-        ratingTotal
-        address
-        phone
-        isRegistered
-        demandNumber
-        createdAt
-        updatedAt
-        __typename
-      }
-      createdAt
-      updatedAt
-      __typename
-    }
-  }
-`;
-export const deleteMachineGyms = /* GraphQL */ `
-  mutation DeleteMachineGyms(
-    $input: DeleteMachineGymsInput!
-    $condition: ModelMachineGymsConditionInput
-  ) {
-    deleteMachineGyms(input: $input, condition: $condition) {
-      id
-      machineId
-      gymId
-      machine {
-        id
-        name
-        createdAt
-        updatedAt
-        __typename
-      }
-      gym {
-        id
-        name
-        rating
-        ratingTotal
-        address
-        phone
-        isRegistered
-        demandNumber
         createdAt
         updatedAt
         __typename
@@ -1457,6 +1421,135 @@ export const deleteWorkoutExercises = /* GraphQL */ `
         createdAt
         updatedAt
         workoutCreatorId
+        __typename
+      }
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const createWorkoutGyms = /* GraphQL */ `
+  mutation CreateWorkoutGyms(
+    $input: CreateWorkoutGymsInput!
+    $condition: ModelWorkoutGymsConditionInput
+  ) {
+    createWorkoutGyms(input: $input, condition: $condition) {
+      id
+      workoutId
+      gymId
+      workout {
+        id
+        name
+        imageUrl
+        reps
+        sets
+        rests
+        nameLower
+        percents
+        difficulty
+        createdAt
+        updatedAt
+        workoutCreatorId
+        __typename
+      }
+      gym {
+        id
+        name
+        rating
+        ratingTotal
+        address
+        phone
+        isRegistered
+        demandNumber
+        createdAt
+        updatedAt
+        __typename
+      }
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const updateWorkoutGyms = /* GraphQL */ `
+  mutation UpdateWorkoutGyms(
+    $input: UpdateWorkoutGymsInput!
+    $condition: ModelWorkoutGymsConditionInput
+  ) {
+    updateWorkoutGyms(input: $input, condition: $condition) {
+      id
+      workoutId
+      gymId
+      workout {
+        id
+        name
+        imageUrl
+        reps
+        sets
+        rests
+        nameLower
+        percents
+        difficulty
+        createdAt
+        updatedAt
+        workoutCreatorId
+        __typename
+      }
+      gym {
+        id
+        name
+        rating
+        ratingTotal
+        address
+        phone
+        isRegistered
+        demandNumber
+        createdAt
+        updatedAt
+        __typename
+      }
+      createdAt
+      updatedAt
+      __typename
+    }
+  }
+`;
+export const deleteWorkoutGyms = /* GraphQL */ `
+  mutation DeleteWorkoutGyms(
+    $input: DeleteWorkoutGymsInput!
+    $condition: ModelWorkoutGymsConditionInput
+  ) {
+    deleteWorkoutGyms(input: $input, condition: $condition) {
+      id
+      workoutId
+      gymId
+      workout {
+        id
+        name
+        imageUrl
+        reps
+        sets
+        rests
+        nameLower
+        percents
+        difficulty
+        createdAt
+        updatedAt
+        workoutCreatorId
+        __typename
+      }
+      gym {
+        id
+        name
+        rating
+        ratingTotal
+        address
+        phone
+        isRegistered
+        demandNumber
+        createdAt
+        updatedAt
         __typename
       }
       createdAt

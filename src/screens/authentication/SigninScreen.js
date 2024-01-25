@@ -55,7 +55,7 @@ const SigninScreen = ({ navigation, route }) => {
                   if (profile_list[0]?.profileGymId) {
                       navigation.navigate('Tabs');
                   } else {
-                      navigation.navigate('SelectGym', { profile_id: profile_list[0].id });
+                      navigation.navigate('SpecifyTypeGym', { profile_id: profile_list[0].id });
                   }
               } else {
                   navigation.navigate('ExperienceLevel', { sub: userId });

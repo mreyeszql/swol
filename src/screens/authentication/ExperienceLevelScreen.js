@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, Text, Button, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, TextInput, Text as RNText, Button, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, Platform } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import SafeAreaView from 'components/view';
 import { generateClient } from 'aws-amplify/api';
 import Slider from '@react-native-community/slider';
 import { updateProfile } from 'graphql/mutations';
+import Text from 'components/text';
 
 
 const ExperienceLevelScreen = ({ navigation, route }) => {
-    const { sub } = route.params;
+    const { sub, comingFromSettings } = route.params;
     const [profile_id, setProfile_id] = useState(null);
     const [value, setValue] = useState(5);
 
@@ -34,7 +35,7 @@ const ExperienceLevelScreen = ({ navigation, route }) => {
         });
 
         const profile_id = profile.data.profilesByOwnerId.items[0]?.id;
-        setValue(profile.data.profilesByOwnerId.items[0]?.experience);
+        setValue(profile.data.profilesByOwnerId.items[0]?.experience ?? 5);
         setProfile_id(profile_id);
     };
 
@@ -48,7 +49,12 @@ const ExperienceLevelScreen = ({ navigation, route }) => {
                     experience: Math.round(value)
                 }}
             });
-            navigation.navigate("SelectGym", { profile_id });
+            if (comingFromSettings) {
+                navigation.goBack()
+            } else { 
+                navigation.navigate("SpecifyTypeGym", { profile_id });
+            }
+            
         }
     }
 
@@ -80,9 +86,9 @@ const ExperienceLevelScreen = ({ navigation, route }) => {
                     />
                     <View>
                         <TouchableOpacity style={styles.next} onPress={localHandleNext}>
-                        <Text styles={styles.text}>
+                        <RNText styles={styles.text}>
                             Next
-                        </Text>
+                        </RNText>
                         </TouchableOpacity>
                     </View>
                 </View>

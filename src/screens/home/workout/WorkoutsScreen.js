@@ -2,10 +2,12 @@ import { useEffect, useState } from 'react';
 import { View, FlatList, TouchableOpacity, Image, TextInput } from 'react-native';
 import { generateClient } from 'aws-amplify/api';
 import Text from 'components/text';
-import { Feather, AntDesign } from '@expo/vector-icons'; 
+import { Feather, AntDesign, MaterialCommunityIcons } from '@expo/vector-icons'; 
 import SafeAreaView from 'components/view';
 import { getUrl, list } from 'aws-amplify/storage';
 import { getCurrentUser } from 'aws-amplify/auth';
+import { listMachines } from 'graphql/queries';
+
 
 
 
@@ -14,6 +16,8 @@ const WorkoutsScreen = ({ navigation }) => {
     const [recommendedWorkouts, setRecommendedWorkouts] = useState([]);
     const [searchText, setSearchText] = useState('');
     const [searchedWorkouts, setSearchedWorkouts] = useState([]);
+    const [workoutIds, setWorkoutIds] = useState(null);
+    const [machineIds, setMachineIds] = useState(null);
 
     //MISSING IN EXERCISE:  
     // difficulty
@@ -36,6 +40,15 @@ const WorkoutsScreen = ({ navigation }) => {
                   id
                   name
                   timePerRep
+                  machines(filter: {or: ${JSON.stringify(machineIds).replace(/"([^"]+)":/g, '$1:')}}) {
+                    items {
+                      machineId
+                      machine {
+                        increment
+                        name
+                      }
+                    }
+                  }
                   lottie
                   hasWeight
                   muscles {
@@ -62,14 +75,21 @@ const WorkoutsScreen = ({ navigation }) => {
     };
 
     useEffect(() => {
-        localHandleFetchRecommendedWorkouts();
+        localHandleFetchGymsWorkoutIds();
+        localHandleFetchGymsMachineIds();
     }, []);
 
     useEffect(() => {
-      if (searchText !== '') {
+      if (workoutIds && machineIds) {
+        localHandleFetchRecommendedWorkouts();
+      }
+    }, [workoutIds, machineIds]);
+
+    useEffect(() => {
+      if (searchText !== '' && machineIds) {
         localHandleFetchSearchWorkouts();
       }
-    }, [searchText]);
+    }, [searchText, machineIds]);
 
     const localHandleFetchProfile = async () => {
       const { userId } = await getCurrentUser();
@@ -79,6 +99,10 @@ const WorkoutsScreen = ({ navigation }) => {
           items {
               id
               experience
+              gym {
+                id
+                isRegistered
+              }
           }
           }
       }
@@ -86,22 +110,67 @@ const WorkoutsScreen = ({ navigation }) => {
       const profile = await client.graphql({
           query: query,
       });
-  
-      return profile.data.profilesByOwnerId.items[0];
+        return profile.data.profilesByOwnerId.items[0];
     };
+
+    const localHandleFetchGymsMachineIds = async () => {
+      const profile = await localHandleFetchProfile();
+      if (profile.gym.isRegistered) {
+        const res = await client.graphql({
+          query: listMachines,
+          variables: { filter: {
+            machineGymId: {eq: profile.gym.id}
+          }}
+        })
+        setMachineIds(res.data.listMachines.items.map(item => { return {machineId: {eq: item.id}} }));
+      }
+    };
+
+    const localHandleFetchGymsWorkoutIds = async () => {
+      const profile = await localHandleFetchProfile();
+      if (profile.gym.isRegistered) {
+        const query_str = `
+        query MyQuery {
+          workoutGymsByGymId(gymId: "${profile.gym.id}") {
+            items {
+              workout {
+                id
+              }
+            }
+          }
+        }
+        `;
+
+        const workout_results = await client.graphql({
+          query: query_str,
+        })
+        let workout_ids = workout_results.data.workoutGymsByGymId.items.map(item => { return {id: {eq: item.workout.id}} });
+        setWorkoutIds(workout_ids);
+      }
+    }
 
     const localHandleFetchSearchWorkouts = async () => {
       console.log("localHandleFetchSearchExercises");
-      result = await client.graphql({
-        query: customQuery(`(filter: {nameLower: {contains: "${searchText.toLowerCase()}"}})`)
-      })
-      localHandleProcessWorkouts(result, setSearchedWorkouts);
+      const profile = await localHandleFetchProfile();
+
+      if (profile.gym.isRegistered) {
+        const result = await client.graphql({ query: customQuery(`(filter: {and: [{and: ${JSON.stringify(workoutIds).replace(/"([^"]+)":/g, '$1:')}}, {nameLower: {contains: "${searchText}"}}]})`) });
+        localHandleProcessWorkouts(result, setSearchedWorkouts);
+      } else {
+        const result = await client.graphql({ query: customQuery(`(filter: {and: [{workoutCreatorId: {eq: "swol"}}, {nameLower: {contains: "${searchText}"}}]})`) });
+        localHandleProcessWorkouts(result, setRecommendedWorkouts);
+      }
     };
 
     const localHandleFetchRecommendedWorkouts = async () => {
       const profile = await localHandleFetchProfile();
-      const result = await client.graphql({ query: customQuery(`(filter: {and: [{difficulty: {le: ${profile?.experience + 1}}}, {difficulty: {ge: ${profile?.experience - 1}}}]})`) });
-      localHandleProcessWorkouts(result, setRecommendedWorkouts);
+      if (profile.gym.isRegistered) {
+        const result = await client.graphql({ query: customQuery(`(filter: {and: [{and: ${JSON.stringify(workoutIds).replace(/"([^"]+)":/g, '$1:')}}, {difficulty: {le: ${profile?.experience + 1}}}, {difficulty: {ge: ${profile?.experience - 1}}}]})`) });
+        localHandleProcessWorkouts(result, setRecommendedWorkouts);
+      } else {
+        const result = await client.graphql({ query: customQuery(`(filter: {and: [{workoutCreatorId: {eq: "swol"}}, {difficulty: {le: ${profile?.experience + 1}}}, {difficulty: {ge: ${profile?.experience - 1}}}]})`) });
+        localHandleProcessWorkouts(result, setRecommendedWorkouts);
+      }
     }
 
     const localHandleProcessWorkouts = async (result, setFunction) => {
@@ -144,7 +213,7 @@ const WorkoutsScreen = ({ navigation }) => {
           >
               <Image 
                 source={{uri: item.uri}}
-                defaultSource={require('../../../../assets/logo.png')} //TODO Santi: better placeholder
+                defaultSource={require('../../../../assets/img/placeholder_workout.png')} //TODO Santi: better placeholder
                 style={{width: 80, height: 80, backgroundColor: 'gray', borderRadius: 10, borderWidth: 0.5}}
               />
               <View style={{flexDirection: 'column', paddingLeft: 18}}>
@@ -163,7 +232,7 @@ const WorkoutsScreen = ({ navigation }) => {
             <TouchableOpacity
               onPress={() => navigation.navigate('Scan')}
             >
-              <Feather name="maximize" size={24} color="white" />
+              <MaterialCommunityIcons name="qrcode-scan" size={24} color="white" />
             </TouchableOpacity>
           </View>
           <View style={{flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderRadius: 10, borderColor: 'white', paddingHorizontal: 12, paddingVertical: 4}}>

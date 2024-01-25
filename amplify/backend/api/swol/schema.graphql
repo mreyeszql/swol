@@ -10,8 +10,9 @@ type Muscle @model @auth(rules: [{ allow: private }]) {
 type Machine @model @auth(rules: [{ allow: private }]) {
   id: ID!
   name: String!
+  increment: Int
   exercises: [Exercise] @manyToMany(relationName: "MachineExercises")
-  gyms: [Gym] @manyToMany(relationName: "MachineGyms")
+  gym: Gym @hasOne
 }
 
 # check here https://github.com/aws-amplify/amplify-category-api/issues/698#issuecomment-1217202492
@@ -28,7 +29,7 @@ type Exercise @model @auth(rules: [{ allow: private }]) {
   id: ID!
   name: String!
   muscles: [Muscle] @manyToMany(relationName: "MuscleExercises")
-  macines: [Machine] @manyToMany(relationName: "MachineExercises")
+  machines: [Machine] @manyToMany(relationName: "MachineExercises")
   workouts: [Workout] @manyToMany(relationName: "WorkoutExercises")
   increment: Int!
   timePerRep: Int
@@ -50,6 +51,7 @@ type Workout @model @auth(rules: [{ allow: private }]) {
   percents: [Float]
   difficulty: Int
   creator: Gym @hasOne
+  gyms: [Gym] @manyToMany(relationName: "WorkoutGyms")
 }
 
 type MyExercise @model @auth(rules: [{ allow: owner }]) {
@@ -98,7 +100,8 @@ type Gym @model @auth(rules: [{ allow: private }]) {
   isRegistered: Boolean, 
   demandNumber: Int,
   profiles: [Profile] @hasMany
-  machines: [Machine] @manyToMany(relationName: "MachineGyms")
+  machines: [Machine] @hasMany
+  workouts: [Workout] @manyToMany(relationName: "WorkoutGyms")
 }
 
 type FriendRequest @model @auth(rules: [{ allow: private }]) {

@@ -6,6 +6,7 @@ import Text from 'components/text';
 import SafeAreaView from 'components/view';
 import { AntDesign } from '@expo/vector-icons';
 import { openSettings } from 'expo-linking';
+import { generateClient } from 'aws-amplify/api';
 
 const ScanScreen = ({ navigation }) => {
   const [hasPermission, setHasPermission] = useState(null);
@@ -20,10 +21,52 @@ const ScanScreen = ({ navigation }) => {
     getBarCodeScannerPermissions();
   }, []);
 
-  const handleBarCodeScanned = ({ type, data }) => {
-    setScanned(true);
-    navigation.navigate('ExerciseDetail', { data });
-    setScanned(false);
+  const handleBarCodeScanned = async ({ type, data }) => {
+    try {
+      const client = generateClient();
+      const query_str = `
+      query MyQuery {
+        getMachine(id: "${data}") {
+          exercises {
+            items {
+              exercise {
+                hasWeight
+                difficulty
+                incrementPR
+                id
+                lottie
+                name
+                muscles {
+                  items {
+                    muscle {
+                      id
+                      name
+                    }
+                  }
+                }
+              }
+            }
+          }
+          increment
+          name
+        }
+      }`;
+      
+      const result = await client.graphql({
+        query: query_str
+      });
+
+      setScanned(true);
+      if (result.data.getMachine.exercises.items.length === 1) {
+        navigation.navigate('ExerciseDetail', { data: result.data.getMachine.exercises.items[0], machine_name:  result.data.getMachine.name, machine_increment: result.data.getMachine.increment});
+      } else if (result.data.getMachine.exercises.items.length > 1) {
+        navigation.navigate('ListExerciseDetails', { data: result.data.getMachine });
+      }
+      setScanned(false);
+
+    } catch (err) {
+      setScanned(false);
+    };
   };
 
   if (hasPermission === null) {

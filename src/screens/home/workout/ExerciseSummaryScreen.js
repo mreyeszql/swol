@@ -65,10 +65,10 @@ const ExercisesSummaryScreen = ({ navigation, route }) => {
         setTotalSets(totalSets);
     };
 
-    const localHandleExit = () => {
+    const localHandleExit = async () => {
         localHandleMyWorkout();
-        localHandleUpdateWeekTime();
-        navigation.navigate('Workouts');
+        const thisWeekTime = await localHandleUpdateWeekTime();
+        navigation.navigate('Profile', { thisWeekTime });
     };
 
     const localHandleUpdateWeekTime = async () => {
@@ -85,6 +85,7 @@ const ExercisesSummaryScreen = ({ navigation, route }) => {
                 thisWeekTime
             }}
         })
+        return thisWeekTime;
     }
 
     return (

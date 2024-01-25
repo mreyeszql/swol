@@ -168,11 +168,11 @@ const ExercisesScreen = ({ route, navigation }) => {
                             <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 15}}> 
                                 <Text>{timers[item.expandedId] >= 60 && Math.floor(timers[item.expandedId] / 60)}{ timers[item.expandedId] >= 60 && " MIN "}{timers[item.expandedId] ? timers[item.expandedId] % 60: 0} SEC</Text>
                                 <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                                    <TouchableOpacity style={{opacity: condition ? 0.25 : 1}} onPress={() => localHandleSetMyExercises(item.exercise, -(item.exercise.increment ?? 5))} disabled={condition}>
+                                    <TouchableOpacity style={{opacity: condition ? 0.25 : 1}} onPress={() => localHandleSetMyExercises(item.exercise, -(item.exercise?.machines?.items[0]?.machine?.increment ?? 5))} disabled={condition}>
                                         <Text style={{fontFamily: 'Inter-Bold', fontSize: 20}}>-</Text>
                                     </TouchableOpacity>
                                     <Text style={{paddingHorizontal: 8, opacity: item.exercise?.hasWeight ? 1 : 0.25}}>{processedWeight} lbs.</Text>
-                                    <TouchableOpacity style={{opacity: condition ? 0.25 : 1}} onPress={() => localHandleSetMyExercises(item.exercise, item.exercise.increment ?? 5)} disabled={condition}>
+                                    <TouchableOpacity style={{opacity: condition ? 0.25 : 1}} onPress={() => localHandleSetMyExercises(item.exercise, item.exercise?.machines?.items[0]?.machine?.increment ?? 5)} disabled={condition}>
                                         <Text style={{fontFamily: 'Inter-Bold', fontSize: 20}}>+</Text>
                                     </TouchableOpacity>
                                 </View>

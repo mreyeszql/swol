@@ -12,10 +12,12 @@ import { launchImageLibraryAsync } from 'expo-image-picker';
 import { uploadData, getUrl } from "aws-amplify/storage";
 import { listProfiles } from "graphql/queries";
 
-const SettingsScreen = ({ navigation }) => {
+const SettingsScreen = ({ navigation, route }) => {
 
+    const [params, setParams] = useState(route.params);
     const [accountError, setAccountError] = useState(null);
     const [passwordError, setPasswordError] = useState(null);
+    const [profileId, setProfileId] = useState(null);
     const [username, setUsername] = useState('mreyes');
     const [email, setEmail] = useState('mreyes@gmail.com');
     const [oldPassword, setOldPassword] = useState(null);
@@ -35,28 +37,30 @@ const SettingsScreen = ({ navigation }) => {
         setEmail(email);
         setUsername(preferred_username);
 
-        client = generateClient();
-        const query = `
-        query MyQuery {
-            profilesByOwnerId(ownerId: "${sub}") {
-            items {
-                id
-                imageUrl
+        if (!params?.imageUri) {
+            client = generateClient();
+            const query = `
+            query MyQuery {
+                profilesByOwnerId(ownerId: "${sub}") {
+                items {
+                    id
+                    imageUrl
+                }
+                }
             }
-            }
-        }
-        `;
-        const profile = await client.graphql({
-            query: query,
-        });
-
-        const imageUri = profile.data.profilesByOwnerId.items[0]?.imageUrl;
-        if (imageUri) {
-            let getUrlResult = await getUrl({
-                key: imageUri
+            `;
+            const profile = await client.graphql({
+                query: query,
             });
-            setImageUri(getUrlResult.url.toString());
-        }
+            setProfileId(profile.data.profilesByOwnerId.items[0]?.id);
+            const imageUri = profile.data.profilesByOwnerId.items[0]?.imageUrl;
+            if (imageUri) {
+                let getUrlResult = await getUrl({
+                    key: imageUri
+                });
+                setImageUri(getUrlResult.url.toString());
+            }
+        } 
     };
 
     const localHandleChangePassword = async () => {
@@ -198,6 +202,7 @@ const SettingsScreen = ({ navigation }) => {
 
         if (!result.canceled) {
             setImageUri(result.assets[0].uri);
+            setParams({imageUri: result.assets[0].uri})
 
             client = generateClient();
             const query = `
@@ -243,7 +248,7 @@ const SettingsScreen = ({ navigation }) => {
                         <View style={{flexDirection: 'row', alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center'}}>
                             <Text style={{fontSize: 32, fontFamily: 'Inter-Bold', textTransform: 'uppercase'}}>SETTINGS</Text>
                             <TouchableOpacity
-                                onPress={() => navigation.goBack()}
+                                onPress={() => navigation.navigate('Profile', { imageUri })}
                             >
                                 <Feather name="x" size={24} color="white" />
                             </TouchableOpacity>
@@ -266,19 +271,29 @@ const SettingsScreen = ({ navigation }) => {
                                     <Image 
                                         style={{height: 100, width: 100, borderRadius: 50}}
                                         defaultSource={require('../../../../assets/img/avatar.png')}
-                                        source={{uri: imageUri}}
+                                        source={{uri: params?.imageUri ?? imageUri}}
                                     />
                                     <View style={{position: 'absolute', transform: [{translateX: 76}, {translateY: 76}], backgroundColor: '#6388EC', borderRadius: 50}}> 
                                         <AntDesign name="pluscircle" size={30} color="white"/>
                                     </View>
                                 </TouchableOpacity>
-                                <View style={{justifyContent: 'flex-end', flex: 1, flexDirection: 'row'}}>
-                                    <TouchableOpacity
-                                        onPress={() => navigation.navigate('ExperienceLevel', { sub: localProfileSubId })}
-                                        style={{borderWidth: 1, borderColor: 'white', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8}}
-                                    >
-                                        <Text>Change Gym Location</Text>
-                                    </TouchableOpacity>
+                                <View style={{flexDirection: 'column', justifyContent: 'center', flex: 1}}>
+                                    <View style={{justifyContent: 'flex-end', flex: 0, flexDirection: 'row', paddingBottom: 16}}>
+                                        <TouchableOpacity
+                                            onPress={() => navigation.navigate('SpecifyTypeGym', { profile_id: profileId })}
+                                            style={{borderWidth: 1, borderColor: 'white', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8}}
+                                        >
+                                            <Text>Change Gym Location</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                    <View style={{justifyContent: 'flex-end', flex: 0, flexDirection: 'row'}}>
+                                        <TouchableOpacity
+                                            onPress={() => navigation.navigate('ExperienceLevel', { sub: localProfileSubId, comingFromSettings: true })}
+                                            style={{borderWidth: 1, borderColor: 'white', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8}}
+                                        >
+                                            <Text>Change Experience</Text>
+                                        </TouchableOpacity>
+                                    </View>
                                 </View>
                             </View>
                             <Text style={{fontFamily: "Inter-Bold", fontSize: 20, marginBottom: 12}}>ACCOUNT</Text>
