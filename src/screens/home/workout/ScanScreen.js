@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Button, Dimensions, TouchableOpacity, SafeAreaView as RNSafeAreaView } from 'react-native';
+import { View, StyleSheet, Button, Dimensions, Image, TouchableOpacity, SafeAreaView as RNSafeAreaView } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import { Feather } from '@expo/vector-icons';
 import Text from 'components/text';
@@ -13,6 +13,7 @@ import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 const ScanScreen = ({ navigation, route }) => {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
+  const {height, width} = Dimensions.get('window')
 
   useEffect(() => {
     const getBarCodeScannerPermissions = async () => {
@@ -86,7 +87,13 @@ const ScanScreen = ({ navigation, route }) => {
   if (hasPermission === false) {
     return (
       <SafeAreaView>
-        <View style={{paddingHorizontal: 12}}>
+        <View style={{ position: 'absolute', justifyContent: 'center', height: '100%', width: '100%', marginTop: 52, alignContent: 'center', alignItems: 'center'}}>
+          <Image
+            style={{height: height * 0.8, width: height * 0.8, opacity: 0.25, transform: [{translateX: height * 0.8 / 4}]}}
+            source={require('../../../../assets/img/no_camera_access_background.png')}
+          />
+        </View>
+        <View style={{paddingHorizontal: 12, paddingBottom:52}}>
           <View style={{flexDirection: 'row-reverse'}}>
               <TouchableOpacity onPress={() => navigation.navigate('Workouts')}>
                   <AntDesign name="close" size={24} color="white" />
