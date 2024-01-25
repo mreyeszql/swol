@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Button, TouchableOpacity, SafeAreaView as RNSafeAreaView } from 'react-native';
+import { View, StyleSheet, Button, Dimensions, TouchableOpacity, SafeAreaView as RNSafeAreaView } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import { Feather } from '@expo/vector-icons';
 import Text from 'components/text';
@@ -7,8 +7,10 @@ import SafeAreaView from 'components/view';
 import { AntDesign } from '@expo/vector-icons';
 import { openSettings } from 'expo-linking';
 import { generateClient } from 'aws-amplify/api';
+import { runOnJS } from 'react-native-reanimated';
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
-const ScanScreen = ({ navigation }) => {
+const ScanScreen = ({ navigation, route }) => {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
 
@@ -19,54 +21,57 @@ const ScanScreen = ({ navigation }) => {
     };
 
     getBarCodeScannerPermissions();
+  
   }, []);
 
-  const handleBarCodeScanned = async ({ type, data }) => {
-    try {
-      const client = generateClient();
-      const query_str = `
-      query MyQuery {
-        getMachine(id: "${data}") {
-          exercises {
-            items {
-              exercise {
-                hasWeight
-                difficulty
-                incrementPR
-                id
-                lottie
-                name
-                muscles {
-                  items {
-                    muscle {
-                      id
-                      name
+  const handleBarCodeScanned = ({ type, data }) => {
+    if (!scanned) {
+      setScanned(true);
+      (async () => {
+        try {
+          const client = generateClient();
+          const query_str = `
+          query MyQuery {
+            getMachine(id: "${data}") {
+              exercises {
+                items {
+                  exercise {
+                    hasWeight
+                    difficulty
+                    incrementPR
+                    id
+                    lottie
+                    name
+                    muscles {
+                      items {
+                        muscle {
+                          id
+                          name
+                        }
+                      }
                     }
                   }
                 }
               }
+              increment
+              name
             }
+          }`;
+          
+          const result = await client.graphql({
+            query: query_str
+          });
+    
+          if (result.data.getMachine.exercises.items.length === 1) {
+            navigation.navigate('ExerciseDetail', { data: result.data.getMachine.exercises.items[0], machine_name:  result.data.getMachine.name, machine_increment: result.data.getMachine.increment, setScanned});
+          } else if (result.data.getMachine.exercises.items.length > 1) {
+            navigation.navigate('ListExerciseDetails', { data: result.data.getMachine });
           }
-          increment
-          name
-        }
-      }`;
-      
-      const result = await client.graphql({
-        query: query_str
-      });
-
-      setScanned(true);
-      if (result.data.getMachine.exercises.items.length === 1) {
-        navigation.navigate('ExerciseDetail', { data: result.data.getMachine.exercises.items[0], machine_name:  result.data.getMachine.name, machine_increment: result.data.getMachine.increment});
-      } else if (result.data.getMachine.exercises.items.length > 1) {
-        navigation.navigate('ListExerciseDetails', { data: result.data.getMachine });
-      }
-      setScanned(false);
-
-    } catch (err) {
-      setScanned(false);
-    };
+        } catch (err) {
+          console.log(err)
+        };
+      })()
+    }
   };
 
   if (hasPermission === null) {
@@ -107,14 +112,19 @@ const ScanScreen = ({ navigation }) => {
         style={StyleSheet.absoluteFillObject}
       />
       <RNSafeAreaView style={styles.view}>
-        <View style={{flexDirection:'row'}}>
-            <TouchableOpacity onPress={() => navigation.goBack()}>
-                <Feather name="x" size={24} color="white" />
-            </TouchableOpacity>
-        </View>
-        <View style={{marginBottom: 56}}>
-            <Text style={{marginRight: 56, fontSize: 18, textAlign: 'center', marginBottom: 12}}>Scan the QR codes on the machines at your gym to learn how to use them!</Text>
-        </View>
+          <View style={{flexDirection:'row'}}>
+              <TouchableOpacity onPress={() => navigation.navigate('Tabs')}>
+                  <Feather name="x" size={24} color="white" />
+              </TouchableOpacity>
+          </View>
+          <TouchableWithoutFeedback
+          style={{height: '100%', width: '100%', justifyContent: 'flex-end'}}
+          onPress={() => setScanned(false)}
+        >
+          <View style={{marginBottom: 56}}>
+              <Text style={{marginRight: 56, fontSize: 18, textAlign: 'center', marginBottom: 12}}>{scanned === false ? "Scan the QR codes on the machines at your gym to learn how to use them!" : "Tap anywhere on the screen to scan another QR code!" }</Text>
+          </View>
+        </TouchableWithoutFeedback>
       </RNSafeAreaView>
       
     </View>
@@ -128,7 +138,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     view: {
-        justifyContent: 'space-between',
         position: 'absolute',
         flexDirection: 'column',
         marginHorizontal: 28,
