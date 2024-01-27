@@ -40,7 +40,7 @@ const ExperienceLevelScreen = ({ navigation, route }) => {
     };
 
     const localHandleNext = async () => {
-        if (value) {
+        if (value >= 0 && value <= 10) {
             const client = generateClient();
             const result = await client.graphql({
                 query: updateProfile,
