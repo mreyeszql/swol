@@ -1,4 +1,4 @@
-import { StyleSheet, View, TouchableOpacity } from "react-native";
+import { StyleSheet, View, TouchableOpacity, FlatList } from "react-native";
 import SafeAreaView from "components/view";
 import Text from "components/text";
 import { AntDesign } from '@expo/vector-icons';
@@ -103,6 +103,14 @@ const ExerciseDetailScreen = ({ navigation, route }) => {
         }
     };
 
+    const mockRenderItem = ({ item }) => {
+        return (
+            <TouchableOpacity style={{borderColor: 'white', borderWidth: 1, paddingHorizontal: 12, paddingVertical: 4, borderRadius: 8}}>
+                <Text>{item.muscle.name}</Text>
+            </TouchableOpacity>
+        );
+    };
+
     return (
         <SafeAreaView>
             <View style={{ width: '100%', height: '100%', flexDirection: 'column', justifyContent: 'space-between', paddingHorizontal: 28}}>
@@ -128,14 +136,31 @@ const ExerciseDetailScreen = ({ navigation, route }) => {
                     isLooping
                     shouldPlay
                 />}
-                <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
-                    <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
-                        <TouchableOpacity onPress={() => localHandleSetMyExercise(myExercise, -(machine_increment ?? 5))}>
-                            <Text style={{fontFamily: 'Inter-Bold', fontSize: 20}}>-</Text>
+                <View style={{flexDirection: 'column', alignItems: 'center', justifyContent: 'center', marginBottom: 28}}>
+                    <FlatList 
+                        style ={{width: '100%', overflow: 'visible'}}
+                        horizontal={true}
+                        data={data.exercise.muscles.items}
+                        renderItem={mockRenderItem}
+                        ItemSeparatorComponent={() => <View style={{width: 8}} />}
+                    />
+                    <View style={{width: '100%', height: 1, backgroundColor: 'white', marginVertical: 12}}/>
+                    <View style={{width: '100%', flexDirection: 'row', justifyContent: 'space-between', alignContent: 'center', alignItems: 'center'}}>
+                        <Text>
+                            Difficulty: {data.exercise.difficulty}/10
+                        </Text>
+                        <TouchableOpacity style={{paddingHorizontal: 12, paddingVertical: 4, borderRadius: 8, borderColor: 'white', borderWidth: 1, opacity: 0.25}} disabled={true}>
+                            <Text>Workouts</Text>
                         </TouchableOpacity>
-                        <Text style={{paddingHorizontal: 8}}>{myExercise ? (myExercise?.weight ?? 0) : 0} lbs.</Text>
-                        <TouchableOpacity onPress={() => localHandleSetMyExercise(myExercise, machine_increment ?? 5)}>
-                            <Text style={{fontFamily: 'Inter-Bold', fontSize: 20}}>+</Text>
+                    </View>
+                    <View style={{width: '100%', height: 1, backgroundColor: 'white', marginVertical: 12, marginBottom: 28}}/>
+                    <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
+                        <TouchableOpacity style={{opacity: data.exercise.hasWeight ? 1 : 0.25}} onPress={() => localHandleSetMyExercise(myExercise, -(machine_increment ?? 5))} disabled={!data.exercise.hasWeight}>
+                            <Text style={{fontFamily: 'Inter-Bold', fontSize: 28}}>-</Text>
+                        </TouchableOpacity>
+                        <Text style={{paddingHorizontal: 8, fontSize: 28, opacity: data.exercise.hasWeight ? 1 : 0.25}}>{data.exercise.hasWeight ? (myExercise ? (myExercise?.weight ?? 0) : 0) : 0} lbs.</Text>
+                        <TouchableOpacity style={{opacity: data.exercise.hasWeight ? 1 : 0.25}} onPress={() => localHandleSetMyExercise(myExercise, machine_increment ?? 5)} disabled={!data.exercise.hasWeight}>
+                            <Text style={{fontFamily: 'Inter-Bold', fontSize: 28}}>+</Text>
                         </TouchableOpacity>
                     </View>
                 </View>

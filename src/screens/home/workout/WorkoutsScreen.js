@@ -19,11 +19,6 @@ const WorkoutsScreen = ({ navigation }) => {
     const [workoutIds, setWorkoutIds] = useState(null);
     const [machineIds, setMachineIds] = useState(null);
 
-    //MISSING IN EXERCISE:  
-    // difficulty
-    // hasWeight
-    // increment
-
     const customQuery = (filterExp) => {
       const query = 
       `
