@@ -34,7 +34,7 @@ const InitialScreen = ({ navigation }) => {
     
             const profile_list = profile.data.profilesByOwnerId.items;
             if (profile_list[0]?.username) {
-                if (profile_list[0]?.experience) {
+                if (profile_list[0]?.experience >= 0 && profile_list[0]?.experience <= 10) {
                     if (profile_list[0]?.profileGymId) {
                         navigation.navigate('Tabs');
                     } else {
